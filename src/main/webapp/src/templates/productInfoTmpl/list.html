@@ -1,0 +1,46 @@
+<%var jsPart = {%>
+
+<script type="text/javascript">
+
+
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+
+<div class="ui segments">
+
+    <div class="ui segment">
+
+    </div>
+    <div class="ui secondary segment">
+        <table class="ui fixed single line celled table">
+            <thead>
+            <tr>
+                <th>产品大类名称</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%for (product in productList){%>
+            <tr>
+                <td>${product.code}</td>
+                <td>${product.typeName}</td>
+                <td>${product.name}</td>
+                <td>${product.code}</td>
+                <td>是</td>
+                <td> <button class="ui grey basic button">修改</button></td>
+            </tr>
+            <%}%>
+            </tbody>
+            <tfoot>
+            <#pager objects="${productList}"/>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<% includeFileTemplate("add.html"){} %>
+
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart}){}%>

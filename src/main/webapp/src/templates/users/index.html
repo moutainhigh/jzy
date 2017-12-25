@@ -1,0 +1,800 @@
+<%var jsPart = {%>
+
+<!--person roles-->
+<script type="text/mustach-template" id="personRolesTemplate">
+    <label>角色</label>
+    <select multiple="" class="ui fluid search dropdown js-dropdown__role" name="user.roles">
+        {{#data}}
+        <option value="{{id}}">{{name}}</option>
+        {{/data}}
+    </select>
+</script>
+
+<script type="text/mustach-template" id="channelTemplate">
+    <label>渠道配置</label>
+    <select multiple="" class="ui fluid search dropdown js-dropdown__channel" name="user.channels">
+        {{#channelList}}
+        <option value="{{id}}">{{name}}</option>
+        {{/channelList}}
+    </select>
+</script>
+
+<script type="text/mustach-template" id="productTemplate">
+    <label>产品子类</label>
+    <select multiple="" class="ui fluid search dropdown js-dropdown__product" name="user.products">
+        {{#productList}}
+        <option value="{{id}}">{{name}}</option>
+        {{/productList}}
+    </select>
+</script>
+
+<script type="text/dt-template" id="addUserTemplate">
+    <div class="ui teal small button js-addUserBtn">
+        <i class="add icon"></i>新增用户
+    </div>
+</script>
+
+<script>
+    var personQuery = {
+        data: {
+//            id: 0,
+            name: '',
+            mobile: '',
+            role: ''
+        },
+        reset: function () {
+            this.data = {
+                name: '',
+                mobile: '',
+                role: ''
+            }
+        }
+    }
+
+    /**
+     * 人员
+     * @type {{manage: Person.manage, add: Person.add, update: Person.update}}
+     */
+    var Person = {
+        /**
+         * manage抽象了新增和修改方法
+         * @param opts add/update
+         * @param opts
+         */
+        manage: function (type, opts) {
+            var defaults = {
+                action: "",
+                resOk: {
+                    textHead: '',
+                    text: ''
+                },
+                resFail: {
+                    textHead: ''
+                }
+            };
+            var options = $.extend(defaults, opts);
+
+            var $modal = $("#personModal");
+            var $form = $modal.find(".ui.form");
+            var $submitBtn = $form.find(".submit.button");
+            $modal.modal({
+                        observeChanges:true,
+                        blurring: true,
+                        onApprove: function () {
+                            $(this).find(".form").submit();
+                            return false;
+                        },
+                        onShow: function () {
+                            $form.form({
+                                inline: true,
+                                fields: {
+                                    type:{
+                                        identifier: 'user.type',
+                                        rules: [
+                                            {
+                                                type: 'checked',
+                                                prompt: '人员类型不能为空'
+                                            }
+                                        ]
+                                    },
+                                    name: {
+                                        identifier: 'user.name',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            },
+                                            {
+                                                type: 'maxLength[40]',
+                                                prompt: '{name}不能为超过40个字符'
+                                            }
+                                        ]
+                                    },
+                                    sex: {
+                                        identifier: 'user.sex',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            }
+                                        ]
+                                    },
+                                    products:{
+                                        identifier: 'user.products',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            }
+                                        ]
+                                    },
+                                    channels:{
+                                        identifier: 'user.channels',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            }
+                                        ]
+                                    },
+                                    certificateType: {
+                                        identifier: 'user.certificateType',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            }
+                                        ]
+                                    },
+                                    certificateNumber: {
+                                        identifier: 'user.certificateNumber',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            }
+                                        ]
+                                    },
+                                    birthDate: {
+                                        identifier: 'user.birthDate',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            }
+                                        ]
+                                    },
+                                    companyStatus: {
+                                        identifier: 'user.companyStatus',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            }
+                                        ]
+                                    },
+                                    mobile: {
+                                        identifier: 'user.mobile',
+                                        rules: [
+                                            {
+                                                type: 'regExp[/^0?(13|14|15|17|18)[0-9]{9}$/]',
+                                                prompt: '{name}格式不正确'
+                                            }
+                                        ]
+                                    },
+                                    email: {
+                                        identifier: 'user.email',
+                                        rules: [
+                                            {
+                                                type: 'regExp[/^\s*$|^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/]',
+                                                prompt: '{name}格式不正确'
+                                            },
+                                            {
+                                                type: 'maxLength[128]',
+                                                prompt: '{name}不能为超过128个字符'
+                                            }
+                                        ]
+                                    },
+                                    address: {
+                                        identifier: 'user.address',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            },
+                                            {
+                                                type: 'maxLength[256]',
+                                                prompt: '{name}不能为超过256个字符'
+                                            }
+                                        ]
+                                    },
+                                    inCompanyDate: {
+                                        identifier: 'user.inCompanyDate',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            }
+                                        ]
+                                    },
+                                    roles: {
+                                        identifier: 'user.roles',
+                                        rules: [
+                                            {
+                                                type: 'minCount[1]',
+                                                prompt: '请选择至少一个角色'
+                                            }
+                                        ]
+                                    },
+                                    login: {
+                                        identifier: 'user.login',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            }
+                                        ]
+                                    }
+                                },
+                                onSuccess: function (e, fidlds) {
+                                    e.preventDefault();
+                                }
+
+                            }).api({
+                                action: options.action,
+                                method: 'POST',
+                                serializeForm: true,
+                                data: {
+                                    "user.organizeId": 1,       //目前用户不跟组织挂钩，默认填写1
+                                    "user.id": options.info.id,
+                                    "user.password": options.info.password
+                                },
+                                beforeSend: function (settings) {
+                                    var roles = settings.data["user.roles"];
+                                    var _return = [];
+                                    if (utils.isString(roles)) {
+                                        _return = [{"id": roles}];
+                                    } else {
+                                        for (var i = 0; i < roles.length; i++) {
+                                            _return.push({"id": roles[i]});
+                                        }
+                                    }
+                                    settings.data["user.roles"] = _return;
+
+                                    for(i in settings.data){
+                                        if(i !='user.roles'){
+                                            var val = settings.data[i];
+                                            settings.data[i] = $.trim(val);
+                                        }
+                                    }
+                                    return settings;
+                                },
+                                onSuccess: function (response) {
+                                    $.uiAlert({
+                                        type: "success",
+                                        textHead: options.resOk.textHead,
+                                        text: options.resOk.text,
+                                        time: 1,
+                                        onClosed: function () {
+                                            if (type == "add")
+                                                window.location.reload();
+                                            else {
+                                                dtTable.ajax.reload();   //按原条件刷新
+                                                $("#personModal").modal("hide");
+                                            }
+                                        }
+                                    });
+
+                                },
+                                onFailure: function (response) {
+                                    $.uiAlert({
+                                        type: "danger",
+                                        textHead: options.resFail.textHead,
+                                        text: response.msg,
+                                        time: 2
+                                    });
+                                }
+                            })
+                            if (type == "add") {
+                                $modal.find(".js-personHeader").html('新增人员');
+                                $("#effectDiv").hide();
+                                $form.form('clear')
+                                $('#personType').removeClass('disabled');
+                            } else if (type == "update") {
+                                $('#personType').addClass('disabled');
+                                $modal.find(".js-personHeader").html('修改人员');
+                                $("#effectDiv").show();
+                                $form.form('clear').form('set values', {
+                                    'user.type':options.info.type,
+                                    'user.name': options.info.name,
+                                    'user.mobile': options.info.mobile,
+                                    'user.email': options.info.email,
+                                    'user.address': options.info.address,
+                                    'user.sex': options.info.sex,
+                                    'user.companyStatus': options.info.companyStatus + "",
+                                    'user.certificateType': options.info.certificateType,
+                                    'user.certificateNumber': options.info.certificateNumber,
+                                    'user.birthDate': options.info.birthDate.substring(0, 10),
+                                    'user.inCompanyDate': options.info.inCompanyDate == null ? "" :  options.info.inCompanyDate.substring(0, 10),
+                                    'user.outCompanyDate': options.info.outCompanyDate == null ? "" : options.info.outCompanyDate.substring(0, 10),
+                                    'user.login': options.info.login,
+                                    'user.rebuild': 0,
+                                    'user.channels':options.info.channels,
+                                    'user.products':options.info.products,
+                                    'user.status': options.info.status,
+                                    'user.roles': options.info.roles
+                                })
+                            }
+
+                        }
+                    }
+            ).modal('show');
+        },
+        add: function () {
+            var othis = this;
+            othis.manage("add", {
+                action: "add user origin",
+                resOk: {
+                    textHead: '新增成功',
+                    text: '成功新增人员'
+                },
+                resFail: {
+                    textHead: '新增失败'
+                },
+                info: {
+                    id: ''
+                }
+            })
+        },
+        update: function (id) {
+            var othis = this;
+            $(document).api({
+                on: "now",
+                method: 'post',
+                action: "get UserById",
+                data: {
+                    id: id
+                },
+                onSuccess: function (res) {
+                    var data = res.data;
+                    var tempRoles = [];
+                    for (var i = 0; i < data.roles.length; i++) {
+                        tempRoles.push(data.roles[i].id + "");
+                    }
+                    var channels = res.data.channels,products = res.data.products;
+                    var channelsGroup =res.data.channels ? channels.split(','):'';
+                    var productsGroup = res.data.products ? products.split(','):'';
+                    var info = {
+                        name: data.name,
+                        type:data.type,
+                        channels:channelsGroup,
+                        products:productsGroup,
+                        mobile: data.mobile ? data.mobile : '',
+                        login: data.login,
+                        sex: data.sex,
+                        email: data.email,
+                        address: data.address,
+                        companyStatus: data.companyStatus,
+                        certificateType: data.certificateType,
+                        certificateNumber: data.certificateNumber,
+                        birthDate: data.birthDate,
+                        inCompanyDate: data.inCompanyDate,
+                        outCompanyDate: data.outCompanyDate,
+                        status: data.status,
+                        password: data.password,
+                        roles: tempRoles,
+                        id: id
+                    };
+                    othis.manage("update", {
+                        action: "update user origin",
+                        resOk: {
+                            textHead: '修改成功',
+                            text: '成功修改人员'
+                        },
+                        resFail: {
+                            textHead: '修改失败'
+                        },
+                        info: info
+                    })
+                }
+            });
+        },
+        changePersionType:function(){
+            $('input[name="user.type"]').on('change',function(){
+                var val = $(this).val();
+                if(val == 'COMPANY_USER'){
+                    $('#personChannel,#personProduct').addClass('disabled');
+                    $('select[name="user.channels"],select[name="user.products"]').attr('disabled',true);
+                }else{
+                    $('#personChannel,#personProduct').removeClass('disabled');
+                    $('select[name="user.channels"],select[name="user.products"]').attr('disabled',false);
+                }
+
+            })
+        }
+    }
+
+    var dtTable;
+
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o) {
+            if (new RegExp("(" + k + ")").test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            }
+        }
+        return fmt;
+    }
+
+    function convertkeysToDataTableParam(params) {
+        if (params) {
+            var dataTableParam = new Object();
+            dataTableParam.searchKeys = params;
+            return dataTableParam;
+        }
+        return params;
+    }
+
+    function init() {
+        renderPesonRoles();
+        renderChannel();
+        renderProduct();
+        Person.changePersionType();
+        dtTable = $("#personTable").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            "ajax": {
+                "url": $(document).api.settings.api['query user'],
+                "data": function (d) {
+                    return JSON.stringify($.extend(convertkeysToDataTableParam(personQuery.data),{draw:d.draw,start:d.start,length:d.length}));
+                },
+                "dataSrc": function (json) {
+                    for (var i = 0; i < json.data.length; i++) {
+                        json.data[i] = $.extend({
+                            id: 0,
+                            name: "",
+                            organizeId: 0,
+                            orgName: "",
+                            login: "",
+                            mobile: "",
+                            roleName: ""
+                        }, json.data[i]);
+                    }
+                    return json.data
+                },
+                "type": "POST"
+            },
+            columns: [
+                {data: 'name'},
+                {
+                    data: function (row, type, set) {
+                        var rtn = '';
+//                        console.log(row);
+                        for (var i = 0; i < row.roles.length; i++) {
+                            rtn = rtn + '<div class="ui label">' + row.roles[i].name + '</div>'
+                        }
+                        return rtn;
+                    }
+                },
+                {data: 'login'},
+                {data: 'mobile'},
+                {data: 'statusDesc'},
+            ],
+            columnDefs: [{
+                //   指定第最后一列
+                className:"single line",
+                targets: 5,
+                render: function (data, type, row, meta) {
+                    return '<button onclick="changePerson(\'' + row.id + '\')" class="ui mini basic button js-personChange" data-id="' + row.id + '"><i class="edit icon"></i>修改</button>';
+                }
+            }],
+            "iDisplayLength": 10,
+            initComplete: function () {
+                $(".right.aligned.eight.wide.column").append($("#addUserTemplate").html());
+                $(document).on("click", ".js-addUserBtn", function () {
+                    Person.add();
+                })
+            }
+        })
+    }
+    init();
+
+    //查询
+    $(".js-searchForm").form({
+        inline: true,
+        fields: {
+            type: {
+                identifier: 'type',
+                rules: [
+                    {
+                        type: 'checked',
+                        prompt: '请选择一项'
+                    }
+                ]
+            },
+            keyword: {
+                identifier: 'keyword',
+                depends: 'type',
+                rules: [
+                    {
+                        type: 'maxLength[41]',
+                        prompt: '查询内容不能为超过41个字符'
+                    }
+                ]
+            }
+        },
+        onSuccess: function (e, fidlds) {
+            e.preventDefault();
+            personQuery.reset();
+            personQuery.data[fidlds.type] = fidlds.keyword;
+            dtTable.ajax.reload();
+        }
+    })
+
+    /**
+     * 获取用户角色
+     */
+    function renderPesonRoles() {
+        $(document).api({
+            on: "now",
+            method: 'post',
+            action: "get roleList",
+            onSuccess: function (data) {
+                var $personRolesTemplate = utils.render("#personRolesTemplate", data);
+                $("#personRoles").append($personRolesTemplate);
+                //初始化人员角色选择框
+                $('.js-dropdown__role').dropdown({
+                     forceSelection:false
+                 });
+            }
+        });
+    }
+
+    /**
+    * 获取渠道下拉数据
+    * */
+    function renderChannel(){
+        $(document).api({
+            on:'now',
+            method:'post',
+            action:'get role channelList',
+            onSuccess:function(data){
+                var $channelTemplate = utils.render("#channelTemplate", data);
+                $("#personChannel").append($channelTemplate);
+                //初始化渠道
+                $('.js-dropdown__channel').dropdown({
+                    forceSelection:false
+                });
+            }
+        })
+    }
+
+    /**
+     * 获取产品子类
+     * */
+    function renderProduct(){
+        $(document).api({
+            on:'now',
+            method:'post',
+            action:'get role productList',
+            onSuccess:function(data){
+                var $productTemplate = utils.render("#productTemplate", data);
+                $("#personProduct").append($productTemplate);
+                //初始产品子类
+                $('.js-dropdown__product').dropdown({
+                    forceSelection:false
+                });
+            }
+        })
+    }
+
+    function addPerson() {
+        Person.add();
+    }
+    function changePerson(id) {
+        Person.update(id);
+    }
+    function initBirthDate(obj) {
+        var idNumber = obj.value;
+        if (verify_card(idNumber))
+            $("#birthDate").val(idNumber.substring(6, 10) + "-" + idNumber.substring(10, 12) + "-" + idNumber.substring(12, 14));
+        else {
+            $("#birthDate").val("");
+            $("#certificateNumber").val("");
+            $.uiAlert({
+                type: "danger",
+                textHead: '格式有误',
+                text: "身份证格式不正确",
+                time: 2
+            });
+        }
+    }
+    function initLogin(obj) {
+        var mobile = obj.value;
+        var pat=/^0?(13|14|15|17|18)[0-9]{9}$/;
+        if (pat.test(mobile))
+            $("#login").val("zc_"+mobile);
+        else {
+            $("#login").val("");
+            $("#mobile").val("");
+            $.uiAlert({
+                type: "danger",
+                textHead: '格式有误',
+                text: "移动电话格式不正确",
+                time: 2
+            });
+        }
+    }
+
+    /*身份证验证*/
+    var Wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1];    // 加权因子
+    var ValideCode = [1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2];            // 身份证验证位值.10代表X
+    function verify_card(value) {
+        var idCard = value;
+        idCard = trim(idCard.replace(/ /g, ""));               //去掉字符串头尾空格
+        if (idCard.length == 15) {
+            return isValidityBrithBy15IdCard(idCard);       //进行15位身份证的验证
+        } else if (idCard.length == 18) {
+            var a_idCard = idCard.split("");                // 得到身份证数组
+            if (isValidityBrithBy18IdCard(idCard) && isTrueValidateCodeBy18IdCard(a_idCard)) {   //进行18位身份证的基本验证和第18位的验证
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    /**
+     * 判断身份证号码为18位时最后的验证位是否正确
+     * @param a_idCard 身份证号码数组
+     * @return
+     */
+    function isTrueValidateCodeBy18IdCard(a_idCard) {
+        var sum = 0;                             // 声明加权求和变量
+        if (a_idCard[17].toLowerCase() == 'x') {
+            a_idCard[17] = 10;                    // 将最后位为x的验证码替换为10方便后续操作
+        }
+        for (var i = 0; i < 17; i++) {
+            sum += Wi[i] * a_idCard[i];            // 加权求和
+        }
+        valCodePosition = sum % 11;                // 得到验证码所位置
+        if (a_idCard[17] == ValideCode[valCodePosition]) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    /**
+     * 验证18位数身份证号码中的生日是否是有效生日
+     * @param idCard 18位书身份证字符串
+     * @return
+     */
+    function isValidityBrithBy18IdCard(idCard18) {
+        var year = idCard18.substring(6, 10);
+        var month = idCard18.substring(10, 12);
+        var day = idCard18.substring(12, 14);
+        var temp_date = new Date(year, parseFloat(month) - 1, parseFloat(day));
+        // 这里用getFullYear()获取年份，避免千年虫问题
+        if (temp_date.getFullYear() != parseFloat(year)
+                || temp_date.getMonth() != parseFloat(month) - 1
+                || temp_date.getDate() != parseFloat(day)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    /**
+     * 验证15位数身份证号码中的生日是否是有效生日
+     * @param idCard15 15位书身份证字符串
+     * @return
+     */
+    function isValidityBrithBy15IdCard(idCard15) {
+        var year = idCard15.substring(6, 8);
+        var month = idCard15.substring(8, 10);
+        var day = idCard15.substring(10, 12);
+        var temp_date = new Date(year, parseFloat(month) - 1, parseFloat(day));
+        // 对于老身份证中的你年龄则不需考虑千年虫问题而使用getYear()方法
+        if (temp_date.getYear() != parseFloat(year)
+                || temp_date.getMonth() != parseFloat(month) - 1
+                || temp_date.getDate() != parseFloat(day)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    //去掉字符串头尾空格
+    function trim(str) {
+        return str.replace(/(^\s*)|(\s*$)/g, "");
+    }
+</script>
+
+<%};%>
+
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <form class="ui form js-searchForm">
+                    <div class=" fields">
+                        <div class="field">
+                            <div class="ui action left icon input">
+                                <i class="users icon"></i>
+                                <input type="text" placeholder="查询..." name="keyword">
+                                <div class="ui teal submit button " id="search">&nbsp;&nbsp;查询&nbsp;&nbsp;</div>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                            </div>
+                        </div>
+                    </div>
+                    <div class="inline fields">
+                        <label>类别：</label>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="type" checked="" value="name">
+                                <label>按姓名</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="type" value="mobile">
+                                <label>按手机号</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="type" value="role">
+                                <label>按角色</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <!--人员列表-->
+            <div class="row" id="personList">
+                <div class="column">
+                    <div class=" ui segment small teal">
+                        <a class="ui teal left ribbon label">人员列表</a>
+                        <table class="ui celled small table" id="personTable">
+                            <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>角色</th>
+                                <th>登录名</th>
+                                <th>手机号</th>
+                                <th>是否生效</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div class="ui hidden divider"></div>-->
+
+
+<%
+include("../organize/person_save.html"){}
+%>
+</div>
+
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"用户信息维护"}){}%>

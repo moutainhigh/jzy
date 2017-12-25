@@ -1,0 +1,540 @@
+<%var jsPart = {%>
+<script src="/js/plugins/laydate-1.1/laydate.js"></script>
+<script>
+    var dtTableA,dtTableB,dtTableC
+    var y_date = moment().subtract('days',1).format('YYYY-MM-DD');
+    $("#report_time").val(y_date);
+    $("#report_time").click(function(){
+        laydate({ max: laydate.now(-1)});
+    });
+    var exportName='',exportTime=moment().subtract(1, "months").format("YYYY-MM-DD") + '~' + moment().format("YYYY-MM-DD"),exportType=''
+    var formQuery = {
+        data: {
+            'report_name':'',
+            'report_time':y_date,
+            'product_type_name':''
+        },
+        reset: function () {
+            this.data = {
+                'report_name':'',
+                'report_time':y_date,
+                'product_type_name':''
+            }
+        }
+    };
+    var searchForm = {
+        init : function(){
+            //查询
+            $(".js-searchForm").form({
+                onSuccess: function (e, fields) {
+                    e.preventDefault();
+                    formQuery.reset();
+                    $.extend(formQuery.data, fields);
+                    formQuery.data.product_type_name=$("#report_name").find("option:selected").text()
+                    /*验证*/
+                    if(formQuery.data.report_time=='' || formQuery.data.report_name==''){
+                        $.uiAlert({type: "danger", textHead: '提示', text: '查询字段不能为空', time: 3});
+                        return false;
+                    }
+                    exportName=formQuery.data.report_name;
+                    exportTime=formQuery.data.report_time;
+                    exportType=formQuery.data.product_type_name;
+                    if(formQuery.data.report_name=='PIAOJU' || formQuery.data.report_name=='YINPIAO'){
+                        if(dtTableA==undefined){
+                            initLoanList_a()
+                        }else{
+                            initLoanList_a()
+                        }
+                        changeTab("a");
+                    }
+                    if(formQuery.data.report_name=='GERENDAI' || formQuery.data.report_name=='CHEDAI'){
+                        if(dtTableB==undefined){
+                            initLoanList_b()
+                        }else{
+                            initLoanList_b()
+                        }
+                        changeTab("b");
+                    }
+                    if(formQuery.data.report_name=='SHULOU' || formQuery.data.report_name=='HONGBEN'){
+                        if(dtTableC==undefined){
+                            initLoanList_c()
+                        }else{
+                            initLoanList_c()
+                        }
+                        changeTab("c");
+                    }
+                    $("#reportTable").show();
+                }
+            })
+        }
+    };
+    $(function(){
+
+        searchForm.init();
+
+        $(document).on("click", ".export_btn", function () {
+            if(exportName=='' || exportTime==''){
+                $.uiAlert({type: "danger", textHead: '提示', text: '导出字段不能为空', time: 3});
+                return false;
+            }
+            window.open('/report/finance_daily_report_export?report_name='+exportName+'&report_time='+exportTime)
+        })
+    });
+
+    //列表初始化
+    function initLoanList_a() {
+        dtTableA = $("#reportTable_a").DataTable({
+            destroy:true,
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query finance daily report'],
+                "data": function (d) {
+                    var _d = $.extend({}, {searchKeys:formQuery.data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST",
+            },
+            columns: [
+                {data: 'businessOrderNo'},
+                {data: 'billCode'},
+                {data: 'drawer'},
+                {data: 'discounter'},
+                {data: 'billType'},
+                {data: 'businessUser'},
+                {data: 'businessDate'},
+                {data: 'billingDate'},
+                {data: 'dueDate'},
+                {data: 'billReceiveDate'},
+                {data: 'expireDays'},
+                {data: 'adjustedDays'},
+                {data: 'totalDays'},
+                {data: 'intermediaryFee'},
+                {data: 'intermediaryName'},
+                {data: 'billAmount'},
+                {data: 'billInterest'},
+                {data: 'otherFee'},
+            ],
+            columnDefs: [{
+                targets:[0,1,2,3,4,5,10,11,12,14],
+                className:'',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return data
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[6,7,8,9],
+                className:'',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--";
+                        }else{
+                            return moment(data).format('YYYY-MM-DD')
+                        }
+                    }else{
+                        return "--";
+                    }
+                }
+            },{
+                targets:[13,15,16,17],
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return accounting.formatMoney(data,'',2,',','.')
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+            }
+        });
+
+    }
+
+    function initLoanList_b() {
+        dtTableB = $("#reportTable_b").DataTable({
+            destroy:true,
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query finance daily report'],
+                "data": function (d) {
+                    var _d = $.extend({}, {searchKeys:formQuery.data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST",
+            },
+            columns: [
+                {data: 'businessOrderNo'},
+                {data: 'productType'},
+                {data: 'businessUser'},
+                {data: 'borrower'},
+                {data: 'idNumber'},
+                {data: 'loanAmount'},
+                {data: 'repayMethod'},
+                {data: 'loanTerm'},
+                {data: 'yearRate'},
+                {data: 'businessDate'},
+                {data: 'dueDate'},
+                {data: 'actualRepayDate'},
+                {data: 'totalDays'},
+                {data: 'principal'},
+                {data: 'interest'},
+                {data: 'otherFee'},
+                {data: 'totalAmount'}
+            ],
+            columnDefs: [{
+                targets:[0,1,2,3,4,7],
+                className:'',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return data
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets: 6,
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return enums.loanRepayMethod[data]
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[5,13,14,15,16],
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return accounting.formatMoney(data,'',2,',','.')
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets: [8],
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return (data).toFixed(2)+'%'
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[10,11],
+                className:'',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return moment(data).format('YYYY-MM-DD')
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+            }
+        })
+    }
+
+    function initLoanList_c() {
+        dtTableC = $("#reportTable_c").DataTable({
+            destroy:true,
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query finance daily report'],
+                "data": function (d) {
+                    var _d = $.extend({}, {searchKeys:formQuery.data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST",
+            },
+            columns: [
+                {data: 'businessOrderNo'},
+                {data: 'source'},
+                {data: 'productType'},
+                {data: 'businessUser'},
+                {data: 'borrower'},
+                {data: 'idNumber'},
+                {data: 'loanAmount'},
+                {data: 'loanTerm'},
+                {data: 'yearRate'},
+                {data: 'businessDate'},
+                {data: 'dueDate'},
+                {data: 'actualRepayDate'},
+                {data: 'totalDays'},
+                {data: 'principal'},
+                {data: 'interest'},
+                {data: 'otherFee'},
+                {data: 'totalAmount'}
+            ],
+            columnDefs: [{
+                targets:[0,1,2,3,4,15],
+                className:'',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return data
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[10,11],
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--";
+                        }else{
+                            return moment(data).format('YYYY-MM-DD')
+                        }
+                    }else{
+                        return "--";
+                    }
+                }
+            },{
+                targets:[6,13,14,15,16],
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return accounting.formatMoney(data,'',2,',','.')
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets: [8],
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return (data).toFixed(2)+'%'
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+            }
+        })
+    }
+    function changeTab(type) {
+        $("#table_a,#table_b,#table_c").hide();
+        $("#table_"+type).show();
+    }
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment teal">
+                <form class="ui fluid  form js-searchForm">
+                    <div class="fields">
+                        <div class="five wide field">
+                            <label>报表名称</label>
+                            <div class="ui search">
+                                <select class="ui fluid dropdown" name="report_name" id="report_name">
+                                    <% for(reportName in reportNameList){%>
+                                    <option value="${reportName.code}">${reportName.name}</option>
+                                    <%}%>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="five wide field">
+                            <label>报表时间</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" placeholder="报表时间" id="report_time" name="report_time">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ui teal mini submit button">查询</div>
+                    <div class="ui clear mini button">重置</div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!--列表-->
+    <div class="row" id="reportTable" style="display: none;">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">报表列表</a>
+
+                <div class="overflow">
+                    <div class="chevron right">
+                        <a class="ui teal small button export_btn" href="javascript:;">
+                            <i class="external share icon"></i>导出
+                        </a>
+                    </div>
+                </div>
+
+                <div id="table_a" style="overflow-x: auto;overflow-y: hidden;display: none;">
+                    <div style="width: 2500px !important;">
+                    <table id="reportTable_a" class="ui celled small table">
+                        <thead>
+                        <tr>
+                            <th>业务单号</th>
+                            <th>票据号码</th>
+                            <th>出票人</th>
+                            <th>贴现人</th>
+                            <th>票据类型</th>
+                            <th>业务员</th>
+                            <th>业务日期</th>
+                            <th>票据开票日期</th>
+                            <th>票据到期日期</th>
+                            <th>票据收款日期</th>
+                            <th>距离到期天数</th>
+                            <th>调整天数</th>
+                            <th>总天数</th>
+                            <th>居间费（元）</th>
+                            <th>居间人</th>
+                            <th>票据面值（元）</th>
+                            <th>票据利息（元）</th>
+                            <th>其它费用（元）</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <div id="table_b" style="overflow-x: auto;overflow-y: hidden;display: none;">
+                    <div style="width: 2500px !important;">
+                    <table id="reportTable_b" class="ui celled small table">
+                        <thead>
+                        <tr>
+                            <th>业务单号</th>
+                            <th>产品类型</th>
+                            <th>业务人员</th>
+                            <th>借款人</th>
+                            <th>身份证号</th>
+                            <th>放款金额（元）</th>
+                            <th>还款方式</th>
+                            <th>放款期限</th>
+                            <th>年利率</th>
+                            <th>业务时间</th>
+                            <th>合同到期时间</th>
+                            <th>实际结清日</th>
+                            <th>总天数</th>
+                            <th>应收本金（元）</th>
+                            <th>应收利息（元）</th>
+                            <th>其他费用（元）</th>
+                            <th>合计（元）</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <div id="table_c" style="overflow-x: auto;overflow-y: hidden;display: none;">
+                    <div style="width: 2500px !important;">
+                    <table id="reportTable_c" class="ui celled small table">
+                        <thead>
+                        <tr>
+                            <th>业务单号</th>
+                            <th>来源</th>
+                            <th>产品类型</th>
+                            <th>业务员</th>
+                            <th>借款人</th>
+                            <th>身份证号</th>
+                            <th>放款金额（元）</th>
+                            <th>放款期限</th>
+                            <th>年利率(%)</th>
+                            <th>业务日期</th>
+                            <th>合同到期日</th>
+                            <th>实际结清日</th>
+                            <th>总天数</th>
+                            <th>应收本金（元）</th>
+                            <th>应收利息（元）</th>
+                            <th>其它费用（元）</th>
+                            <th>合计（元）</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"财务日报表"}){}%>

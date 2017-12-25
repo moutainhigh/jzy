@@ -1,0 +1,129 @@
+<%var jsPart = {%>
+<script src="/js/plugins/mustache.min.js"></script>
+<script src="/js/common/utils.js"></script>
+<script src="/js/pages/account/index.js"></script>
+<%};%>
+
+
+<%var htmlPart = {%>
+<!--回款账户列表-->
+<form class="ui segment teal js-searchForm">
+    <div class="ui equal width form small">
+        <div class="fields">
+            <div class="field">
+                <label>回款账户户名</label>
+                <input type="text" id="s_name" name="s_name">
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="aligned center">
+            <div class="ui teal submit button mini">查询</div>
+            <div  class="ui clear button mini">重置</div>
+        </div>
+    </div>
+</form>
+
+
+<div class="ui hidden divider"></div>
+
+<div class="row" >
+    <div class="column">
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label"> 回款账户列表</a>
+            <table class="ui aligned celled table compact  small" id="paymentAccountTable">
+                <thead >
+                <tr>
+                    <th>回款账户户名</th>
+                    <th>回款账户开户行</th>
+                    <th>回款账户账号</th>
+                    <th>维护人</th>
+                    <th>维护时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="ui modal" id="add_account_modal">
+    <i class="close icon"></i>
+    <div class="header">
+        新增回款账户
+    </div>
+    <div class=" content  ">
+        <form class="ui form" id="add_account_form">
+            <div class="inline fields">
+                <label>回款账户户名：</label>
+                <div class="field eight wide">
+                    <input type="text" name="name">
+                </div>
+
+            </div>
+
+            <div class="inline fields ">
+                <label>回款账户开户行：</label>
+                <div class="field eight wide">
+                    <input type="text" name="bankName">
+                </div>
+            </div>
+            <div class="inline fields">
+                <label>回款账户账号：</label>
+                <div class="field eight wide">
+                    <input type="text" name="account">
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui mini black button" id="addCancelBnt">取消</div>
+        <div class="ui mini teal button " id="addBnt" onclick="add()">保存</div>
+    </div>
+</div>
+
+<div class="ui modal" id="edit_account_modal">
+    <i class="close icon"></i>
+    <div class="header">
+        回款账户维护
+    </div>
+    <div class=" content  ">
+
+                <form class="ui form" id="edit_account_form">
+                    <input type="hidden" name="id" id="id">
+                    <div  class="inline fields">
+                        <label>回款账户户名：</label>
+                        <div class="field eight wide">
+                        <input type="text" name="name" id="name">
+                            </div>
+                    </div>
+                    <div  class="inline fields">
+                        <label>回款账户开户行：</label>
+                        <div class="field eight wide">
+                        <input type="text" name="bankName">
+                        </div>
+                    </div>
+                    <div  class="inline fields">
+                        <label>回款账户账号：</label>
+                        <div class="field eight wide">
+                            <input type="text" name="account">
+                        </div>
+                    </div>
+
+                </form>
+
+    </div>
+    <div class="actions" align="center">
+        <div class="ui black button" id="editCancelBnt">取消</div>
+        <div class="ui  teal button" id="editBnt">保存</div>
+
+    </div>
+</div>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"回款账户管理"}){}%>
+

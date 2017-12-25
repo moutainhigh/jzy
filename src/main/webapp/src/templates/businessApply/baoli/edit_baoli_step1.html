@@ -1,0 +1,425 @@
+<div class="column sixteen wide">
+    <form id="step1Form" class="ui form">
+        <div class="ui segment teal">
+            <div class="two fields margin20t">
+                <div class="field disabled">
+                    <label>产品大类</label>
+                    <input type="text" value="${prdType.name}">
+                </div>
+                <div class="field disabled">
+                    <label>产品子类</label>
+                    <input id="productChild" type="text" value="${prd.name}">
+                </div>
+            </div>
+            <div class="two fields margin20t">
+                <div class="field">
+                    <label>类型</label>
+                    <select class="ui fluid dropdown" name="channelType">
+                        <% if(user.type == 'COMPANY_USER'){%>
+                            <% if(channelType == "0"){ %>
+                            <option value="0" selected>自营</option>
+                            <option value="1">渠道</option>
+                            <% }else{ %>
+                            <option value="0">自营</option>
+                            <option value="1" selected>渠道</option>
+                            <% } %>
+                        <% }else{ %>
+                            <option value="1" selected>渠道</option>
+                        <% } %>
+
+                    </select>
+                </div>
+
+                <div class="field required">
+                    <label>放款主体</label>
+                    <select class="ui fluid dropdown" name="loanSubjectId">
+                        <option value="">请选择</option>
+                        <% for(subject in loanSubjects) {%>
+                        <option value="${subject.id}"  <% if(loan.loanSubjectId == subject.id){ %>selected<% } %> >${subject.name}</option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="equal width fields margin20t">
+                <div class="field required">
+                    <% if(channelType == "0"){ %>
+                    <label id="managerName">承揽业务员</label>
+                    <% }else{ %>
+                    <label id="managerName">业务来源</label>
+                    <% } %>
+
+                    <!--渠道-->
+                    <% if(channelType == "0"){ %>
+                    <div id="managerChannelSearch" class="ui search ks-hidden">
+                        <div class="ui icon input">
+                            <input value="" class="prompt" type="text" placeholder="输入渠道名/渠道简称"
+                                   name="channelSearchName" >
+                            <i class="js_search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                    <% }else{ %>
+                    <div id="managerChannelSearch" class="ui search">
+                        <div class="ui icon input">
+                            <input value="${channelName}" class="prompt" type="text" placeholder="输入渠道名/渠道简称"
+                                   name="channelSearchName" >
+                            <i class="js_search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                    <% } %>
+
+                    <!--自营-->
+                    <% if(channelType == "0"){ %>
+                    <div id="channelSearch" class="ui search">
+                        <div class="ui icon input">
+                            <input value="${loan.saleName}" class="prompt" type="text" placeholder="输入业务人员或代码" name="org.managerName">
+                            <i class="js_search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                    <% }else{ %>
+                    <div id="channelSearch" class="ui search ks-hidden">
+                        <div class="ui icon input">
+                            <input value="" class="prompt" type="text" placeholder="输入业务人员或代码" name="org.managerName">
+                            <i class="js_search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                    <% } %>
+                </div>
+
+                <%if(channelType == "0"){%>
+                <div class="field required" id="engagedChannel">
+                    <label>承做业务员</label>
+                    <div id="engagedChannelSearch" class="ui search">
+                        <div class="ui icon input">
+                            <input value="${loan.engagedSaleName}" class="prompt" type="text" placeholder="输入渠道名/渠道简称"
+                                   name="engagedSaleName">
+                            <i class="js_search search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </div>
+                <%}else{%>
+                <div class="field required" id="engagedChannel">
+                    <label>承做业务员</label>
+                    <div id="engagedChannelSearch" class="ui search">
+                        <div class="ui icon input">
+                            <input value="" class="prompt" type="text" placeholder="输入渠道名/渠道简称"
+                                   name="engagedSaleName">
+                            <i class="js_search search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </div>
+                <%}%>
+
+                <% if(channelType == "0"){ %>
+                <div class="field" id="channelSource">
+                    <label>业务提供方</label>
+                    <div id="partnerSearch" class="ui search">
+                        <div class="ui icon input">
+                            <input value="${channelName}" class="prompt" type="text" placeholder="" name="partnerName">
+                            <i class="js_search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </div>
+                <% }else{ %>
+                <div class="field ks-hidden" id="channelSource">
+                    <label>业务提供方</label>
+                    <div id="partnerSearch" class="ui search">
+                        <div class="ui icon input">
+                            <input disabled value="" class="prompt" type="text" placeholder="" name="partnerName">
+                            <i class="js_search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+
+        </div>
+
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label">借款人信息</a>
+            <h5 class="ui dividing header teal">
+                <span class="padding50r">主借款人&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <div id="btn-addMainBorrower" class="ui button mini basic teal pull-right">
+                    新建
+                </div>
+                <span class="red-required">*</span>
+                <div class="ui icon input mini field">
+                    <input name="mainCertifNumber" id="input-mainCertifNumber" type="text" placeholder="输入证件号码">
+                    <i class="search icon"></i>
+                </div>
+                <div id="js-queryMainBorrower" class="ui button mini basic">
+                    确定
+                </div>
+            </h5>
+            <div id="mainBorrowerList" class="ui cards">
+                <div id="borrower-${borrower.id}" class="card item" data-id="${borrower.id}">
+                    <div class="content">
+                        <a data-borrowerid="${borrower.id}" class="btn-borrowerRemove">
+                            <i class="right floated remove icon red font-20"></i>
+                        </a>
+                        <a data-borrowerid="${borrower.id}" data-certif_type="${borrower.certifType}" class="btn-borrowerEdit">
+                            <i class="right floated edit icon font-20"></i>
+                        </a>
+                        <div class="row">
+                            <div class="column">
+                                <b>融资主体名称：</b>
+                                <span class="borrower-name">${borrower.name}</span>
+                            </div>
+                            <div class="column">
+                                <b>营业执照编号：</b>
+                                <span class="borrower-certifNumber">${borrower.certifNumber}</span>
+                            </div>
+                            <div class="column">
+                                <b>法人姓名：</b>
+                                <span class="borrower-legalPerson">${borrower.legalPerson}</span>
+                            </div>
+                            <div class="column">
+                                <b>法人身份证号：</b>
+                                <span class="borrower-legalPersonCertifNumber">${borrower.legalPersonCertifNumber}</span>
+                            </div>
+                            <div class="column">
+                                <b>公司基本情况：</b>
+                                <span class="borrower-companyProfiles">${borrower.companyProfiles}</span>
+                            </div>
+                            <input value="${borrower.companyProfiles}"  type="text"  style="display:none"
+                                   name="companyProfiles" id="companyProfiles"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="ui dividing header teal margin80t">
+                <span>收款账户</span>
+                <div id="btn-addBank" class="ui button mini basic teal pull-right">
+                    添加
+                </div>
+            </h5>
+            <div id="main_banks" class="ui segment">
+                <% for(item in borrowerAccounts){ %>
+                <% if(itemLP.index == 1){ %>
+                <div class="ui form">
+                    <div class="four fields relative">
+                        <div class="field required">
+                            <label>收款人</label>
+                            <input value="${item.name}" name="account.name" type="text">
+                        </div>
+                        <div class="field required">
+                            <label>开户行（需输入具体的支行）</label>
+                            <input value="${item.bank}" name="account.bank" type="text">
+                        </div>
+                        <div class="field required">
+                            <label>收款账号</label>
+                            <input class="js-bankCard" value="${item.account}" name="account.account" type="text">
+                        </div>
+                        <div class="field required">
+                            <label>融资申请金额（元）</label>
+                            <input value="${item.amount}" name="account.amount" type="text">
+                        </div>
+                    </div>
+                </div>
+                <% }else{ %>
+                <div class="ui form">
+                    <div class=" four fields relative">
+                        <div class="field required">
+                            <label>收款人</label>
+                            <input value="${item.name}" name="account.name" type="text">
+                        </div>
+                        <div class="field required">
+                            <label>开户行（需输入具体的支行）</label>
+                            <input value="${item.bank}" name="account.bank" type="text">
+                        </div>
+                        <div class="field required">
+                            <label>收款账号</label>
+                            <input value="${item.account}" name="account.account" type="text">
+                        </div>
+                        <div class="field required">
+                            <label>融资申请金额（元）</label>
+                            <input value="${item.amount}" name="account.amount" type="text">
+                        </div>
+                        <div class="circular ui icon button floatBtn mini js-removeBank">
+                            <i class="icon remove"></i>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+                <% }elsefor{ %>
+                <div class="ui form">
+                    <div class=" four fields relative">
+                        <div class="field required">
+                            <label>收款人</label>
+                            <input name="account.name" type="text">
+                        </div>
+                        <div class="field required">
+                            <label>开户行（需输入具体的支行）</label>
+                            <input name="account.bank" type="text">
+                        </div>
+                        <div class="field required">
+                            <label>收款账号</label>
+                            <input class="js-bankCard" name="account.account" type="text">
+                        </div>
+                        <div class="field required">
+                            <label>融资申请金额（元）</label>
+                            <input name="account.amount" type="text">
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="ui error message"></div>
+
+        <%if(loan.loanStatus == "SAVE" || loan.loanStatus == "CHANNELSAVE"){%>
+        <div class="actions">
+            <div id="btn-submit" class="ui button  teal">确定</div>
+        </div>
+        <%}%>
+
+        <input type="hidden" name="id" value="${loan.id}">
+        <input type="hidden" name="productTypeId" value="${prdType.id}">
+        <input type="hidden" name="productId" value="${prd.id}">
+        <input type="hidden" name="saleId" value="${loan.saleId}">
+        <input type="hidden" name="engagedSaleId" value="${loan.engagedSaleId}">
+        <input type="hidden" name="channelId" value="${loan.channelId}">
+    </form>
+</div>
+
+<div class="ui form ks-hidden" id="demo-bank" >
+    <div  class=" four fields  relative">
+        <div class="field required">
+            <label>收款人</label>
+            <input name="account.name" type="text">
+        </div>
+        <div class="field required">
+            <label>开户行（需输入具体的支行）</label>
+            <input name="account.bank" type="text">
+        </div>
+        <div class="field required">
+            <label>收款账号</label>
+            <input class="js-bankCard" name="account.account" type="text">
+        </div>
+        <div class="field required">
+            <label>融资申请金额（元）</label>
+            <input name="account.amount" type="text">
+        </div>
+        <div class="circular ui icon button floatBtn mini js-removeBank">
+            <i class="icon remove"></i>
+        </div>
+    </div>
+</div>
+
+<div id="modal-addBorrower" class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+        新建借款人
+    </div>
+    <div class="content">
+        <form id="form-addBorrower" class="ui form padding80">
+            <div class="field required">
+                <label>融资主体名称</label>
+                <input name="name" type="text">
+            </div>
+            <div class="field required">
+                <label>营业执照编号</label>
+                <input type="text" name="certifNumber">
+            </div>
+            <div class="field required">
+                <label>法人姓名</label>
+                <input type="text" name="legalPerson">
+            </div>
+            <div class="field">
+                <label>法人身份证号</label>
+                <input type="text" name="legalPersonCertifNumber">
+            </div>
+            <div class="field required">
+                <label>公司基本情况</label>
+                <textarea name="companyProfiles"></textarea>
+            </div>
+            <div class="field required">
+                <div data-action="" id="btn-addBorrower" class="ui submit button default teal">保存</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modal-editBorrower" class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+        修改借款人
+    </div>
+    <div class="content">
+        <form id="form-editBorrower" class="ui form padding80">
+            <input name="id" type="hidden">
+            <div class="field required">
+                <label>融资主体名称</label>
+                <input name="name" type="text">
+            </div>
+            <div class="field required">
+                <label>营业执照编号</label>
+                <input type="text" name="certifNumber" readonly>
+            </div>
+            <div class="field required">
+                <label>法人姓名</label>
+                <input type="text" name="legalPerson">
+            </div>
+            <div class="field">
+                <label>法人身份证号</label>
+                <input type="text" name="legalPersonCertifNumber">
+            </div>
+            <div class="field required">
+                <label>公司基本情况</label>
+                <textarea name="companyProfiles"></textarea>
+            </div>
+            <div class="field">
+                <div id="btn-eidtBorrower" class="ui submit button default teal">保存</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/mustach-template" id="borrowerTemplate">
+    <div id="borrower-{{id}}" class="card item" data-id="{{id}}">
+        <div class="content">
+            <a data-borrowerid="{{id}}" class="btn-borrowerRemove">
+                <i class="right floated remove icon red font-20"></i>
+            </a>
+            <a data-borrowerid="{{id}}"  class="btn-borrowerEdit">
+                <i class="right floated edit icon font-20"></i>
+            </a>
+            <div class="row">
+                <div class="column">
+                    <b>融资主体名称：</b>
+                    <span class="borrower-name">{{name}}</span>
+                </div>
+                <div class="column">
+                    <b>营业执照编号：</b>
+                    <span class="borrower-certifNumber">{{certifNumber}}</span>
+                </div>
+                <div class="column">
+                    <b>法人姓名：</b>
+                    <span id="legalPerson" class="borrower-legalPerson">{{legalPerson}}</span id="legalPerson">
+                </div>
+                <div class="column">
+                    <b>法人身份证号：</b>
+                    <span class="borrower-legalPersonCertifNumber">{{legalPersonCertifNumber}}</span>
+                </div>
+                <div class="column">
+                    <b>公司基本情况：</b>
+                    <span class="borrower-companyProfiles">{{companyProfiles}}</span>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</script>
+
+

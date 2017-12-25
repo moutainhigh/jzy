@@ -1,0 +1,415 @@
+<script src="/js/common/bin-choices.js"></script>
+<%var jsPart = {%>
+<!--基本信息模板-->
+<script type="text/mustach-template" id="basicInfoTemplate">
+    <div class="five column row">
+        <div class="column">
+            <b for="">
+                业务单号：
+            </b>
+            <span>{{code}}</span>
+        </div>
+        {{#channel_type}}
+        <div class="column">
+            <b for="">
+                业务来源：
+            </b>
+            <span>自营 {{businessLineCN}}-{{saleCode}}-{{saleName}}</span>
+        </div>
+        {{/channel_type}}
+        {{^channel_type}}
+        <div class="column">
+            <b for="">
+                业务来源：
+            </b>
+            <span>渠道 <a target="_blank" href="/channel/view?id={{channelId}}">{{channelName}}</a></span>
+        </div>
+        {{/channel_type}}
+        <div class="column">
+            <b for="">
+                产品大类：
+            </b>
+            <span>{{productTypeName}}</span>
+        </div>
+        <div class="column">
+            <b for="">
+                产品子类：
+            </b>
+            <span>{{productName}}</span>
+        </div>
+        <div class="column">
+            <b for="">
+                放款主体：
+            </b>
+            <% if(user.type == 'COMPANY_USER'){%>
+            <span>{{loanSubjectName}}</span>
+            <%}%>
+        </div>
+    </div>
+    <div class="five column row">
+        <div class="column">
+            <b for="">
+                填单人：
+            </b>
+            <span>{{applyName}}</span>
+        </div>
+        <div class="column">
+            <b for="">
+                提交时间：
+            </b>
+            <span>{{submitTime}}</span>
+        </div>
+        {{#channel_type}}
+        <div class="column">
+            <b for="">
+                业务提供方：
+            </b>
+            <span>{{channelName}}</span>
+        </div>
+        {{/channel_type}}
+        <div class="column">
+        </div>
+        
+    </div>
+</script>
+
+<!--利润-->
+<!--
+<%
+include("./detail_profit.html"){}
+%>
+-->
+
+<!--业务申请信息模板-->
+<%
+if(productInfoTmpl.productTempType!='PIAOJU' && productInfoTmpl.productTempType!='SHULOUPLAT' && productInfoTmpl.productTempType!='YINPIAO' && productInfoTmpl.productTempType!='RRC' && productInfoTmpl.productTempType!='BAOLI'){
+    include("./detail_business.html"){}
+}
+%>
+<!--业务申请-业务信息-->
+<%
+include(productInfoTmpl.viewUrl){}
+%>
+
+<!-- 业务展期-->
+<%
+include("./detail_extension_new.html"){}
+%>
+
+<!--审批流程-->
+<%
+include("./detail_flow.html"){}
+%>
+
+<script type="text/mustach-template" id="relationTemplateCode">
+    <% include("./relation_business_order.html"){} %>
+</script>
+
+<!--业务审批流程：表单-->
+<script type="text/mustach-template" id="businessFormTemplate">
+    <form class="ui form" id="businessForm">
+        {{#isBill}}
+        <a class="ui teal left ribbon label">居间费立项审批</a>
+        <div class="ui grouped fields">
+            <label>&emsp;</label>
+            <div class="field">
+                <div class="ui radio checkbox ">
+                    <input type="radio" name="intermediary" value="true" checked>
+                    <label>同意居间费立项</label>
+                </div>
+                <div class="ui radio checkbox ">
+                    <input type="radio" name="intermediary" value="false">
+                    <label>不同意居间费立项</label>
+                </div>
+            </div>
+        </div>
+        {{/isBill}}
+
+        {{#enterprise}}
+        <a class="ui teal left ribbon label">用印审批</a>
+        <div class="ui grouped fields">
+            <label>&emsp;</label>
+            <div class="field">
+                <div class="ui radio checkbox ">
+                    <input type="radio" name="enterprise" value="true">
+                    <label>同意用印</label>
+                </div>
+                <div class="ui radio checkbox ">
+                    <input type="radio" name="enterprise" value="false">
+                    <label>不同意用印</label>
+                </div>
+            </div>
+        </div>
+        {{/enterprise}}
+
+        {{#workItem}}
+        <a class="ui teal left ribbon label">业务审批流程</a>
+        <h3 class="ui header">审批流程节点：<span id="business_arrorval">{{taskKey}}-{{taskName}}</span></h3>
+            <input type="hidden" id="taskKey" value="{{taskKey}}">
+            <div class="ui grouped required  fields">
+                <label>审批结果</label>
+                <div class="field ">
+                    {{#resultEnums}}
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="approvalCode" value="{{value}}">
+                        <label>{{name}}</label>
+                    </div>
+                    {{/resultEnums}}
+                </div>
+            </div>
+            <div class="required field ">
+                <label>审批意见</label>
+                <textarea name="content"></textarea>
+            </div>
+            <input type="hidden" name="needRepeatFlow" value="false">
+            <div class="ui button teal" id="businessFlowSubmitBnt">提交</div>
+            <div class="ui error message"></div>
+
+        {{/workItem}}
+    </form>
+</script>
+
+<!--风控信息模板-->
+<%
+include("./detail_risk.html"){}
+%>
+
+<%
+include("./detail_risk_bill.html"){}
+%>
+
+
+<!--风控审批流程：表单-->
+<%
+include("./detail_risk_form.html"){}
+%>
+
+<%
+include("./detail_risk_billForm.html"){}
+%>
+
+<!--财务信息模板-->
+<%
+include("./detail_financial.html"){}
+%>
+<!--财务审批流程：表单-->
+<%
+include("./detail_financial_form.html"){}
+%>
+
+<!--财务审批流程：审批表单-->
+<%
+include("./detail_financial_spForm.html"){}
+%>
+
+<!--高管审批流程：审批表单-->
+<%
+include("./detail_senior_spForm.html"){}
+%>
+
+
+<!--贷后信息模板-->
+<%
+include("./detail_postLoan.html"){}
+%>
+<%
+include("./detail_gather.html"){}
+%>
+
+<!--推单信息模板-->
+<%
+include("./detail_push.html"){}
+%>
+
+<!--查看图片模板-->
+<script type="text/mustach-template" id="applyFileTmp">
+    <i class="close icon"></i>
+    <div class="center" style="text-align:center;padding: 40px;">
+        <div class="ui shape" id="fileSide">
+            <div class="ui ignored icon direction buttons">
+                <div class="ui button" id="prev"><i class="left long arrow icon"></i></div>
+                <div class="ui icon button" id="next"><i class="right long arrow icon"></i></div>
+            </div>
+            <div class="ui ignored divider"></div>
+            <div class="sides">
+                {{#data_List}}
+                <div class="side js-side">
+                    <div class="ui shape image">
+                        <div class="image">
+                            {{#is_Image}}
+                            <img src="{{href}}">
+                            {{/is_Image}}
+                            {{^is_Image}}
+                            <i class="file icon"></i>{{fileType}}文件
+                            {{/is_Image}}
+                        </div>
+                        <div class="content">
+                            <div class="ui hidden diver"></div>
+                            <h3 class="header">{{name}}</h3>
+                        </div>
+                        <div class="extra content">
+                            <div class="ui ignored divider"></div>
+                            {{^is_Image}}
+                            <a target="_blank" href="{{href}}"><i class="download icon"></i>下载</a>
+                            {{/is_Image}}
+                            {{#is_Image}}
+                            <a class="ui button" target="_blank" id="source_file" href="{{href}}"><i class="linkify icon"></i>查看原文件</a>
+                            {{/is_Image}}
+                        </div>
+                    </div>
+                </div>
+                {{/data_List}}
+            </div>
+        </div>
+    </div>
+</script>
+
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/pages/businessApply/details/productTmplType.js"></script>
+<script src="/js/pages/businessApply/details/index.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<style>
+    .hide{
+        display: none;
+    }
+    .js-canbedel{
+        margin-bottom: 5px;
+        padding: 5px;
+    }
+</style>
+
+<div class="ui grid">
+    <!--基本信息-->
+    <div class="row" id="loanBasicDetail">
+        <div class="column">
+            <div class=" ui  small segment teal">
+                <div class="ui grid" id="basicInfo">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="productTempType" value="${productInfoTmpl.productTempType}"/>
+    <!--申请单信息-->
+    <div class="row" id="personList">
+        <div class="column">
+            <!--<div class=" ui segment teal">-->
+            <div class="ui secondary pointing   stackable tabs menu js-detailsMenu">
+                <%if(business){%>
+                <a class="item js-detailsMenu__item" data-tab="businessApply">业务申请信息</a>
+                <%}%>
+                <%if(extension){%>
+                <a class="item js-detailsMenu__item" data-tab="businessExtension">业务展期</a>
+                <%}%>
+                <%if(risk){%>
+                <a class="item js-detailsMenu__item" data-tab="riskMng">风控信息</a>
+                <%}%>
+                <%if(finance){%>
+                <a class="item js-detailsMenu__item" data-tab="finance">财务信息</a>
+                <%}%>
+                <%if(senior){%>
+                <a class="item js-detailsMenu__item" data-tab="senior">高管审批信息</a>
+                <%}%>
+                <%if(loaned){%>
+                <a class="item js-detailsMenu__item" data-tab="postLoan">贷后信息</a>
+                <%}%>
+                <%if(push){%>
+                <a class="item js-detailsMenu__item" data-tab="pushes">推单信息</a>
+                <%}%>
+                <%if(flow){%>
+                <a class="item js-detailsMenu__item" data-tab="flows">审批流程</a>
+                <%}%>
+            </div>
+            <!--tab: 业务申请信息-->
+            <div class="ui  tab js-tab" data-tab="businessApply" id="businessApply">
+                <!--利润-->
+                <div class="ks-hidden" id="profitDetail">
+                </div>
+                <!--/利润-->
+
+                <!--业务审批流程:表单-->
+                <div class="ui bottom teal segment hide" id="businessApplyForm" >
+                </div>
+                <!--/业务审批流程:表单-->
+            </div>
+            <!--tab: 业务展期-->
+            <div class="ui  tab js-tab" data-tab="businessExtension" id="businessExtension">
+                <%if(extension){%>
+                <input type="hidden" value="${product.repayMethod}" id="all_repayMethod">
+                <div id="stepData"
+                     data-termType="${product.loanTermType}"
+                     data-repayDateType="${product.repayDateType}"
+                     data-dayInterestType="${product.dayInterestType}"
+                     data-monthInterestType="${product.monthInterestType}"
+                     data-interestType="${product.interestType}"
+                     data-seasonInterestType="${product.seasonInterestType}"
+
+                     data-dayMinInterestAmount="${product.dayMinInterestAmount}"
+                     data-dayMinInterestRate="${product.dayMinInterestRate}"
+
+                     data-monthMinInterestRate="${product.monthMinInterestRate}"
+                     data-monthMinInterestAmount="${product.monthMinInterestAmount}"
+
+                     data-minInterestRate="${product.minInterestRate}"
+                     data-minInterestAmount="${product.minInterestAmount}"
+
+                     data-seasonMinInterestRate="${product.seasonMinInterestRate}"
+                     data-seasonMinInterestAmount="${product.seasonMinInterestAmount}"
+                ></div>
+                <%}%>
+            </div>
+            <!--tab:  风控信息-->
+            <div class="ui   tab js-tab" data-tab="riskMng" id="riskControl">
+                <!--风控审批流程:表单-->
+                <!--div-->
+                <!--<form class="ui bottom teal segment hide form" id="riskControlForms">-->
+                <!--</form>-->
+                <!--/风控审批流程:表单-->
+            </div>
+            <!--财务信息-->
+            <div class="ui   tab js-tab" data-tab="finance" id="financialContainer"></div>
+            <!--高管信息-->
+            <div class="ui   tab js-tab" data-tab="senior" id="seniorControl"></div>
+            <!--贷后信息-->
+            <div class="ui   tab js-tab" data-tab="postLoan" id="postControl"></div>
+            <!--推单信息-->
+            <div class="ui   tab js-tab" data-tab="pushes" id="pushesControl"></div>
+            <!--</div>-->
+
+            <!--审批流程-->
+            <div class="ui tab js-tab" data-tab="flows" id="flowInfo"></div>
+        </div>
+    </div>
+</div>
+<div class="ui modal" id="checkFile">
+
+</div>
+
+<div class="ui modal" id="needRepeatFlowModal">
+    <i class="close icon"></i>
+    <div class="header">
+        是否重走流程？
+    </div>
+    <div class="content">
+        <div class="two fields">
+            <div class="ui radio checkbox checked">
+                <input type="radio" checked="checked" name="needRepeatFlowRadio" value="true">
+                <label>是</label>
+            </div>
+            <div class="ui radio checkbox checked">
+                <input type="radio" name="needRepeatFlowRadio" value="false">
+                <label>否</label>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui green button approve">提交</div>
+        <div class="ui button deny">取消</div>
+    </div>
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"业务详情"}){}%>
+<script src="/js/common/upload.js" defer="defer"></script>
+<script src="/js/common/checkfile.js"></script>

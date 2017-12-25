@@ -1,0 +1,67 @@
+<div class="ui modal" id="editIntermediary">
+    <i class="close icon"></i>
+    <div class="header">
+        编辑居间人
+    </div>
+    <div class="content">
+        <form class="ui form" id="editIntermediaryFrom">
+            <input type="hidden" name="id" class="js_init">
+            <div class="ui segment">
+                <div class="two fields">
+                    <div class=" field required">
+                        <label>居间人姓名</label>
+                        <input type="text" name="name" class="js_init">
+                    </div>
+                    <div class=" field required">
+                        <label id="idNumberUpdate">身份证号码</label>
+                        <input type="text" name="idNumber" class="js_init">
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class=" field required">
+                        <label class="three wide">电话</label>
+                        <input type="text" name="phone" class="js_init"/>
+                    </div>
+                    <div class=" field">
+                        <label>地址</label>
+                        <input type="text" name="address" class="js_init">
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class=" field required">
+                        <label class="three wide">开户行</label>
+                        <input type="text" name="bank" class="js_init"/>
+                    </div>
+                    <div class=" field required">
+                        <label>账号</label>
+                        <input type="text" name="account" class="js_init js-bankCard">
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="field">
+                        <label>身份证件</label>
+                        <span class="js-uploadBtn button ui mini" data-catalog="intermediary"><i class="upload icon"></i>选择上传文件</span>
+                        <a href="" target="_blank" class="js-fileName"></a>
+                        <span class="ui red button mini" onclick="submitFrom.clearFile('editIntermediary')">删除</span>
+                        <input type="hidden" name="contractFileName" disabled>
+                        <input type="hidden" name="contractFileUrl" disabled>
+                        <input type="hidden" name="contractFileUrls" class="js_init">
+                    </div>
+                </div>
+            </div>
+            <div class=" grouped fields">
+                <label class="four wide">状态：</label>
+                <input type="radio" value="ABLE" name="status"/>生效
+                <input type="radio" value="DISABLED" name="status"/>失效
+            </div>
+            <div class="actions">
+                <div class="ui teal submit button" id="editIntermediaryBtn">
+                    提交
+                </div>
+                <div class="ui gray deny button">
+                    取消
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

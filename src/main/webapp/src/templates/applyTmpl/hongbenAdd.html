@@ -1,0 +1,765 @@
+<div class="column sixteen wide">
+    <form id="step3Form" class="ui form">
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label">业务信息</a>
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">借款用途</span>
+            </h5>
+
+            <div class="fields">
+                 <div class="field required inline">
+                     <label>借款用途：</label>
+                     <select name="use_of_loan" class="item" value="">
+                         <option value="">请选择</option>
+                         <option value="DAY_COST">日常消费</option>
+                         <option value="CASH_COST">资金周转</option>
+                     </select>
+                </div>
+            </div>
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">关联抵押房产</span>
+            </h5>
+            <div class="fields">
+                <div class="field">
+                    <div class="field">
+                        <label>房产抵押编号</label>
+                        <input type="text" id="houseCode">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="field">
+                        <label>&emsp;</label>
+                        <div class="ui button mini teal" id="linkDY">关联</div>
+                    </div>
+                </div>
+            </div>
+
+            <table class="ui celled striped table small" id="houseTable">
+                <thead>
+                <tr>
+                    <th>抵押房产编码</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+
+
+
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">抵押房产信息</span>
+            </h5>
+            <div class="inline fields">
+                <div class="ui button teal js_addhouseinfo"><i class="plus icon"></i>增加抵押房产</div>
+            </div>
+            <div class="js_house_list">
+                <div class="ui teal segment js_list">
+                    <div class="ui mini button right floated js_clear">清空</div>
+                    <div class="ui red mini button right floated js_removeHouse ks-hidden">删除</div>
+                    <div class="four fields margin40t">
+                        <div class="field required">
+                            <label>房产证号</label>
+                            <input class="iteml" name="house_code" type="text" value="">
+                        </div>
+                        <div class="field required">
+                            <label>权利人</label>
+                            <select name="user" multiple="" class="iteml ui fluid normal dropdown owerList">
+
+                            </select>
+                        </div>
+                        <div class="field required">
+                            <label>与借款人关系</label>
+                            <select name="relation" class="ui dropdown js_changeRelation iteml">
+                                <option value="1">本人</option>
+                                <option value="2">配偶</option>
+                                <option value="3">亲属</option>
+                                <option value="4">合作人</option>
+                                <option value="5">合作伙伴</option>
+                                <option value="6" name="re_else">其他</option>
+                            </select>
+                        </div>
+                        <div class="field ks-hidden js_relation_else">
+                            <label>&emsp;</label>
+                            <input class="iteml" name="relation_else" type="text" value="" disabled>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>房产名称</label>
+                            <input class="iteml" type="text" name="house_name" value="">
+                        </div>
+                        <div class="sixteen wide field required">
+                            <label>房产地址</label>
+                            <input class="iteml" name="address" type="text" value="">
+                        </div>
+                    </div>
+                    <div class="three fields">
+                        <div class="field required">
+                            <label>房产面积（m²）</label>
+                            <input class="iteml" name="area" type="text" value="">
+                        </div>
+                        <div class="field required">
+                            <label>房产估值（万元）</label>
+                            <input class="iteml" name="price" type="text" value="">
+                        </div>
+                        <div class="field">
+                            <label>估值渠道</label>
+                            <input class="iteml" name="channel" type="text" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">借款人工作信息</span>
+            </h5>
+            <div class="fields inline">
+                <input type="text" name="people_type" class="item ks-hidden" value ="0">
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" class="js_radio radio js_radio_prop" name="peopletype" checked="checked" data-check="0">
+                        <label>受薪人士</label>
+                    </div>
+                </div>
+            </div>
+            <div class="type_a">
+                <div class="fields">
+                    <div class="sixteen wide field">
+                        <label>公司名称</label>
+                        <input class="item" name="company_name_self" type="text" value="${productInfoItemData.company_name_self}">
+                    </div>
+                    <div class="field">
+                        <label>月收入（元）</label>
+                        <input class="item" name="income" type="text" value="${productInfoItemData.income}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fields">
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input class="radio js_radio" name="peopletype" type="radio" data-check="1">
+                        <label>经营企业</label>
+                    </div>
+                </div>
+            </div>
+            <div class="type_b">
+                <div class="fields">
+                    <div class="sixteen wide field">
+                        <label>公司名称</label>
+                        <input  class="item" type="text" name="company_name_com" value="${productInfoItemData.company_name_com}">
+                    </div>
+                    <div class="field">
+                        <label>注册资本（万元）</label>
+                        <input  class="item" type="text" name="register_funds" value="${productInfoItemData.register_funds}">
+                    </div>
+                </div>
+                <div class="three fields">
+                    <div class="field">
+                        <label>成立时间</label>
+                        <input class="laydate item" type="text" name="set_time" value="${productInfoItemData.set_time}">
+                    </div>
+                    <div class="field">
+                        <label>法人代表</label>
+                        <input  class="item" type="text" name="legal_person" value="${productInfoItemData.legal_person}">
+                    </div>
+                    <div class="field">
+                        <label>年营业额（万元）</label>
+                        <input  class="item" type="text" name="year_amount" value="${productInfoItemData.year_amount}">
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="field sixteen wide">
+                        <label>主营业务</label>
+                        <input  class="item" type="text" name="business" value="${productInfoItemData.business}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui error message"></div>
+        <%if(loan.loanStatus == "SAVE" || loan.loanStatus == "CHANNELSAVE"){%>
+        <div class="actions">
+            <div id="btn-submit-step3" class="ui button teal">确定</div>
+        </div>
+        <%}%>
+    </form>
+</div>
+
+
+<div class="ui teal segment js_demo ks-hidden">
+    <div class="ui mini button right floated js_clear">清空</div>
+    <div class="ui red mini button right floated js_removeHouse ks-hidden">删除</div>
+    <div class="four fields margin40t">
+        <div class="field required">
+            <label>房产证号</label>
+            <input class="iteml" name="house_code" type="text" value="">
+        </div>
+        <div class="field required">
+            <label>权利人</label>
+            <select name="user" multiple="" class="iteml ui fluid normal dropdown owerList">
+
+            </select>
+        </div>
+        <div class="field required">
+            <label>与借款人关系</label>
+            <select name="relation" class="ui dropdown js_changeRelation iteml">
+                <option value="1">本人</option>
+                <option value="2">配偶</option>
+                <option value="3">亲属</option>
+                <option value="4">合作人</option>
+                <option value="5">合作伙伴</option>
+                <option value="6" name="re_else">其他</option>
+            </select>
+        </div>
+        <div class="field ks-hidden js_relation_else">
+            <label>&emsp;</label>
+            <input class="iteml" name="relation_else" type="text" value="" disabled>
+        </div>
+    </div>
+    <div class="two fields">
+        <div class="field">
+            <label>房产名称</label>
+            <input class="iteml" type="text" name="house_name" value="">
+        </div>
+        <div class="sixteen wide field required">
+            <label>房产地址</label>
+            <input class="iteml" name="address" type="text" value="">
+        </div>
+    </div>
+    <div class="three fields">
+        <div class="field required">
+            <label>房产面积（m²）</label>
+            <input class="iteml" name="area" type="text" value="">
+        </div>
+        <div class="field required">
+            <label>房产估值（万元）</label>
+            <input class="iteml" name="price" type="text" value="">
+        </div>
+        <div class="field">
+            <label>估值渠道</label>
+            <input class="iteml" name="channel" type="text" value="">
+        </div>
+    </div>
+</div>
+
+<script>
+    var bindSelect = function(){
+        $('#step3Form select[name="user"]').each(function(){
+            $(this).dropdown({
+                allowAdditions: true,
+            })
+        })
+    };
+    function getUser(is_clear,callback){
+        if(is_clear =='true'){
+            $('#step3Form select[name="user"]').dropdown('clear');
+        }
+        $(document).api({
+            on:'now',
+            method:'post',
+            data:{
+                loanId:utils.getUrlParam('id')
+            },
+            url:'/business_apply/query_propertyOwner',
+            onSuccess:function(data){
+                var data = data.data;
+                $('#step3Form select[name="user"],.js_demo select[name="user"]').html('');
+                for(i in data){
+                    $('#step3Form select[name="user"],.js_demo select[name="user"]').each(function(){
+                        $(this).append('<option value='+data[i].borrowerId+'>'+data[i].name+'')
+                    })
+                }
+                if(callback){
+                    callback();
+                }
+                bindSelect();
+            },
+            onFailure: function(data) {
+                $.uiAlert({type: "danger", textHead: '权利人获取失败', text: data.msg, time: 3});
+            }
+        });
+    }
+
+    var init = {
+        getHouseList:function(){
+            HouseDtTable = $('#houseTable').DataTable({
+                serverSide: false,//服务端分页
+                searching: false,//显示默认搜索框
+                ordering: false,//开启排序
+                autoWidth: true,//自适应宽度
+                "ajax": {
+                    "url": '/business_apply/query_loanMortgage',
+                    "type": 'post',
+                    data: function (d) {
+                        var data = {};
+                        data.loanId= utils.getUrlParam('id');
+                        var _d = $.extend({},data, {start: d.start, length: d.length, draw: d.draw});
+                        return _d;
+                    }
+                },
+                columns: [
+                    {data: 'mortgageCode'},
+                    {data: 'approvalStatusType'},
+                    {data: null}
+                ],
+
+                columnDefs:[{
+                    targets: 0,
+                    className: "single line",
+                    render: function (data, type, row, meta) {
+                        return '<a class="ui mini" target="_blank" href="/mortgage/view?id='+row.id+'&type=mortgage">'+data+'</a>';
+                    }
+                },{
+                    targets: 1,
+                    className: "single line",
+                    render: function (data, type, row, meta) {
+                        return enums.approvalStatusTypeList[data];
+                    }
+                },{
+                    targets: 2,
+                    className: "single line",
+                    render: function (data, type, row, meta) {
+                        return '<div class="ui button mini red" onclick="removed(\''+row.mortgageCode+'\')">删除</div>'
+                    }
+                }],
+                "iDisplayLength": 20,
+                "aLengthMenu": [
+                    [20],
+                    [20]
+                ]
+            })
+        },
+
+        link:function(){
+            $('#linkDY').click(function(){
+                var code = $('#houseCode').val();
+                $(document).api({
+                    on:'now',
+                    method:'post',
+                    action:'add loanMortgage',
+                    data:{
+                        mortgageCode:code,
+                        loanId:utils.getUrlParam('id')
+                    },
+                    onSuccess:function(response){
+                        $.uiAlert({type: "success", textHead: '关联成功', text:'', time: 3});
+                        HouseDtTable.ajax.reload();
+                    },
+                    onFailure: function (response) {
+                        $.uiAlert({type: "danger", textHead: '关联失败', text: response.msg, time: 3});
+                    }
+                })
+            })
+
+        }
+    };
+
+    function removed(code){
+        $(document).api({
+            on:'now',
+            method:'post',
+            action:'del loanMortgage',
+            data:{
+                mortgageCode:code,
+                loanId:utils.getUrlParam('id')
+            },
+            onSuccess:function(data){
+                $.uiAlert({type: "success", textHead: '删除成功', text:'', time: 3});
+                HouseDtTable.ajax.reload();
+            },
+            onFailure: function (response) {
+                $.uiAlert({type: "danger", textHead: '删除失败', text: response.msg, time: 3});
+            }
+        })
+    }
+    init.link();
+    init.getHouseList()
+    getUser('false',function(){
+        addData();
+    })
+
+    //其他
+    $(document).on('change','.js_house_list .js_changeRelation',function(){
+        if($(this).val() == '6'){
+            $(this).parent().siblings('.js_relation_else').removeClass('ks-hidden');
+            $(this).parent().siblings('.js_relation_else').find($('input[name="relation_else"]')).attr('disabled',false);
+        }else{
+            $(this).parent().siblings('.js_relation_else').addClass('ks-hidden');
+            $(this).parent().siblings('.js_relation_else').find($('input[name="relation_else"]')).val('');
+            $(this).parent().siblings('.js_relation_else').find($('input[name="relation_else"]')).attr('disabled',true);
+        }
+    });
+    //借款人输入状态改变
+    var pepole_type_radio = $('input[name="peopletype"]');
+    var changeStatue = function(){
+        if($('#step3Form .js_radio_prop').prop('checked')){
+            $('input[name="people_type"]').attr('value','0');
+            $('.type_a').find('input').removeAttr('disabled');
+            $('.type_b').find('input').attr('disabled',true);
+        }else{
+            $('input[name="people_type"]').attr('value','1');
+            $('.type_a').find('input').attr('disabled',true);
+            $('.type_b').find('input').removeAttr('disabled');
+        }
+    };
+    pepole_type_radio.on('change',function () {
+        changeStatue();
+    });
+    changeStatue();
+
+    var clone = function(){
+        var htm = $('.js_demo').clone().addClass('js_list').removeClass('ks-hidden js_demo');
+        htm.find('.iteml').val('');
+        htm.find('select[name="user"]').dropdown('clear'); //设置clone的值为空
+        $('.js_house_list').append(htm);
+        $('.js_removeHouse').removeClass('ks-hidden');
+        $('.js_removeHouse:eq(0)').addClass('ks-hidden');
+    };
+
+    //添加&删除房产信息
+    $('.js_addhouseinfo').on('click',function(){
+        clone();
+        bindSelect();
+    });
+    $('.js_house_list').on('click','.js_removeHouse',function(){
+        $(this).parents('.js_list').remove();
+    });
+
+    $('.js_house_list').on('click','.js_clear',function(){
+        $(this).parents('.js_list').find('.iteml').val('');
+    });
+
+    var step3FormInfo = {
+        inline:true,
+        fields: {
+            'use_of_loan':{
+                identifier: 'use_of_loan',
+                rules: [{
+                    type:'empty',
+                    prompt:'请选择借款用途'
+                }]
+            },
+            'company_name_self': {
+                identifier: 'company_name_self',
+                rules: [
+                    {
+                    type:'maxLength[40]',
+                    prompt:'公司名称不超过40个字符'
+                    }
+                ]
+            },
+            'income': {
+                identifier: 'income',
+                rules: [{
+                    type:'validateNumFloat',
+                    prompt:'输入正整数或2位小数且在0.01-99999999.99内'
+                }]
+            },
+            'company_name_com': {
+                identifier: 'company_name_com',
+                rules: [
+                    {
+                    type:'maxLength[40]',
+                    prompt:'公司名称不超过40个字符'
+                    }
+                ]
+            },
+            'register_funds': {
+                identifier: 'register_funds',
+                rules: [{
+                    type:'validateNumFloat',
+                    prompt:'输入正整数或2位小数且在0.01-99999999.99内'
+                }]
+            },
+            'legal_person': {
+                identifier: 'legal_person',
+                rules: [
+                    {
+                    type:'maxLength[20]',
+                    prompt:'法人代表不超过20个字符'
+                    }
+                ]
+            },
+            'year_amount': {
+                identifier: 'year_amount',
+                rules: [{
+                    type:'validateNumFloat',
+                    prompt:'输入正整数或2位小数且在0.01-99999999.99内'
+                }]
+            },
+            'business': {
+                identifier: 'business',
+                rules: [
+                    {
+                    type:'maxLength[200]',
+                    prompt:'主营业务不超过200个字符'
+                    }
+                ]
+            },
+            onSuccess: function (e, fidlds) {
+                e.preventDefault();
+            }
+        }
+    };
+
+    var step3FormOption = {
+        inline:true,
+        fields: {
+            'house_code': {
+                identifier: 'house_code',
+                rules: [{
+                    type:'empty',
+                    prompt:'房产证号不为空'
+                },{
+                    type:'maxLength[100]',
+                    prompt:'房产证号不超过100个字符'
+                }]
+            },
+            'relation_else':{
+                identifier:'relation_else',
+                rules:[{
+                    type:'maxLength[20]',
+                    prompt:'与借款人关系不超过20个字符'
+                }]
+            },
+            'relation':{
+                identifier:'relation',
+                rules:[{
+                    type:'empty',
+                    prompt:'请选择关系'
+                }]
+            },
+            'user':{
+                identifier:'user',
+                rules:[
+                    {
+                    type: 'empty',
+                    prompt: '权利人不能为空'
+                    }
+                ]
+            },
+            'house_name': {
+                identifier: 'house_name',
+                rules: [
+                    {
+                    type:'maxLength[40]',
+                    prompt:'房产名称不超过40个字符'
+                    }
+                ]
+            },
+            'address': {
+                identifier: 'address',
+                rules: [
+                    {
+                    type: 'empty',
+                    prompt: '房产地址不能为空'
+                    },
+                    {
+                    type:'maxLength[200]',
+                    prompt:'房产地址不超过200个字符'
+                    }
+                ]
+            },
+            'area': {
+                identifier: 'area',
+                rules: [{
+                    type: 'empty',
+                    prompt: '房产面积不为空'
+                },{
+                    type:'validateNumFloat',
+                    prompt:'输入正整数或2位小数且在0.01-99999999.99内'
+                }]
+            },
+            'price': {
+                identifier: 'price',
+                rules: [{
+                    type: 'empty',
+                    prompt: '房产估值不能为空'
+                },{
+                    type:'validateNumFloat',
+                    prompt:'输入正整数或2位小数且在0.01-99999999.99内'
+                }]
+            },
+            'channel': {
+                identifier: 'channel',
+                rules: [
+                    {
+                    type:'maxLength[100]',
+                    prompt:'估值渠道不超过100个字符'
+                    }
+                ]
+            },
+            onSuccess: function (e, fidlds) {
+                e.preventDefault();
+            }
+        }
+    };
+
+
+    $(document).on('click','#btn-submit-step3',function(){
+        var flag = true;
+        $('.js_list').each(function(){
+            var s_flag = $(this).form(step3FormOption).form("validate form");
+            flag=flag && s_flag;
+        });
+        if(flag){
+            $('#step3Form').form(step3FormInfo).api({
+                action: "update loan business",
+                method: 'POST',
+                beforeSend:function(settings){
+                    var _step = "";
+                    if($("#linkStep1").hasClass("completed")) {
+                        _step += "1"
+                    }else {
+                        _step += "0"
+                    }
+                    if($("#linkStep2").hasClass("completed")) {
+                        _step += "1"
+                    }else {
+                        _step += "0"
+                    }
+                    _step += "1"
+                    if($("#linkStep4").hasClass("completed")) {
+                        _step += "1"
+                    }else {
+                        _step += "0"
+                    }
+                    settings.data["step"] = _step;
+                    var loanId = $("#stepData").data("loan_id");
+                    var tmplId = $("#stepData").data("product_info_tmpl_id");
+                    settings.data["id"] = loanId;
+                    var items = [];
+                    var house_list = [];
+                    $('.js_list').each(function(n,ele){
+                        var _that = $(ele);
+                        var house_item = [];
+                        _that.find('.iteml').each(function(m,ele){
+                            var keyName =  $(ele).attr('name');
+                            var dataValue = $(ele).val();
+                            house_item.push({
+                                'keyName':keyName,
+                                'dataValue':dataValue
+                            })
+                        });
+                        house_item.push({
+                            'keyName':'user',
+                            'dataValue':{
+                                val:$(ele).find('select[name="user"]').val(),
+                            }
+                        });
+                        house_list.push(house_item);
+                    });
+
+                    $('#step3Form .item').each(function(i){
+                        if(!$(this).attr('disabled')){
+                            var isDate = $(this).hasClass("laydate");
+                            if(isDate) {
+                                var type = 'date';
+                            } else {
+                                var type = $(this).attr('type');
+                            }
+                            if(type == 'checkbox') {
+                                var checked = $(this).prop("checked");
+                                if(checked) {
+                                    var dataValue = "true";
+                                } else {
+                                    var dataValue = "false";
+                                }
+                            }else if(type == 'radio'){
+                                if($(this).prop("checked")){
+                                    var dataValue = $(this).val();
+                                }
+                            } else {
+                                var dataValue = $(this).val();
+                            }
+
+                            items.push({
+                                'loanId': loanId,
+                                'tmplId': tmplId,
+                                'keyName': $(this).attr('name'),
+                                'dataValue': dataValue,
+                                'type': type
+                            })
+                        }
+                    });
+                    items.push({
+                        'keyName':'house',
+                        "dataValue":JSON.stringify(house_list),
+                        'type':'json'
+                    });
+                    var houseList =[];
+                    $('.js_house_list .js_list').each(function(k,ele){
+                        houseList.push({
+                            'code':$(ele).find('input[name="house_code"]').val(),
+                            'owerId':$(ele).find('select[name="user"]').val().toString(),
+                            'area':$(ele).find('input[name="area"]').val(),
+                            'address':$(ele).find('input[name="address"]').val(),
+                            'price':$(ele).find('input[name="price"]').val(),
+                            'channel':$(ele).find('input[name="channel"]').val(),
+                            'houseName':$(ele).find('input[name="house_name"]').val(),
+                            'relation':$(ele).find('select[name="relation"]').val(),
+                            'relationElse':$(ele).find('input[name="relation_else"]').val(),
+                        })
+                    });
+                    settings.data["houseAccountListStr"] = JSON.stringify(houseList);
+                    settings.data["items"] = JSON.stringify(items);
+                    return settings;
+                },
+                onSuccess: function (response) {
+                    $("#linkStep3").addClass("completed");
+                    goStep("Step4");
+                },
+                onFailure: function(response) {
+                    $.uiAlert({type: "danger", textHead: '保存失败', text: response.msg, time: 3});
+                }
+            });
+            $('#step3Form').submit();
+        }
+    });
+
+
+    // 填充数据
+    function addData(){
+        var dataHouse = '${productInfoItemData.house}';
+        if(dataHouse && dataHouse != ''){
+            var dataJsonList = $.parseJSON(dataHouse);
+            for(var i=0;i<dataJsonList.length;i++){
+                if(i > 0){
+                    clone();
+                }
+                for(l in dataJsonList[i]){
+                    var _data = dataJsonList[i][l];
+                    $('.js_list:eq('+i+') .iteml').each(function(n,ele){
+                        var name = $(ele).attr('name');
+                        if(name == _data.keyName){
+                            if(name =='relation' && _data.dataValue =='6'){
+                                $('.js_list:eq('+i+')').find('.js_relation_else').removeClass('ks-hidden').find('input[name="relation_else"]').attr('disabled',false)
+                            }
+                            $(ele).val(_data.dataValue)
+                        }
+
+                    })
+                    if(_data.keyName == 'user'){
+                        $('.js_list:eq('+i+') select[name="user"]').dropdown('set selected',_data.dataValue.val);
+                    }
+
+                }
+            }
+            var pepleType = '${productInfoItemData.people_type}';
+            var use_of_loan = '${productInfoItemData.use_of_loan}';
+            $('select[name="use_of_loan"]').val(use_of_loan);
+            $('.js_radio').each(function(){
+                var type = $(this).data('check');
+                if(type == pepleType){
+                    $(this).attr('checked','checked');
+                }
+            });
+            changeStatue();
+        }
+    }
+
+</script>

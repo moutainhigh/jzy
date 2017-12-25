@@ -1,0 +1,184 @@
+<script type="text/mustach-template" id="applyTemplate">
+    <h3 class="weui-cells__title f-black">借款用途</h3>
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    借款用途
+                </label>
+                <span class="weui-form-preview__value">{{useOfLoan}}</span>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="weui-cells__title f-black">抵押房产信息</h3>
+    <div class="weui-form-preview">
+        {{#houseList}}
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    房产证号
+                </label>
+                <span class="weui-form-preview__value">{{code}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">权利人</label>
+                <span class="weui-form-preview__value">{{ower}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">与借款人关系</label>
+                <span class="weui-form-preview__value">{{relationDes}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">房产面积（m²）</label>
+                <span class="weui-form-preview__value">{{area}}</span>
+            </div>
+
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">房产估值（万元）</label>
+                <span class="weui-form-preview__value">{{Price}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">估值渠道</label>
+                <span class="weui-form-preview__value">{{channel}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">房产名称</label>
+                <span class="weui-form-preview__value">{{houseName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">房产地址</label>
+                <span class="weui-form-preview__value">{{address}}</span>
+            </div>
+        </div>
+        {{/houseList}}
+        {{^houseList}}
+        <div class="weui-form-preview__ft">
+            <p  class="weui-form-preview__btn weui-form-preview__btn_default" >无</p>
+        </div>
+        {{/houseList}}
+    </div>
+
+    <!--借款人工作信息-->
+    <h3 class="weui-cells__title f-lack">借款人工作信息
+        {{#people_type}}（经营企业）{{/people_type}}
+        {{^people_type}}（受薪人士）{{/people_type}}
+    </h3>
+    {{#people_type}}
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    公司名称
+                </label>
+                <span class="weui-form-preview__value">{{company_name_com}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">注册资本（元）</label>
+                <span class="weui-form-preview__value">{{register_funds}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">成立时间</label>
+                <span class="weui-form-preview__value">{{set_time}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">法人代表</label>
+                <span class="weui-form-preview__value">{{legal_person}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">年营业额（元）</label>
+                <span class="weui-form-preview__value">{{year_amount}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">主营业务</label>
+                <span class="weui-form-preview__value">{{business}}</span>
+            </div>
+        </div>
+    </div>
+    {{/people_type}}
+    {{^people_type}}
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    公司名称
+                </label>
+                <span class="weui-form-preview__value">{{company_name_self}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">月收入（元）</label>
+                <span class="weui-form-preview__value">{{Income}}</span>
+            </div>
+        </div>
+    </div>
+    {{/people_type}}
+    <!--/借款人工作信息-->
+</script>
+
+<script>
+    $(function(){
+        window.renderApplyTpml=function(){
+            $.ajax({
+                type: "get",
+                url: "/m/business_apply/query_business_info",
+                data: {
+                    id: id
+                },
+                async: true,
+                success: function (data) {
+                    var _data=data.data;
+
+                    var house_list = _data.house;
+                    var house_json = $.parseJSON(house_list);
+                    var arry = [];
+                    for(i in house_json){
+                        var j_data = house_json[i];
+                        var param ={};
+                        for(n in j_data){
+                            var key = j_data[n].keyName;
+                            var val = j_data[n].dataValue;
+                            param[key] = val;
+                        }
+                        arry.push(param);
+                    }
+                    _data.house_list = arry;
+                    console.log(_data);
+                    _data.people_type = function(){
+                        return this.people_type =='1';
+                    };
+                    _data.relationDes = function(){
+                        return  this.relation == '6' ? this.relation_else : enums.relation[this.relation];
+                    };
+
+                    _data.Price = function (){
+                        if(this.price){
+                            var num = 0;
+                            if(this.price.indexOf(".") !=-1){
+                                num = this.price.split(".")[1].length;
+                            }else {
+                                num = 0
+                            }
+                            return accounting.formatNumber(this.price,num,"");
+                        }
+                    };
+                    _data.useOfLoan = function(){
+                        return enums.use_of_loan[this.use_of_loan]
+                    };
+                    _data.Income = function (){
+                        if(this.income){
+                            var num = 0;
+                            if(this.income.indexOf(".") !=-1){
+                                num = this.income.split(".")[1].length;
+                            }else {
+                                num = 0
+                            }
+                            return accounting.formatNumber(this.income,num,",");
+                        }
+                    };
+                    var $applyTemplate = utils.render("#applyTemplate", _data);
+                    $("#applyInfoContainer").append($applyTemplate);
+                }
+            });
+        }
+    })
+</script>

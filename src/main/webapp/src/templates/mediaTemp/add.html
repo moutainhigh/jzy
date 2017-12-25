@@ -1,0 +1,144 @@
+<%var jsPart = {%>
+<!--js 获取数据引入-->
+<script src="/js/pages/mediaTemp/media_temp.js"></script>
+<script src="/js/pages/mediaTemp/media_temp_add.js"></script>
+<%};%>
+<%var htmlPart = {%>
+<style>
+    .dataTable .fluid.dropdown {
+        box-sizing: border-box;
+    }
+</style>
+
+<div>
+    <!--新增影像资料配置-->
+    <div class="ui grid">
+        <div class="row ">
+            <div class="column">
+                <div class=" ui segment teal">
+                    <form class="ui form js-saveForm">
+                        <h4>基本信息</h4>
+                        <div class="ui segment">
+                            <div class="three fields">
+                                <div class="field">
+                                    <label>产品影像资料编码</label>
+                                    <input type="text" placeholder="请输入正确的编号" name="mediaTmpl.code" id="code"
+                                           value="${code}" readonly="readonly">
+                                </div>
+                                <div class="ui required field">
+                                    <label>产品影像资料名称</label>
+                                    <input type="text" placeholder="请输入正确的名称" name="mediaTmpl.name" id="name">
+                                </div>
+                                <div class="ui required field">
+                                    <label>选择状态</label>
+                                    <select class="ui fluid dropdown" id="status" name="mediaTmpl.status">
+                                        <option value="">请选择状态</option>
+                                        <option value="ABLE">生效</option>
+                                        <option value="DISABLED">失效</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="ui field">
+                                <label>产品影像资料说明</label>
+                                <textarea rows="2" name="mediaTmpl.description"></textarea>
+                            </div>
+                        </div>
+                        <h4>影像资料</h4>
+                        <div class="ui segment">
+                            <div class="ui top attached tabular menu viewDateMenu">
+                                <a class="item active" data-tab="first">业务影像资料</a>
+                                <a class="item" data-tab="second">风控影像资料</a>
+                                <a class="item" data-tab="third">财务影像资料</a>
+                                <a class="item" data-tab="fourth">贷后影像资料</a>
+                            </div>
+                            <div class="ui bottom attached tab segment active" data-tab="first">
+                                <h4 class="ui dividing header">业务影像
+                                    <div class="ui tiny teal  floated gray  button y_addButton" id="y_addButton">
+                                        <i class="plus icon"></i>新增影像资料
+                                    </div>
+                                </h4>
+                                <a class="ui teal left ribbon label">业务影像列表</a>
+                                <table id="y_dataTabel" class="ui celled five column table" cellspacing="0"
+                                       width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>影像资料名称</th>
+                                        <!--<th>影像资料类型</th>-->
+                                        <th>是否必填</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="ui bottom attached tab segment" data-tab="second">
+                                <h4 class="ui dividing header">风控影像
+                                    <div class="ui tiny teal  floated gray  button f_addButton" id="f_addButton">
+                                        <i class="plus icon"></i>新增影像资料
+                                    </div>
+                                </h4>
+                                <a class="ui teal left ribbon label">风控影像列表</a>
+                                <table id="f_dataTabel" class="ui celled five column table" cellspacing="0"
+                                       width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>影像资料名称</th>
+                                        <!--<th>影像资料类型</th>-->
+                                        <th>是否必填</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="ui bottom attached tab segment" data-tab="third">
+                                <h4 class="ui dividing header">财务影像
+                                    <div class="ui tiny teal  floated gray  button c_addButton" id="c_addButton">
+                                        <i class="plus icon"></i>新增影像资料
+                                    </div>
+                                </h4>
+                                <a class="ui teal left ribbon label">财务影像列表</a>
+                                <table id="c_dataTabel" class="ui celled five column table" cellspacing="0"
+                                       width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>影像资料名称</th>
+                                        <!--<th>影像资料类型</th>-->
+                                        <th>是否必填</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="ui bottom attached tab segment" data-tab="fourth">
+                                <h4 class="ui dividing header">贷后影像
+                                    <div class="ui tiny teal  floated gray  button d_addButton" id="d_addButton">
+                                        <i class="plus icon"></i>新增影像资料
+                                    </div>
+                                </h4>
+                                <a class="ui teal left ribbon label">贷后影像列表</a>
+                                <table id="d_dataTabel" class="ui celled five column table" cellspacing="0"
+                                       width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>影像资料名称</th>
+                                        <!--<th>影像资料类型</th>-->
+                                        <th>是否必填</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                        <!--<div class="ui small  right floated gray  button resetSaveButton">重置</div>-->
+                        <div class="ui small right floated  teal button submit saveButton" id="saveButton">保存</div>
+                        <div class="ui small  floated gray  button backButton">返回列表</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"新增影像配置"}){}%>

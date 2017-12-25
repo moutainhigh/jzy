@@ -1,0 +1,452 @@
+<%var jsPart = {%>
+
+<script></script>
+
+<%};%>
+<style type="text/css">
+
+</style>
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>票据号</label>
+                <input type="text" id="billNo">
+            </div>
+            <div class="field">
+                <label>付款人/出票人</label>
+                <input type="text" id="drawer">
+            </div>
+            <div class="field">
+                <label>类型</label>
+                <select  name="type" id="type" class="ui dropdown">
+                    <option value="" data_name="">全部</option>
+                    <option value="商票" data_name="">商票</option>
+                    <option value="银票" data_name="">银票</option>
+                </select>
+            </div>
+        </div>
+        <div class="fields">
+            <div class="field">
+                <label>导入状态</label>
+                <select  name="importStatus" id="importStatus" class="ui dropdown">
+                    <option value="" data_name="">全部</option>
+                    <option value="00" data_name="">成功</option>
+                    <option value="01" data_name="">失败</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>执行状态</label>
+                <select name="excludeStatus" id="excludeStatus" class="ui dropdown">
+                    <option value="" data_name="">全部</option>
+                    <option value="00" data_name="">待执行</option>
+                    <option value="01" data_name="">执行成功</option>
+                    <option value="02" data_name="">执行失败</option>
+                </select>
+            </div>
+        </div>
+
+
+
+
+        <div class="field">
+            <div class="aligned center">
+                <div class="ui tiny submit button teal" id="searchBnt">查询</div>
+                <div class="ui tiny button clear" id="resetBnt" type="reset">重置</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+
+<div class="row" id="">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">业务列表</a>
+            <table class="ui  celled table compact  small" id="productList">
+                <thead>
+                <tr>
+                    <th>票据号</th>
+                    <th>付款人/出票人</th>
+                    <th>贴现日期</th>
+                    <th>票面金额</th>
+                    <th>贴现利息</th>
+                    <th>导入信息</th>
+                    <th>执行信息</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="ui modal" id="import_product_modal">
+    <!--<i class="close icon"></i>-->
+    <div class="header">
+        产品导入
+    </div>
+    <div class=" content  ">
+        <form class="ui form" id="add_type_form">
+
+
+            <div class="inline fields left-required">
+                <label>产品文件：</label>
+                <div class="field eight wide">
+                    <span class="js-uploadBtn button ui mini" onclick="fileHandler();" id="fileHandlerBtn" ><i class="upload icon"></i>选择上传文件</span>
+                </div>
+                <input type="file"  name="Filedata" id="file" onchange="changeFile();" style="display:none">
+            </div>
+        </form>
+    </div>
+
+    <div class="actions" align="center">
+        <div class="ui mini black button"  id="btn-close"  onclick="hideModal();">取消</div>
+        <div id="btn-upload"  onclick="importProduct();" class="ui button default teal" >上传</div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+        //获取数据
+        initTable();
+
+        //重置
+        $("#resetBnt").on("click", function () {
+            reset();
+        });
+        $("#searchBnt").on("click", function () {
+            initTable();
+        });
+    });
+
+
+    function initTable() {
+        dtTable = $("#productList").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            bDestroy: true,
+            "ajax": {
+                "url": $(document).api.settings.api['get importPiaojuList'],
+                "dataSrc": function (json) {
+                    return json.data;
+                },
+                "data": {
+                    "importStatus": $("#importStatus").val(),
+                    "excludeStatus": $("#excludeStatus").val(),
+                    "billNo":$("#billNo").val(),
+                    "type":$("#type").val(),
+                    "drawer":$("#drawer").val()
+                },
+                "type": "POST"
+            },
+            columns: [{
+                data: 'billNo'
+            }, {
+                data: 'drawer'
+            }, {
+                data: 'discountDate'
+            },
+                /*{
+                data: 'billingDate'
+            }, {
+                data: 'expireDate'
+            }, {
+                data: null
+            },*/
+                {
+                data: null
+            },{
+                data: 'importMsg'
+            },{
+                    data: 'excludeMsg'
+                }],
+            columnDefs: [
+                {
+                targets:3,
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    return accounting.formatMoney(row.parValue,'',2,',','.');
+                }
+            },{
+                    targets:4,
+                    className:'right aligned',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(row.discountInterest,'',2,',','.');
+                    }
+                },{
+                    targets:5,
+                    render: function (data, type, row, meta) {
+                        return row.importStatus=="00"?"导入成功":row.importMsg.replace(/，/g,"</br>");;
+                    }
+                },{
+                    targets:6,
+                    render: function (data, type, row, meta) {
+                        return row.excludeStatus=="00"?"待执行":row.excludeStatus=="01"?"执行成功":row.excludeMsg.replace(/,/g,"</br>");;
+                    }
+                },{
+            //指定第最后一列
+            className:"single line",
+            targets:7,
+            render: function (data, type, row, meta) {
+                var excludeBtn="";
+                if(row.excludeStatus!="01"&&row.importStatus=="00")
+                    excludeBtn = "<div onclick=\"excludeById('" + row.id + "')\" class=\"ui mini submit button basic\" id='exclude_" + row.id + "' ><i class='play icon'></i>处理</div>";
+                if(row.excludeStatus=="01")
+                    excludeBtn =     '<a class="ui mini basic button " data-id="' + row.loanId + '" target="_blank" href="/business_apply/detail?id=' + row.loanId + '&tab=financial&comeFrom='+window.location.pathname+'"><i class="info circle icon"></i>查看</a>';
+                var deleteBtn = "<div onclick=\"deleteById('" + row.id + "')\" class=\"ui mini basic submit button \" id='delete_" + row.id + "'><i class='delete icon'></i>删除</div>";
+                return excludeBtn + deleteBtn;
+            }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete:function(){
+                $(".right.aligned.eight.wide.column").append("<div class='ui teal small button ' id='importBtn' onclick='batchExclude();'><i class='play icon'></i>批量处理</div><div class='ui teal small button ' id='importBtn' onclick='importProductModal();'><i class='plus icon'></i>导入</div>");
+            },
+            "dom": "<'ui grid'<'row'<'eight wide column'><'right aligned eight wide column'>><'row dt-table'<'sixteen wide column'tr>><'row'<'seven wide column'i><'right aligned nine wide column'p>>>"
+        });
+    }
+
+    function deleteById(id) {
+        $.uiDialog("确定删除？", {
+            onApprove: function () {
+                var $modal = $(this);
+                $(document).api({
+                    on: "now",
+                    method: 'post',
+                    url: "/productImport/deletePiaojuById",
+                    data: {
+                        "id": id
+                    },
+                    onSuccess: function (response) {
+                        $modal.modal({
+                            onHidden: function () {
+                                $.uiAlert({
+                                    type: "success",
+                                    textHead: '删除成功',
+                                    text: '成功删除导入产品',
+                                    time: 1,
+                                    onClosed: function () {
+                                        initTable();
+                                    }
+                                });
+                            }
+                        }).modal("hide");
+                    },
+                    onFailure: function (data) {
+                        $.uiAlert({
+                            type: "danger",
+                            textHead: '删除失败',
+                            text: data.msg,
+                            time: 2
+                        });
+                    }
+
+                });
+                return false;
+            },
+            onDeny: function () {
+            }
+        });
+    }
+
+    function excludeById(id) {
+        $.uiDialog("确定处理数据？", {
+            onApprove: function () {
+                var $modal = $(this);
+                $(document).api({
+                    on: "now",
+                    method: 'post',
+                    url: "/productImport/excludePiaoju",
+                    data: {
+                        "id": id
+                    },
+                    onSuccess: function (response) {
+                        $modal.modal({
+                            onHidden: function () {
+                                $.uiAlert({
+                                    type: "success",
+                                    textHead: '处理成功',
+                                    text:response.msg,
+                                    time: 1,
+                                    onClosed: function () {
+                                        $("#excludeStatus").val("01");
+                                        initTable();
+                                    }
+                                });
+                            }
+                        }).modal("hide");
+                    },
+                    onFailure: function (data) {
+                        $modal.modal({
+                            onHidden: function () {
+                                $.uiAlert({
+                                    type: "danger",
+                                    textHead: '处理失败',
+                                    text: data.msg,
+                                    time: 2,
+                                    onClosed: function () {
+                                        $("#excludeStatus").val("02");
+                                        initTable();
+                                    }
+                                })
+                            }
+                        }).modal("hide");
+                    }
+                });
+                return false;
+            },
+            onDeny: function () {
+            }
+        });
+    }
+
+    function batchExclude(id) {
+        $.uiDialog("确定批量处理数据？", {
+            onApprove: function () {
+                var $modal = $(this);
+                $modal.find(".center>h3").text("数据导入中，请耐心等待！");
+                $modal.find(".button").addClass("disabled");
+                $(document).api({
+                    on: "now",
+                    method: 'post',
+                    url: "/productImport/batchExcludePiaoju",
+                    data: {
+                        "importStatus": $("#importStatus").val(),
+                        "excludeStatus": $("#excludeStatus").val(),
+                        "billNo":$("#billNo").val(),
+                        "type":$("#type").val(),
+                        "drawer":$("#drawer").val()
+                    },
+                    onSuccess: function (response) {
+                        $modal.modal({
+                            onHidden: function () {
+                                $.uiAlert({
+                                    type: "success",
+                                    textHead: '处理成功',
+                                    text:response.msg,
+                                    time: 1,
+                                    onClosed: function () {
+                                        $("#excludeStatus").val("01");
+                                        initTable();
+                                    }
+                                });
+                            }
+                        }).modal("hide");
+                    },
+                    onFailure: function (data) {
+                        $modal.modal({
+                            onHidden: function () {
+                                $.uiAlert({
+                                    type: "danger",
+                                    textHead: '处理失败',
+                                    text: data.msg,
+                                    time: 2,
+                                    onClosed: function () {
+                                        $("#excludeStatus").val("02");
+                                        initTable();
+                                    }
+                                })
+                            }
+                        }).modal("hide");
+                    }
+                });
+                return false;
+            },
+            onDeny: function () {
+            }
+        });
+    }
+
+
+    function reset() {
+        $("#billNo").val("");
+        $("#drawer").val("");
+        $("#type").val("");
+        $("#importStatus").val("");
+        $("#excludeStatus").val("");
+
+    }
+
+    function  batchExcludeModal(){
+        $("#exclude_product_modal").modal({blurring:true}).modal("show");
+    }
+
+    function  importProductModal(){
+        $("#import_product_modal").modal({blurring:true}).modal("show");
+    }
+
+    function fileHandler(){
+        $("#file").trigger("click");
+    }
+
+    function changeFile(){
+        $("#fileHandlerBtn").html("<i class=\"upload icon\"></i>"+ ($("#file").val()||"选择上传文件"));
+    };
+
+    function importProduct(){
+        var uploadEventFile = $("#file").val();
+        if(uploadEventFile == ''){
+            $.uiAlert({
+                type: "danger",
+                textHead: '警告',
+                text: "请选择excel,再上传",
+                time: 2,
+                onClosed: function () {
+                }
+            })
+        }else if(!(uploadEventFile.lastIndexOf(".xlsx")>0)){//可判断以.xls和.xlsx结尾的excel
+            $.uiAlert({
+                type: "danger",
+                textHead: '警告',
+                text: "只能上传Excel文件",
+                time: 2,
+                onClosed: function () {
+                }
+            })
+        }else{
+            $("#btn-upload").text("上传中...");
+            $("#btn-close").hide();
+            $('#btn-upload').addClass("disabled");
+            $.ajaxUploadPost('/productImport/uploadPiaoju', ':file', function (data) {
+                $.uiAlert({
+                    type: data.ok==true?"success":"danger",
+                    textHead: '导入数据',
+                    text: data.msg,
+                    time: data.ok==true?1:5,
+                    onClosed: function () {
+                        $("#btn-upload").html("上传");
+                        $("#btn-upload").removeClass("disabled");
+                        $("#btn-close").show();
+                        $("#import_product_modal").modal("hide");
+                        $("#fileHandlerBtn").html("<i class=\"upload icon\"></i>选择上传文件");
+                        $("#file").val("");
+                        initTable();
+                    }
+                });
+            });
+        }
+
+    }
+    //新增取消
+    function hideModal(){
+        $("#exclude_product_modal").modal("hide");
+        $("#import_product_modal").modal("hide");
+    };
+</script>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"票据历史数据导入"}){}%>

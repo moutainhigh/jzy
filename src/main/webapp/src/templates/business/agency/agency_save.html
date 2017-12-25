@@ -1,0 +1,233 @@
+<!--修改、新增机构弹出modal-->
+<div class="ui small modal js-editAgcModal">
+    <i class="close icon"></i>
+    <div class="header js-editAgc__header">
+        编辑
+    </div>
+    <div class=" content">
+        <form class="ui form js_agency_form">
+            <div class="ui   field js-ageSearchField">
+                <label>上级机构</label>
+                <div class="ui search js-agcSearch">
+                    <div class="ui icon input">
+                        <input class="prompt" type="text" placeholder="输入机构名称或代码查询">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </div>
+            <div class="ui  disabled  field">
+                <label>机构级别</label>
+                <input type="text" name="agency.level" placeholder="机构级别" readonly="readonly">
+            </div>
+            <div class="ui required   field">
+                <label>机构代码</label>
+                <input type="text" name="agency.code" placeholder="机构代码">
+            </div>
+            <div class="ui  required  field">
+                <label>机构名称</label>
+                <input type="text" name="agency.name" placeholder="机构名称">
+            </div>
+            <div class="ui   field">
+                <label>联系地址</label>
+                <input type="text" name="agency.address" placeholder="联系地址">
+            </div>
+            <div class="ui   field">
+                <label>联系电话</label>
+                <input type="text" name="agency.telNumber" placeholder="联系电话">
+            </div>
+            <div class="ui   field">
+                <label>状态</label>
+                <div class="field ">
+                    <div class="ui radio checkbox js-modal__checkbox">
+                        <input type="radio" name="agency.status" value="ABLE">
+                        <label>有效</label>
+                    </div>
+                    <div class="ui radio checkbox">
+                        <input type="radio" name="agency.status" value="DISABLED">
+                        <label>无效</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black  deny button">
+            取消
+        </div>
+        <div class="ui teal ok button">确定</div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $.extend(Agency, {
+            /**
+             * 新增和修改
+             * @param type 操作类型：add/update
+             * @param id 节点id
+             */
+            save: function (type, id) {
+                var id = id;
+                var text = "";
+                var actions = "";
+                var _data = {};
+                if (type == "add") {
+                    text = "新增";
+                    actions = "add agency";
+                    $(".js-ageSearchField").show();
+                } else if (type == "update") {
+                    text = "修改";
+                    actions = "update agency";
+                    $(".js-ageSearchField").hide();
+                    _data = {
+                        "agency.id": id,
+                    }
+                }
+
+                $(".js-editAgc__header").text(text);
+
+
+                var $modal = $(".js-editAgcModal");
+                var $form = $(".js_agency_form");
+                $modal.modal({
+                    observeChanges:true,
+                    blurring: true,
+                    onShow: function () {
+                        $form.form('clear').form({
+                            inline: true,
+                            fields: {
+                                code: {
+                                    identifier: 'agency.code',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空.'
+                                        },
+                                        {
+                                            type: 'maxLength[6]',
+                                            prompt: '{name}只能为6个字符.'
+                                        },
+                                        {
+                                            type: 'minLength[6]',
+                                            prompt: '{name}只能为6个字符.'
+                                        }
+                                    ]
+                                }, name: {
+                                    identifier: 'agency.name',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空.'
+                                        },
+                                        {
+                                            type: 'maxLength[50]',
+                                            prompt: '{name}不能超过50个字符'
+                                        }
+                                    ]
+                                },status: {
+                                    identifier: 'agency.status',
+                                    rules: [
+                                        {
+                                            type: 'checked',
+                                            prompt: '请选择一个状态'
+                                        }
+                                    ]
+                                }
+                            },
+                            onSuccess: function (e, fidlds) {
+                                e.preventDefault();
+                            }
+                        }).api({
+                            action: actions,
+                            method: 'POST',
+                            serializeForm: true,
+                            data: _data,
+                            beforeSend: function (settings) {
+                                var agencyPath = "";
+                                var agencyParentId="";
+                                // 完整路径处理
+                                if($("input[name='agency.level']").val()==""){
+                                    settings.data["agency.level"]=1;
+                                    agencyPath="0";
+                                    agencyParentId="";
+                                }else {
+                                    if (STORAGE.modalChosedAgency.path == "0") {
+                                        agencyPath = STORAGE.modalChosedAgency.id;
+                                    } else if(STORAGE.modalChosedAgency.path=="undefined"){
+                                        agencyPath="0";
+                                    }else {
+                                        agencyPath = STORAGE.modalChosedAgency.path + "," + STORAGE.modalChosedAgency.id;
+                                    }
+                                    if(STORAGE.modalChosedAgency.id=="undefined"){
+                                        agencyParentId="";
+                                    }else{
+                                        agencyParentId=STORAGE.modalChosedAgency.id;
+                                    }
+                                }
+                                settings.data["agency.parentId"] = agencyParentId;
+                                settings.data["agency.path"] = agencyPath;
+
+                                for(i in settings.data){
+                                    var val = settings.data[i];
+                                    settings.data[i] = $.trim(val);
+                                }
+                                return settings;
+                            },
+                            onSuccess: function (response) {
+                                $.uiAlert({
+                                    type: "success",
+                                    textHead: text + '成功',
+                                    text: '成功' + text + '机构',
+                                    time: 1,
+                                    onClosed: function () {
+                                        window.location.reload()
+                                    }
+                                });
+
+                            },
+                            onFailure: function (response, element) {
+                                $.uiAlert({
+                                    type: "danger",
+                                    textHead: text + '失败',
+                                    text:response.msg,
+                                    time: 3,
+                                });
+                            }
+                        })
+                        if(type == "add"){
+                            //设置选中值
+                            $('.js-agcSearch').search("set value", STORAGE.chosedTreeItemData.name);
+                            if(STORAGE.chosedTreeItemData.level==null){
+                                $("input[name='agency.level']").val("");
+                            }else {
+                                $("input[name='agency.level']").val(STORAGE.chosedTreeItemData.level + 1);
+                            }
+                           // $("input[name='agency.status'][value='ABLE']").attr("checked",true);
+                            $form.form('set values', {
+                                'agency.status':"ABLE"
+                            })
+                        }
+                        if (type == "update") {
+                            $form.form('set values', {
+                                'agency.level': STORAGE.chosedTreeItemData.level,
+                                'agency.name': STORAGE.chosedTreeItemData.name,
+                                'agency.code': STORAGE.chosedTreeItemData.code,
+                                'agency.address': STORAGE.chosedTreeItemData.address,
+                                'agency.telNumber': STORAGE.chosedTreeItemData.telNumber,
+                                'agency.status':STORAGE.chosedTreeItemData.status
+                            })
+                        }
+                    },
+                    onApprove: function () {
+                        $(this).find(".form").submit();
+                        return false;
+                    },
+                    onDeny: function () {
+//                        window.alert('Wait not yet!');
+                    },
+                }).modal('show');
+            }
+        })
+    })
+</script>

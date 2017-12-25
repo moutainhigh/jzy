@@ -1,0 +1,122 @@
+<!--新增人员弹出modal-->
+<div class="ui small modal" id="personModal">
+    <i class="close icon"></i>
+    <div class="header js-personHeader">
+        新增人员
+    </div>
+    <div class=" content  ">
+        <form class="ui form">
+            <div class="ui grouped required fields" id="personType">
+                <label>人员类型：</label>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" name="user.type" value="COMPANY_USER">
+                        <label>内部人员</label>
+                    </div>
+                    <div class="ui radio checkbox">
+                        <input type="radio" name="user.type" value="CHANNEL_USER">
+                        <label>外部渠道人员</label>
+                    </div>
+                </div>
+            </div>
+            <div class="equal width fields">
+                <div class="required field">
+                    <label>姓名</label>
+                    <input type="text" placeholder="姓名" name="user.name">
+                </div>
+                <div class="required field">
+                    <label>性别</label>
+                    <select class="ui dropdown" name="user.sex">
+                        <option value="">请选择</option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </div>
+                <div class="required field">
+                    <label>在职状态</label>
+                    <select class="ui dropdown" name="user.companyStatus">
+                        <option value="">请选择</option>
+                        <option value="true">在职</option>
+                        <option value="false">离职</option>
+                    </select>
+                </div>
+            </div>
+            <div class="equal width fields">
+            <div class="required field">
+                <label>证件类型</label>
+                <select class="ui dropdown" name="user.certificateType">
+                    <option value="">请选择</option>
+                    <option value="ID" selected="selected">身份证</option>
+                </select>
+            </div>
+            <div class="required field">
+                <label>证件号码</label>
+            <input type="text" placeholder="证件号码" name="user.certificateNumber" id="certificateNumber" onchange="initBirthDate(this);">
+            </div>
+            <div class="required field">
+                <label>出生日期</label>
+                <input type="text" placeholder="出生日期" name="user.birthDate" id="birthDate" readonly>
+            </div>
+            </div>
+            <div class="required field" id="personRoles">
+            </div>
+            <div class="equal width fields">
+            <div class="required field">
+                <label>移动电话</label>
+                <input type="text" placeholder="手机号" name="user.mobile" id="mobile" onchange="initLogin(this);">
+            </div>
+            <div class=" field">
+                <label>电子邮箱</label>
+                <input type="text" placeholder="电子邮箱" name="user.email">
+            </div>
+            </div>
+            <div class="required field">
+                <label>联系地址</label>
+                <input type="text" placeholder="联系地址" name="user.address">
+            </div>
+            <div class="equal width fields">
+            <div class="required field">
+                <label>入司日期</label>
+                <input type="date" placeholder="入司日期" name="user.inCompanyDate" id="inCompanyDate">
+            </div>
+            <div class=" field">
+                <label>离司日期</label>
+                <input type="date" placeholder="入司日期" name="user.outCompanyDate" id="outCompanyDate">
+            </div>
+            </div>
+            <div class="required field">
+                <label>登录名</label>
+                <input type="text" placeholder="登录名" name="user.login" id="login" readonly>
+            </div>
+            <div class="required field disabled" id="personChannel">
+            </div>
+            <div class="required field disabled" id="personProduct">
+            </div>
+            <div class="equal width fields">
+                <div class="inline fields"  id="effectDiv">
+                    <label for="user.status">设置是否生效：</label>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="user.status" checked="" value="ABLE">
+                            <label>是</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="user.status" value="DISABLED">
+                            <label>否</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black  deny button">
+            取消
+        </div>
+        <div class="ui teal ok button">确定</div>
+    </div>
+</div>

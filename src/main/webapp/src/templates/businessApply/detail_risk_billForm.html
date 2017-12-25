@@ -1,0 +1,52 @@
+<script type="text/mustach-template" id="riskBillInfo">
+    <div class="required field ">
+        <label>企业资料</label>
+        <table class="ui celled center aligned table small" id="">
+            <thead>
+            <tr>
+                <th>资料名称</th>
+                <th>是否必填</th>
+                <th>资料文件</th>
+                <th>上传人</th>
+                <th>上传时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#media}}
+            {{#billMediaAttaches}}
+            <tr class="mediaItem">
+                <input type="hidden" name="itemName" value="{{itemName}}">
+                <input type="hidden" name="required" value="{{required}}">
+                <input type="hidden" name="mediaItemType" value="BILL">
+                <input type="hidden" name="mediaDetail" value="">
+                <input type="hidden" name="productMediaAttachId" value="{{id}}">
+                <td>{{itemName}}</td>
+                <td>
+                    {{#required}}
+                    <span class="ui red label">必填</span>
+                    {{/required}}
+                    {{^required}}
+                    <span class="ui label">选填</span>
+                    {{/required}}
+                </td>
+                <td class="js-medias right aligned">
+                    {{#productMediaAttachDetails}}
+                    <div class="js-canBeDel">
+                        <span class="js-temp ui button mini" data-name="{{attachName}}" target="_blank" href="{{url}}">{{attachName}}</span>&emsp;
+                        <a href="javascript:;" class="js-remove ui basic red left label">删除</a>
+                    </div>
+                    {{/productMediaAttachDetails}}
+                </td>
+                <td>{{#url}}{{updateBy}}{{/url}}</td>
+                <td>{{#url}}{{updateTime}}{{/url}}</td>
+                <td class="single line media_container">
+                    <div class="ui basic  mini button js-uploadBtn" data-dir="{{code}}/RISK">上传</div>
+                </td>
+            </tr>
+            {{/billMediaAttaches}}
+            {{/media}}
+            </tbody>
+        </table>
+    </div>
+</script>

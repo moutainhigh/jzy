@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<configuration scan="true" scanPeriod="60 seconds" debug="false">
+		<!-- 定义日志文件 输出位置 -->
+		<property name="log_dir" value="/data0/logs/java/kams" />
+
+		<!-- 滚动记录文件，先将日志记录到指定文件，当符合某个条件时，将日志记录到其他文件 RollingFileAppender -->
+		<appender name="info_file"
+							class="ch.qos.logback.core.rolling.RollingFileAppender">
+				<prudent>true</prudent>
+				<!-- 过滤器，只记录WARN级别的日志 -->
+				<!-- 果日志级别等于配置级别，过滤器会根据onMath 和 onMismatch接收或拒绝日志。 -->
+				<filter class="ch.qos.logback.classic.filter.LevelFilter">
+						<!-- 设置过滤级别 -->
+						<level>INFO</level>
+						<!-- 用于配置符合过滤条件的操作 -->
+						<onMatch>ACCEPT</onMatch>
+						<!-- 用于配置不符合过滤条件的操作 -->
+						<onMismatch>DENY</onMismatch>
+				</filter>
+				<!-- 最常用的滚动策略，它根据时间来制定滚动策略.既负责滚动也负责出发滚动 -->
+				<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+						<!--日志输出位置 可相对、和绝对路径 -->
+						<fileNamePattern>
+								${log_dir}/log.%d
+						</fileNamePattern>
+				</rollingPolicy>
+				<encoder>
+						<pattern>
+								<!-- 设置日志输出格式 -->
+								%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n
+						</pattern>
+				</encoder>
+		</appender>
+
+		<appender name="error_file"
+							class="ch.qos.logback.core.rolling.RollingFileAppender">
+				<prudent>true</prudent>
+				<filter class="ch.qos.logback.classic.filter.LevelFilter">
+						<level>ERROR</level>
+						<onMatch>ACCEPT</onMatch>
+						<onMismatch>DENY</onMismatch>
+				</filter>
+				<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+						<fileNamePattern>
+								${log_dir}/error_log.%d
+						</fileNamePattern>
+				</rollingPolicy>
+				<encoder>
+						<pattern>
+								%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n
+						</pattern>
+				</encoder>
+		</appender>
+
+		<appender name="warn_file"
+							class="ch.qos.logback.core.rolling.RollingFileAppender">
+				<prudent>true</prudent>
+				<filter class="ch.qos.logback.classic.filter.LevelFilter">
+						<level>WARN</level>
+						<onMatch>ACCEPT</onMatch>
+						<onMismatch>DENY</onMismatch>
+				</filter>
+				<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+						<fileNamePattern>
+								${log_dir}/warn_log.%d
+						</fileNamePattern>
+				</rollingPolicy>
+				<encoder>
+						<pattern>
+								%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n
+						</pattern>
+				</encoder>
+		</appender>
+
+		<!-- root级别 DEBUG -->
+		<root>
+				<!-- 打印debug级别日志及以上级别日志 -->
+				<level value="debug" />
+				<!-- 文件输出 -->
+				<appender-ref ref="info_file" />
+				<appender-ref ref="warn_file" />
+				<appender-ref ref="error_file" />
+		</root>
+</configuration>

@@ -1,0 +1,132 @@
+
+<%var jsPart = {%>
+<script>
+    //列表初始化
+    function initUserList() {
+        dtTable = $("#processTable").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['get approval list'],
+                "data": function (d) {
+                    d.type="F"
+                },
+                "type": "get",
+            },
+            columns: [
+                {data: 'code'},
+                {data: 'productTypeName'},
+//                {data: 'agencyName'},
+//                {data: 'organizeName'},
+                {data: 'saleName'},
+                {data: 'borrserName'},
+//                {data: 'submitTime'},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null}
+            ],
+            columnDefs: [{
+                targets:4,
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    return accounting.formatMoney(data.amount,'',2,',','.');
+                }
+            },{
+                targets:5,
+                render: function (data, type, row, meta) {
+                    if("FIXED_DATE"==data.termType){
+                        return "至"+data.term;
+                    }else{
+                        if(data.termType!=undefined && enums.loanTermType[data.termType] != undefined){
+                            return data.term + enums.loanTermType[data.termType];
+                        }else{
+                            return "--";
+                        }
+                    }
+                }
+            },{
+                targets:6,
+                render: function (data, type, row, meta) {
+                    return  enums.loan_status[data.loanStatus];
+                }
+            },{
+                targets: 7,
+                render: function (data, type, row, meta) {
+                    if("CANCEL" == row.loanStatus || "SAVE" == row.loanStatus){
+                        return enums.loan_status[row.loanStatus];
+                    }
+                    if("APPROVEEND" == row.loanStatus || "LOANED" == row.loanStatus || "CLEARED" == row.loanStatus || "OVERDUE" == row.loanStatus || "APPROVEREJECT" == row.loanStatus){
+                        return data.approveStatus;
+                    }else {
+                        if(null != data.nextStatus){
+                            return data.nextStatus+'-等待审批';
+                        }
+                        return data.approveStatus;
+                    }
+                }
+            },{
+                //   指定第最后一列
+                className:"single line",
+                targets: 8,
+                render: function (data, type, row, meta) {
+                    return '<a class="ui mini basic button " data-id="' + row.id + '" href="/business_apply/detail?id=' + row.id + '&tab=riskControl&process=true&comeFrom='+window.location.pathname+'">审批</a>';
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+
+            }
+        })
+    }
+
+
+
+    initUserList()
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+
+<div class="ui grid">
+
+    <!--列表-->
+    <div class="row" id="">
+        <div class="column">
+            <div class=" ui segment teal">
+                <a class="ui teal left ribbon label">待处理列表</a>
+                <table class="ui  celled table compact  small" id="processTable">
+                    <thead>
+                    <tr>
+                        <th>业务单号</th>
+                        <th>产品大类</th>
+                        <!--<th>机构</th>-->
+                        <!--<th>组织</th>-->
+                        <th>业务来源</th>
+                        <th>借款人</th>
+                        <!--<th>提交时间</th>-->
+                        <th>申请金额（元）</th>
+                        <th>期限</th>
+                        <th>状态</th>
+                        <th>审批状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"风控待审批"}){}%>

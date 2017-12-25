@@ -1,0 +1,512 @@
+<%var jsPart = {%>
+<script type="text/mustach-template" id="tr">
+    {{#data}}
+    <tr>
+        <td>{{alias}}</td>
+        <td>{{accountName}}</td>
+        <td>{{accountBank}}</td>
+        <td>{{accountNo}}</td>
+    </tr>
+    {{/data}}
+    {{^data}}
+    暂无数据
+    {{/data}}
+</script>
+<script>
+    var fields = {
+        name: {
+            identifier: 'loanSubject.name',
+            rules: [
+                {
+                    type: 'empty',
+                    prompt: '{name}不能为空'
+                },
+                {
+                    type: 'maxLength[20]',
+                    prompt: '{name}不能超过{ruleValue}字符'
+                }
+            ]
+        },
+        idNumber: {
+            identifier: 'loanSubject.idNumber',
+            rules: [
+                {
+                    type: 'empty',
+                    prompt: '{name}不能为空'
+                },
+                {
+                    type: 'maxLength[20]',
+                    prompt: '{name}不能超过{ruleValue}字符'
+                }
+            ]
+        },
+        phoneNumber: {
+            identifier: 'loanSubject.phoneNumber',
+            rules: [
+                {
+                    type: 'regExp',
+                    value: '/((13[0-9])|(14[0-9])|(15[0-9])|(17[0-9])|(18[0-9]))\\d{8}$/',
+                    prompt: '{name}格式不正确'
+                }
+            ]
+        },
+        address: {
+            identifier: 'loanSubject.address',
+            rules: [
+                {
+                    type: 'empty',
+                    prompt: '{name}格式不能为空'
+                },
+                {
+                    type: 'maxLength[254]',
+                    prompt: '{name}不能超过{ruleValue}字符'
+                }
+            ]
+        }
+    };
+    var dtTable;
+    $(function () {
+        listByFuzzName();
+
+        $("#search").click(function () {
+            dtTable.ajax.reload();
+        });
+
+        $(".js-addAccount").click(function () {
+            insertAccount("", "", "", "");
+        });
+
+        $("body").on("click", ".js-deleteAccount", function () {
+            $(this).parent().parent().parent().remove();
+        });
+
+        $("input[name='loanSubject.type']").change(function () {
+            var value = $(this).data("value");
+            var text = "营业执照"
+            if (value == 'PERSONAL') {
+                text = "身份证号";
+            }
+            $("#idNumberUpdate").text(text);
+            $("input[name='loanSubject.idNumber']").attr("placeholder", text);
+        })
+    });
+
+    //银行账号4位一空
+    $('#account').on('keyup','.js-bankCard',function(){
+        var Val = $(this).val().replace(/\D/g, '').replace(/....(?!$)/g, '$& ');
+        $(this).val(Val);
+    });
+
+    function listByFuzzName() {
+        dtTable = $("#subjectTable").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": "/loan_subject/list_by_fuzz_name",
+                "type": 'POST',
+                "dataType": 'json',
+                "data": function (d) {
+                    var data = {};
+                    data.fuzzName = $("#fuzzName").val();
+                    var _d = $.extend({},{searchKeys:data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                }
+            },
+            columnDefs: [{
+                targets: 0,
+                render: function (data, type, row, meta) {
+                    return row.type == "ENTERPRISE" ? "企业" : "个人";
+                }
+            }, {
+                targets: 1,
+                render: function (data, type, row, meta) {
+                    return row.name;
+                }
+            }, {
+                targets: 2,
+                render: function (data, type, row, meta) {
+                    return row.idNumber;
+                }
+            }, {
+                targets: 3,
+                render: function (data, type, row, meta) {
+                    return row.phoneNumber;
+                }
+            }, {
+                targets: 4,
+                render: function (data, type, row, meta) {
+                    return row.address;
+                }
+            }, {
+                targets: 5,
+                render: function (data, type, row, meta) {
+                    return row.status == "ABLE" ? "使用中" : "已停用";
+                }
+            }, {
+                className:"single line",
+                targets: 6,
+                render: function (data, type, row, meta) {
+                    return '<a class="ui basic mini button" href="javascript:;" data-id="'+row.id+'" onclick="fetchById($(this))"><i class="info circle icon"></i>查看</a>' +
+                            '<a class="ui basic mini button" href="javascript:;" data-id="'+row.id+'" onclick="update_subject($(this))"><i class="edit icon"></i>修改</a>';
+                }
+            }
+            ],
+            "iDisplayLength": 10,
+            initComplete: function () {
+                $(".right.aligned.eight.wide.column").append("<button class='ui teal small button js-add'><i class='plus  icon'></i>新增</button>");
+                $(document).on("click", ".js-add", function () {
+                    $("#id").val("");
+                    add();
+                })
+            }
+        });
+    }
+    function insertAccount(alias, accountName, accountBank, accountNo) {
+        var htm =
+                '<div class="ui teal segment js_subAccount">' +
+                '<div class="three fields">' +
+                '<div class=" field required">' +
+                '<label>别名</label>' +
+                '<input type="text" value="' + alias + '" id="alias" name="alias" placeholder="别名">' +
+                '</div>' +
+                '<div class="field required">' +
+                '<label>用户名</label>' +
+                '<input type="text" value="' + accountName + '" id="accountName" name="accountName" placeholder="用户名">' +
+                '</div>' +
+                '</div>' +
+                '<div class="three fields">' +
+                '<div class=" field required">' +
+                '<label>开户行</label>' +
+                '<input type="text" value="' + accountBank + '" id="accountBank" name="accountBank" placeholder="开户行">' +
+                '</div>' +
+                '<div class="field required">' +
+                '<label>帐号</label>' +
+                '<input class="js-bankCard" type="text" value="' + accountNo + '" id="accountNo" name="accountNo" placeholder="帐号">' +
+                '</div>' +
+                '<div class="right field deleteAccount">' +
+                '<label>操作</label>' +
+                '<div class="ui button basic red js-deleteAccount"><i class="delete  icon"></i>删除帐号</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+        $("#account").append(htm);
+    }
+
+    function view(id) {
+        $(document).api({
+            on: "now",
+            method: "get",
+            action: "fetch loanSubject",
+            data: {
+                id: id
+            },
+            onSuccess: function (data) {
+                var $modal = $("#viewSubjectModal");
+                var $form = $modal.find(".ui.form");
+                $modal.modal({
+                    observeChanges: true,
+                    blurring: true,
+                    onShow: function () {
+                        if (data.type == "ENTERPRISE") {
+                            $form.find("#type").text("企业");
+                            $form.find("#idNumberView").text("营业执照");
+                        } else {
+                            $form.find("#type").text("个人");
+                            $form.find("#idNumberView").text("身份证号");
+                        }
+                        $form.find("#name").val(data.name);
+                        $form.find("#idNumber").val(data.idNumber);
+                        $form.find("#phoneNumber").val(data.phoneNumber);
+                        $form.find("#address").val(data.address);
+                        if (data.status == "DISABLED") {
+                            $form.find("#status").text("已停用");
+                        } else {
+                            $form.find("#status").text("使用中");
+                        }
+                        $form.find("input").attr("readonly", "readonly");
+                        $("#view-tb").html(utils.render("#tr", {data: data.accounts}));
+                    }
+                }).modal('show');
+                ;
+
+            }
+        });
+    }
+
+    function update(id) {
+        $(document).api({
+            on: "now",
+            method: 'get',
+            action: "fetch loanSubject",
+            data: {
+                id: id
+            },
+            onSuccess: function (data) {
+                // 调用弹框
+                var $modal = $("#addSubjectModal");
+                var $form = $modal.find(".ui.form");
+                $form.form('clear')
+                $modal.modal({
+                    observeChanges: true,
+                    blurring: true,
+                    onShow: function () {
+                        $("#varTxt").text("修改");
+                        $form.form({
+                            inline: true,
+                            fields: fields,
+                            onSuccess: function (e, fidlds) {
+                                e.preventDefault();
+                            }
+                        }).api({
+                            action: 'update loanSubject',
+                            method: 'POST',
+                            serializeForm: true,
+                            beforeSend: function (settings) {
+                                settings.data["loanSubject.status"] = $form.find("input[name='loanSubject.status']:checked").data("value");
+                                settings.data["loanSubject.type"] = $form.find("input[name='loanSubject.type']:checked").data("value");
+                                settings.data["loanSubject.id"] = id;
+                                var accountArr = getAccountInfo();
+                                if(accountArr.length==0){
+                                    $.uiAlert({
+                                        type: "danger",
+                                        textHead: '操作失败',
+                                        text: "请添加帐号",
+                                        time: 3
+                                    });
+                                    return false;
+                                }else{
+                                    for(i in accountArr){
+                                        var alias=accountArr[i].alias;
+                                        var accountName=accountArr[i].accountName;
+                                        var accountBank=accountArr[i].accountBank;
+                                        var accountNo=accountArr[i].accountNo;
+                                        if(alias==''||accountName==''||accountBank==''||accountNo==''){
+                                            $.uiAlert({
+                                                type: "danger",
+                                                textHead: '操作失败',
+                                                text: "帐号别名、用户名、开户行、帐号不能为空",
+                                                time: 3
+                                            });
+                                            return false;
+                                        }
+                                    }
+                                }
+                                settings.data.accountInfo = JSON.stringify(accountArr);
+                                return settings;
+                            },
+                            onSuccess: function (response) {
+                                $modal.modal("hide");
+                                $.uiAlert({
+                                    type: "success",
+                                    textHead: '修改成功',
+                                    text: '修改成功',
+                                    time: 1,
+                                    onClosed: function () {
+                                        window.location.reload()
+                                    }
+                                });
+                            },
+                            onFailure: function (data) {
+                                $.uiAlert({
+                                    type: "danger",
+                                    textHead: '操作失败',
+                                    text: data.msg,
+                                    time: 2
+                                });
+                            }
+                        })
+                        $form.find("#account").children(".js_subAccount").remove();
+                        // 赋值
+                        var txt;
+                        if (data.type == "ENTERPRISE") {
+                            $form.find("#personal").removeAttr("checked");
+                            $form.find("#enterprise").prop("checked", "checked");
+                            txt = "营业执照";
+                        } else {
+                            $form.find("#enterprise").removeAttr("checked");
+                            $form.find("#personal").prop("checked", "checked");
+                            txt = "身份证号";
+                        }
+                        $form.find("#idNumberUpdate").text(txt);
+                        $form.find("input[name='loanSubject.idNumber']").attr("placeholder", txt);
+                        $form.find("input[name='loanSubject.name']").val(data.name);
+                        $form.find("input[name='loanSubject.idNumber']").val(data.idNumber);
+                        $form.find("input[name='loanSubject.phoneNumber']").val(data.phoneNumber);
+                        $form.find("input[name='loanSubject.address']").val(data.address);
+                        if (data.status == "DISABLED") {
+                            $form.find("#using").removeAttr("checked");
+                            $form.find("#stop").prop("checked", "checked");
+                        } else {
+                            $form.find("#stop").removeAttr("checked");
+                            $form.find("#using").prop("checked", "checked");
+                        }
+                        var accounts = data.accounts;
+                        var len = accounts.length;
+                        for (var i = 0; i < len; i++) {
+                            var account = accounts[i];
+                            insertAccount(account.alias, account.accountName, account.accountBank, account.accountNo);
+                        }
+                    }
+                }).modal('show');
+            },
+            onApprove: function () {
+                $(this).find(".form").submit();
+                return false;
+            }
+        });
+    }
+    function add() {
+        var $modal = $("#addSubjectModal");
+        var $form = $modal.find(".ui.form");
+        $modal.modal({
+            observeChanges: true,
+            blurring: true,
+            onShow: function () {
+                $("#varTxt").text("新增");
+                $form.form({
+                    inline: true,
+                    fields: fields,
+                    onSuccess: function (e, fidlds) {
+                        e.preventDefault();
+                    }
+                }).api({
+                    action: 'add loanSubject',
+                    method: 'POST',
+                    serializeForm: true,
+                    beforeSend: function (settings) {
+                        settings.data["loanSubject.status"] = $form.find("input[name='loanSubject.status']:checked").data("value");
+                        settings.data["loanSubject.type"] = $form.find("input[name='loanSubject.type']:checked").data("value");
+                        var accountArr = getAccountInfo();
+                        if(accountArr.length==0){
+                            $.uiAlert({
+                                type: "danger",
+                                textHead: '操作失败',
+                                text: "请添加帐号",
+                                time: 3
+                            });
+                            return false;
+                        }else{
+                            for(i in accountArr){
+                                var alias=accountArr[i].alias;
+                                var accountName=accountArr[i].accountName;
+                                var accountBank=accountArr[i].accountBank;
+                                var accountNo=accountArr[i].accountNo;
+                                if(alias==''||accountName==''||accountBank==''||accountNo==''){
+                                    $.uiAlert({
+                                        type: "danger",
+                                        textHead: '操作失败',
+                                        text: "帐号别名、用户名、开户行、帐号均不能为空",
+                                        time: 3
+                                    });
+                                    return false;
+                                }
+                            }
+                        }
+                        settings.data.accountInfo = JSON.stringify(accountArr);
+                        return settings;
+                    },
+                    onSuccess: function (response) {
+                        $modal.modal("hide");
+                        $.uiAlert({
+                            type: "success",
+                            textHead: '添加成功',
+                            text: '添加成功',
+                            time: 1,
+                            onClosed: function () {
+                                window.location.reload()
+                            }
+                        });
+                    },
+                    onFailure: function (data) {
+                        $.uiAlert({
+                            type: "danger",
+                            textHead: '操作失败',
+                            text: data.msg,
+                            time: 2
+                        });
+                    },
+                    onApprove: function () {
+                        $(this).find(".form").submit();
+                        return false;
+                    },
+                    onDeny: function () {
+//                        window.alert('Wait not yet!');
+                    }
+                });
+                $form.form('clear');
+                $form.find("#account").children(".js_subAccount").remove();
+                insertAccount("", "", "", "");
+            }
+        }).modal('show');
+    }
+
+    function getAccountInfo() {
+        var arrs = new Array();
+        $(".js_subAccount").each(function () {
+            arrs.push({
+                alias: $(this).find("input[name='alias']").val(),
+                accountName: $(this).find("input[name='accountName']").val(),
+                accountBank: $(this).find("input[name='accountBank']").val(),
+                accountNo: $(this).find("input[name='accountNo']").val().replace(/\s/g,'')
+            });
+        })
+        return arrs;
+    }
+
+    function fetchById(obj) {
+        var id = obj.data("id");
+        $("#id").val(id);
+        view(id);
+    }
+    function update_subject(obj) {
+        var id = obj.data("id");
+        $("#id").val(id);
+        update(id);
+    }
+</script>
+
+<%};%>
+<style type="text/css">
+</style>
+<%var htmlPart = {%>
+
+<div class="ui grid">
+
+    <!--列表-->
+    <div class="row" id="">
+        <div class="column">
+
+            <div class="ui segment small teal">
+                <!--人员列表-->
+                <div class="ui form">
+                    <div class="ui icon input">
+                        <input type="text" id="fuzzName" placeholder="按放款主体名称查找..." style="width: 200px;">
+                    </div>
+                    <div class="ui teal submit button" id="search">查询</div>
+                </div>
+
+            </div>
+            <div class="ui segment small teal">
+                <a class="ui teal left ribbon label">放款主体列表</a>
+                <table class="ui  celled table compact small " id="subjectTable" width="100%">
+                    <thead id="thead">
+                    <th>类型</th>
+                    <th>主体名称</th>
+                    <th>身份证号/营业执照</th>
+                    <th>联系电话</th>
+                    <th>住址</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<%
+include("/loanSubject/add.html"){}
+include("/loanSubject/view.html"){}
+%>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"放款主体维护"}){}%>

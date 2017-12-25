@@ -1,0 +1,122 @@
+<html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="renderer" content="webkit">
+
+    <link rel="stylesheet" type="text/css" href="/semantic/dist/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/ui-alert.css">
+    <script src="/js/plugins/jquery-3.1.1.min.js"></script>
+    <script src="/semantic/dist/semantic.min.js"></script>
+    <script src="/js/common/api.js"></script>
+    <script src="/js/common/ui-alert.js"></script>
+    <script type="text/javascript">
+        $(function(){
+
+            $(document).keypress(function(e) {
+                // 回车键事件
+                if(e.which == 13) {
+                    login();
+                }
+            });
+            $("#loginBtn").on("click",function(){login();});
+
+        });
+        function login() {
+            $("#msgDiv").hide();
+            var login = $("#login").val();
+            var password = $("#password").val();
+            if(login==null ||login=="" ){
+                $("#msg").html("用户账号不能为空");
+                $("#msgDiv").show();
+                return;
+            }
+            if(password==null ||password=="" ){
+                $("#msg").html("用户密码不能为空");
+                $("#msgDiv").show();
+                return;
+            }
+
+            $(document).api({
+                                on: "now",
+                                method: 'post',
+                                action: "check login",
+                                data: {
+                                    "login": login,
+                                    "password": password
+                                },
+                                onSuccess: function (data) {
+                                    $("#loginForm").submit();
+                                },
+                                onFailure: function (data) {
+                                    $.uiAlert({
+                                                  type: "danger",
+                                                  textHead: '登录失败',
+                                                  text: data.message,
+                                                  time: 2
+                                              });
+                                }
+                            });
+        }
+
+    </script>
+
+    <style type="text/css">
+        body {
+            background-color: #DADADA;
+        }
+        body > .grid {
+            height: 100%;
+        }
+        .image {
+            margin-top: -100px;
+        }
+        .column {
+            max-width: 450px;
+        }
+    </style>
+
+    <title>登录 - 佳兆业金融业务管理系统</title>
+    <link rel="shortcut icon" href="/image/icon.ico">
+</head>
+<body>
+
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            <h2 class="ui teal image header">
+                <div class="content">
+                    业务管理系统
+                </div>
+            </h2>
+            <form class="ui large form" action="/user/login" method="get" id="loginForm">
+                <div class="ui stacked segment">
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" name="user.login" id="login" placeholder="用户账号">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="user.password" id="password" placeholder="用户密码">
+                        </div>
+                    </div>
+                    <div class="ui floating red message" id="msgDiv" style="display: none">
+                        <p id="msg"></p>
+                    </div>
+                    <input  class="ui fluid large teal  button" type="button" value="登录" id="loginBtn"/>
+                </div>
+
+                <div class="ui error message"></div>
+
+            </form>
+
+            <div class="ui message">
+                忘记密码? <a href="/user/toFindPassword">找回密码</a>
+            </div>
+        </div>
+
+</div>
+</body>
+</html>

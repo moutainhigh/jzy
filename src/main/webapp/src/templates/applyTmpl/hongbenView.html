@@ -1,0 +1,284 @@
+<script type="text/mustach-template" id="applyTemplate">
+    <!--房产信息-->
+    <div class="ui horizontal divider ">抵押房产信息</div>
+    {{#houseList}}
+    <div class="ui grid">
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    房产证号：
+                </b>
+                <span>{{code}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    权利人：
+                </b>
+                <span>{{ower}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    与借款人关系：
+                </b>
+                <span>{{relationDes}}</span>
+            </div>
+        </div>
+        <div class="three column row ">
+            <div class="column">
+                <b for="">
+                    房产面积（m²）：
+                </b>
+                <span>{{area}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    房产估值（万元）：
+                </b>
+                <span>{{price}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    估值渠道：
+                </b>
+                <span>{{channel}}</span>
+            </div>
+        </div>
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    房产名称：
+                </b>
+                <span>{{houseName}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    房产地址：
+                </b>
+                <span>{{address}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="ui hidden divider"></div>
+    {{/houseList}}
+    {{^houseList}}
+    <div class="ui grid">
+        <div class="three column row">
+            <div class="column">
+                <b>暂无数据</b>
+            </div>
+        </div>
+    </div>
+    <div class="ui hidden divider"></div>
+    {{/houseList}}
+    <!--/房产信息-->
+
+    <!--借款用途-->
+    <div class="ui horizontal divider margin20t">借款用途</div>
+    <div class="ui grid">
+        <div class="three column row">
+            <div class="column">
+                <b for="">借款用途：</b>
+                <span>{{useOfLoan}}</span>
+            </div>
+        </div>
+    </div>
+    <!--/借款用途-->
+
+    <!--借款人工作信息-->
+    <div class="ui horizontal divider margin20t">借款人工作信息
+        {{#people_Type}}
+        （经营企业）
+        {{/people_Type}}
+        {{^people_Type}}
+        （受薪人士）
+        {{/people_Type}}
+    </div>
+    <div class="ui grid">
+        {{#people_Type}}
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    公司名称：
+                </b>
+                <span>{{company_name_com}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    注册资本（万元）：
+                </b>
+                <span>{{register_funds}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    成立时间：
+                </b>
+                <span>{{set_time}}</span>
+            </div>
+        </div>
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    法人代表：
+                </b>
+                <span>{{legal_person}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    年营业额（万元）：
+                </b>
+                <span>{{year_amount}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    主营业务：
+                </b>
+                <span>{{business}}</span>
+            </div>
+        </div>
+        {{/people_Type}}
+        {{^people_Type}}
+        <div class="two column row">
+            <div class="column">
+                <b for="">
+                    公司名称：
+                </b>
+                <span>{{company_name_self}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    月收入（元）：
+                </b>
+                <span>{{income}}</span>
+            </div>
+        </div>
+        {{/people_Type}}
+    </div>
+    <!--/借款人工作信息-->
+
+    <!-- 关联抵押房产 -->
+    <div id="mortgageRelation" class="seniorItem">
+
+    </div>
+
+    <!-- 关联业务单 -->
+    <div id="hongbenRelation" class="seniorItem">
+
+    </div>
+
+</script>
+
+<script type="text/mustach-template" id="detailRelationMortgage">
+    <div class="ui divider hidden"></div>
+    <div class="ui grid">
+        <div class="column wide">
+            <h5 class="ui dividing header margin20t">
+                <span class="padding50r">关联抵押房产</span>
+            </h5>
+            <a class="ui red tag label">已关联抵押房产列表</a>
+            <table class="ui celled striped table small">
+                <thead>
+                <tr>
+                    <th>抵押房产编码</th>
+                    <th>状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#data}}
+                <tr>
+                    <td><a  class="ui mini" target="_blank" href="/mortgage/view?id={{id}}&type=mortgage">{{mortgageCode}}</a></td>
+                    <td>{{approval_statusType}}</td>
+                </tr>
+                {{/data}}
+                {{^data}}
+                <tr>
+                    <td colspan="2">暂无数据</td>
+                </tr>
+                {{/data}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>
+
+<script type="text/mustach-template" id="detailRelationTemplateCode">
+    <div class="ui hidden divider"></div>
+    <% include("../businessApply/relation_business_detail.html"){} %>
+</script>
+
+<script>
+    $(function(){
+        window.renderApplyTpml=function(callBack){
+            $(document).api({
+                on: "now",
+                method: 'get',
+                action: "get businessInfo",
+                data: {
+                    id:utils.getUrlParam("id")
+                },
+                onSuccess: function (data) {
+                    var _data = data.data;
+                    if (_data.house) {
+                        var house_list = _data.house;
+                        var house_json = $.parseJSON(house_list);
+                        var arry = [];
+                        for (i in house_json) {
+                            var j_data = house_json[i];
+                            var param = {};
+                            for (n in j_data) {
+                                var key = j_data[n].keyName;
+                                var val = j_data[n].dataValue;
+                                param[key] = val;
+                            }
+                            arry.push(param);
+                        }
+                        _data.useOfLoan = function(){
+                            return enums.use_of_loan[this.use_of_loan];
+                        }
+                        _data.house_list = arry;
+                        _data.people_Type = function () {
+                            if(this.people_type == '1'){
+                                return true;
+                            }else{
+                                return false;
+                            }
+                        };
+                        _data.relationDes = function () {
+                            return this.relation == '6' ? this.relation_else
+                                    : enums.relation[this.relation];
+                        }
+                        var $applyTemplate = utils.render("#applyTemplate", _data);
+                        $("#applyInfoContainer").append($applyTemplate);
+
+                        if(utils.getUrlParam('process') !='true'){
+                            var $relationTemplate = utils.render("#detailRelationTemplateCode",'');
+                            $("#hongbenRelation").html($relationTemplate);
+                        }
+
+                        $(document).api({
+                            on:'now',
+                            method:'post',
+                            action:'query loan mortgage',
+                            data:{
+                                loanId:utils.getUrlParam('id')
+                            },
+                            onSuccess:function(data){
+                                var _data = data;
+                                _data.approval_statusType = function(){
+                                    return enums.approvalStatusTypeList[this.approvalStatusType];
+                                };
+                                var $detailRelationMortgageHtm = utils.render("#detailRelationMortgage",_data);
+                                $('#mortgageRelation').html($detailRelationMortgageHtm)
+                            }
+                        });
+
+                        if(typeof callBack =='function'){
+                            callBack();
+                        }
+                    }
+                }
+            });
+
+
+        }
+    })
+</script>

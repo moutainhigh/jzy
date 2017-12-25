@@ -1,0 +1,356 @@
+<script type="text/mustach-template" id="intermediaryTemplate">
+    <a class="ui teal left ribbon label">票据详情</a>
+    <h4 class="ui top attached block small  header">票据信息</h4>
+    <div class="ui  padded attached  small segment">
+        <div class="ui grid">
+            <div class="column row">
+                <a class="ui button teal mini right floated" href="/flow/to_approval_list?id={{billLoan.loanId}}&flowConfigureType=BROKERAGE_FEE">查看审批流程</a>
+            </div>
+        </div>
+        {{#billLoanRepayList}}
+        <div class="ui grid">
+            <div class="three column row">
+                <div class="column">
+                    <b for="">
+                        票号：
+                    </b>
+                    <span>{{billNo}}</span>
+                </div>
+                <div class="column">
+                    <b for="">
+                        出票日期：
+                    </b>
+                    <span>{{draw_Time}}</span>
+                </div>
+                <div class="column">
+                    <b for="">
+                        出票金额（元）：
+                    </b>
+                    <span>{{loanRepay_amount}}</span>
+                </div>
+
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b for="">
+                        到期日：
+                    </b>
+                    <span>{{loanRepay_dueDate}}</span>
+                </div>
+                <div class="column">
+                    <b for="">
+                        调整天数（自然日）：
+                    </b>
+                    <span>{{overdueDays}}</span>
+                </div>
+                <div class="column">
+                    <b>实际到期日：</b>
+                    <span>{{actual_DueDate}}</span>
+                </div>
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b>贴现日期：</b>
+                    <span>{{dis_Date}}</span>
+                </div>
+                <div class="column">
+                    <b for="">打款利息（元）：</b>
+                    <span>{{loanRepay_interest}}</span>
+                </div>
+                <div class="column">
+                    <b for="">打款利率：</b>
+                    <span>{{depositRate}}</span>
+                </div>
+
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b for="">付款人：</b>
+                    <span>{{payer}}&emsp;<span class="ui header green small">[{{risk_Rank}}]</span></span>
+                </div>
+                <div class="column">
+                    <b for="">付款人开户行：</b>
+                    <span>{{bankName}}</span>
+                </div>
+                <div class="column">
+                    <b for="">付款人账号：</b>
+                    <span>{{payerAccount}}</span>
+                </div>
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b>收款人：</b>
+                    <span>{{payee}}</span>
+                </div>
+                <div class="column">
+                    <b>收款人账号：</b>
+                    <span>{{payeeAccount}}</span>
+                </div>
+                <div class="column">
+                    <b>收款人开户行：</b>
+                    <span>{{payeeBankName}}</span>
+                </div>
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b>实际贴现天数：</b>
+                    <span>{{disDays}}</span>
+                </div>
+                <div class="column">
+                    <b>成本报价（%）：</b>
+                    <span>{{costRate}}</span>
+                </div>
+                <div class="column">
+                    <b>居间费（元）：</b>
+                    <span>{{intermediary_Fee}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="ui section divider hidden"></div>
+        {{/billLoanRepayList}}
+    </div>
+
+    <h4 class="ui   attached block  small header">付款信息</h4>
+    <div class="ui  padded attached  small segment">
+        <div class="ui grid">
+            <div class="three column row">
+                <div class="column">
+                    <b>票面总金额（元）:</b>
+                    <span>{{billLoan_totalAmount}}</span>
+                </div>
+                <div class="column">
+                    <b>贴现利息（元）:</b>
+                    <span>{{billLoan_interest}}</span>
+                </div>
+                <div class="column">
+                    <b>付款金额（元）:</b>
+                    <span>{{billLoan_loan_amount}}</span>
+                </div>
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b>贴现日期:</b>
+                    <span>{{billLoan_discountTime}}</span>
+                </div>
+                <div class="column">
+                    <b>户名:</b>
+                    <span>{{billLoan.accountName}}</span>
+                </div>
+                <div class="column">
+                    <b>开户行:</b>
+                    <span>{{billLoan.accountBank}}</span>
+                </div>
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b>账号:</b>
+                    <span>{{billLoan.accountNo}}</span>
+                </div>
+                <div class="column">
+                    <b>法定代表人:</b>
+                    <span>{{loanBorrower.legalRepresentative}}</span>
+                </div>
+                <div class="column">
+                    <b>法定代表人联系方式:</b>
+                    <span>{{loanBorrower.legalRepresentativePhone}}</span>
+                </div>
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b>联系人:</b>
+                    <span>{{loanBorrower.linkman}}</span>
+                </div>
+                <div class="column">
+                    <b>联系人联系方式:</b>
+                    <span>{{loanBorrower.linkmanPhone}}</span>
+                </div>
+            </div>
+            <div class="one column row">
+                <div class="column">
+                    <b>地址：</b>
+                    <span>{{loanBorrower.residence}}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui horizontal divider">居间人信息</div>
+        <div class="ui grid">
+            <div class="three column row">
+                <div class="column">
+                    <b>居间人:</b>
+                    <span>{{intermediary_name}}</span>
+                </div>
+                <div class="column">
+                    <b>居间总费用（元）:</b>
+                    <span>{{billLoan_intermediaryTotalFee}}</span>
+                </div>
+                <div class="column">
+                    <b>身份证号:</b>
+                    <span>{{intermediary_idNumber}}</span>
+                </div>
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b>手机号码:</b>
+                    <span>{{intermediary_phone}}</span>
+                </div>
+                <div class="column">
+                    <b>开户行:</b>
+                    <span>{{intermediary_bank}}</span>
+                </div>
+                <div class="column">
+                    <b>账号:</b>
+                    <span>{{intermediary_account}}</span>
+                </div>
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b>地址:</b>
+                    <span>{{intermediary_address}}</span>
+                </div>
+                <div class="column">
+                    <b>代扣代缴税费（元）:</b>
+                    <span>{{holding_fee}}</span>
+                </div>
+                <div class="column">
+                    <b>税后居间费（元）:</b>
+                    <span>{{after_intermediary_fee}}</span>
+                </div>
+            </div>
+            <div class=" column row">
+                <div class="column">
+                    <b>居间服务协议:</b>
+                    <div class="box">
+                        {{#intermediary_url}}
+                        <a class="ui button mini margin5t" target="_blank" href="{{url}}">{{name}}</a>
+                        <br/>
+                        {{/intermediary_url}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script>
+    if(templateType == 'intermediary'){
+        var renderApplyTpml=function(){
+            $(document).api({
+                on: "now",
+                method: 'post',
+                action: "query bill info",
+                data: {
+                    loanId:utils.getUrlParam("id"),
+                    intermediaryApplyId:utils.getUrlParam("intermediaryApplyId"),
+                },
+                onSuccess: function (data) {
+                    data.draw_Time = function(){
+                        if(this.drawTime){
+                            return moment(this.drawTime).format('YYYY-MM-DD');
+                        }else{
+                            return '';
+                        }
+                    };
+                    data.actual_DueDate = function(){
+                        if(this.actualDueDate){
+                            return moment(this.actualDueDate).format('YYYY-MM-DD');
+                        }else{
+                            return '';
+                        }
+                    }
+                    data.dis_Date = function () {
+                        if(this.disDate){
+                            return moment(this.disDate).format('YYYY-MM-DD');
+                        }else{
+                            return '';
+                        }
+                    };
+                    data.intermediary_Fee = function () {
+                        if(this.intermediaryFee){
+                            return accounting.formatNumber(this.intermediaryFee,2,",")
+                        }else{
+                            return '0.00'
+                        }
+                    }
+                    data.loanRepay_dueDate = function(){
+                        if(this.loanRepay.dueDate){
+                            return moment(this.loanRepay.dueDate).format('YYYY-MM-DD');
+                        }else{
+                            return '';
+                        }
+                    };
+                    data.billLoan_discountTime = function(){
+                        if(this.billLoan.discountTime){
+                            return moment(this.billLoan.discountTime).format('YYYY-MM-DD');
+                        } else{
+                            return '';
+                        }
+                    };
+                    data.billLoan_intermediaryTotalFee = function(){
+                        return accounting.formatNumber(this.billLoan.intermediaryTotalFee,2,",")
+                    };
+                    data.risk_Rank = function (){
+                        if(this.riskRank =='A'){
+                            return 'AAA';
+                        }else if(this.riskRank =='B'){
+                            return 'AA';
+                        }else if(this.riskRank =='C'){
+                            return 'A';
+                        }
+                    };
+                    data.loanRepay_amount =function(){
+                        return accounting.formatNumber(this.loanRepay.amount,2,",");
+                    };
+                    data.loanRepay_interest =function(){
+                        return accounting.formatNumber(this.loanRepay.interest,2,",") ;
+                    };
+                    data.billLoan_totalAmount = function (){
+                        return accounting.formatNumber(this.billLoan.totalAmount,2,",");
+                    };
+                    data.billLoan_interest = function (){
+                        return accounting.formatNumber(this.billLoan.interest,2,",");
+                    };
+                    data.billLoan_loan_amount = function(){
+                        return accounting.formatNumber(this.billLoan.loan.amount,2,",")
+                    };
+
+                    //居间人信息
+                    data.intermediary_name = function(){
+                        return data.intermediaryApply ? this.intermediaryApply.name :'';
+                    };
+                    data.intermediary_idNumber = function(){
+                        return data.intermediaryApply ? this.intermediaryApply.idNumber :'';
+                    };
+                    data.intermediary_phone = function(){
+                        return data.intermediaryApply ? this.intermediaryApply.phone :'';
+                    };
+                    data.intermediary_bank = function(){
+                        return data.intermediaryApply ? this.intermediaryApply.bank :'';
+                    };
+                    data.intermediary_account = function(){
+                        return data.intermediaryApply ? this.intermediaryApply.account  :'';
+                    };
+                    data.intermediary_address = function(){
+                        return data.intermediaryApply ? this.intermediaryApply.address  :'';
+                    };
+                    data.holding_fee = function(){
+                        return accounting.formatNumber(this.billLoan.withHoldingTaxFee,2,",");
+                    };
+                    data.after_intermediary_fee = function(){
+                        return accounting.formatNumber(this.billLoan.afterTaxIntermediaryFee,2,",");
+                    };
+                    if(data.intermediaryApply.serviceContractFileUrls){
+                        data.intermediary_url = JSON.parse(data.intermediaryApply.serviceContractFileUrls);
+                    }
+
+                    var $applyTemplate = utils.render("#intermediaryTemplate", data);
+                    $("#detailTemplate").append($applyTemplate);
+                },
+                onFailure:function(data){
+                    $.uiAlert({type: "danger", textHead: '获取数据失败', text: data.msg, time: 4});
+                }
+            });
+        }
+        renderApplyTpml();
+    }
+</script>

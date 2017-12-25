@@ -1,0 +1,346 @@
+<script type="text/mustach-template" id="updateNodeTemplate">
+    {{#items}}
+    <tr class="fields" style="display: table-row">
+        <td>
+            {{point}}
+        </td>
+        <td class="field">
+            <input type='text' name="pointName" class='name' value="{{name}}"/>
+        </td>
+        <td class="field">
+            <div class="ui search js-postSearch">
+                <div class="ui icon input">
+                    <input type="hidden" name="postId" value="{{organizeId}}">
+                    <input class="prompt js-input" name="pointRole" type="text" placeholder="输入角色名称查询" value="{{organizeName}}">
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+        </td>
+        <td  class="field">
+            <input type='text' name="approveAmount" value="{{approveAmount}}" />
+        </td>
+        <td class="field">
+            <select name="enterprise">
+                <option value="false"{{^enterprise}}selected{{/enterprise}}>不参与</option>
+                <option value="true"{{#enterprise}}selected{{/enterprise}}>参与</option>
+            </select>
+        </td>
+    </tr>
+    {{/items}}
+</script>
+
+
+<script type="application/javascript">
+    function initPostSearch() {
+        //岗位查询
+        $('.js-postSearch').search({
+            apiSettings: {
+                method: "post",
+                url: $(document).api.settings.api['get roleListByName'] + '?name={query}'
+            },
+            fields: {
+                results: 'data',
+                title: 'name',
+                description: 'code'
+            },
+// minCharacters : 3
+            onSelect: function (result, response) {
+                $(this).find('input[name="postId"]').val(result.id)
+            },
+
+        })
+        $('.js-postSearch  .js-input').on('input propertychange', function () {
+            $(this).prev('input').val("");
+        })
+    }
+
+    /**
+     * 重置表单
+     */
+    function updateFormReset() {
+        $("#updateModal").find("form")[0].reset();
+        $("#updateModal").find(".nodeArea").html("");
+    }
+
+    /**
+     * 获取信息用于修改
+     */
+    function fetch(id) {
+        $(document).api({
+            url: "/flow_control/fetchById",
+            on: "now",
+            method: "post",
+            data: {"id": id},
+            onSuccess: function (data) {
+
+                //填充数据
+                $("#updateModal").find("#tmplId").val(id);
+
+                $("#updateModal .form").form("set values",{
+                    'flowControlTmpl.productTypeId':data.tmpl.productTypeId,
+                    'flowControlTmpl.productId':data.tmpl.productId,
+                    'flowControlTmpl.name':data.tmpl.name,
+                    'flowControlTmpl.description':data.tmpl.description,
+                    'flowControlTmpl.status':data.tmpl.status
+                })
+
+                //queryProductByType($("#updateModal").find("[name='flowControlTmpl.productTypeId']"));
+                $("#product").empty();
+                $("#product").append('<option value="'+ data.product.id +'"> '+ data.product.name +'</option>');
+                var _data = data;
+                _data.point = function () {
+
+                    return point++;
+                }
+                var $nodeTemplate = utils.render("#updateNodeTemplate", _data);
+                $("#updateModal").find(".nodeArea").append($nodeTemplate);
+
+                initPostSearch();
+                initUpdateForm();
+
+            }
+        })
+    }
+
+    var ponitForm = {
+        inline:true,
+        fields: {
+            pointName: {
+                identifier: 'pointName',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '节点不为空'
+                    },{
+                        type: 'maxLength[30]',
+                        prompt: '最多30位字符'
+                    }
+                ]
+            },
+            pointRole: {
+                identifier: 'pointRole',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '角色不为空'
+                    }
+                ]
+            }, approveAmount: {
+                identifier: 'approveAmount',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '最低审批金额不能为空'
+                    },{
+                        type:'validateNumFloat[0-999999999.99]',
+                        prompt: '最低审批金额范围[0-999999999.99]，最多2位小数'
+                    }
+                ]
+            },
+            onSuccess: function (e, fidlds) {
+
+                e.preventDefault();
+            }
+        }
+    };
+
+
+    function initUpdateForm() {
+        $("#updateModal .form").form({
+            inline: true,
+            fields: {
+                productTypeId: {
+                    identifier: 'flowControlTmpl.productTypeId',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '请选择产品大类'
+                        }
+                    ]
+                },
+                productId: {
+                    identifier: 'flowControlTmpl.productId',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '请选择产品'
+                        }
+                    ]
+                },
+                name: {
+                    identifier: 'flowControlTmpl.name',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '请填写流程名称'
+                        },{
+                            type:"maxLength[50]",
+                            prompt: '最多50位字符'
+                        }
+                    ]
+                },
+                description: {
+                    identifier: 'flowControlTmpl.description',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '请填写流程描述'
+                        },{
+                            type:"maxLength[300]",
+                            prompt: '最多300位字符'
+                        }
+                    ]
+                }
+            },
+            onSuccess: function (e, fidlds) {
+
+                e.preventDefault();
+            }
+        }).api({
+            action: "flow control update",
+            serializeForm: true,
+            method: "post",
+            beforeSend: function (settings) {
+                var flowControlItems= [];
+                $("#updateModal").find(".nodeArea").find("tr").each(function () {
+                    var name = $(this).find(".name").val();
+                    var organizeId = $(this).find("input[name='postId']").val();
+                    var approveAmount  =  $(this).find("input[name='approveAmount']").val();
+                    var enterprise = $(this).find("select[name='enterprise']").val();
+                    if ("" != name && "" != organizeId) {
+                        var item = new Object();
+                        item.name = name;
+                        item.organizeId = organizeId;
+                        item.approveAmount = approveAmount;
+                        item.enterprise = enterprise;
+                        flowControlItems.push(item);
+                    }
+                });
+                settings.data["flowControlItems"] = JSON.stringify(flowControlItems);
+                settings.data["flowControlTmpl.type"] = $("#flowControlType").val();
+                settings.data["flowControlTmpl.id"] = $("#updateModal").find("#tmplId").val();
+                return settings
+            },
+            onSuccess: function (data) {
+//                alert(data.msg);
+
+                $.uiAlert({
+                    type: "success",
+                    textHead: '修改成功',
+                    text: data.msg,
+                    time: 1,
+                    onClosed: function () {
+                       window.location.reload()
+
+                    }
+                });
+            },
+              onFailure: function (response) {
+                  $.uiAlert({
+                                type: "danger",
+                                textHead: '修改失败',
+                                text: response.msg,
+                                time: 1
+                            });
+              }
+        });
+    }
+
+
+    $(document).on("click", ".js-updateSubmit", function () {
+        var $form = $("#updateModal").find(".form");
+        var flag = true;
+        $("#updateModal").find(".nodeArea").find("tr").each(function () {
+            var s_flag = $(this).form(ponitForm).form("validate form");
+            flag =s_flag && flag;
+        });
+        if(flag){
+            $form.submit();
+        }
+    })
+
+
+
+</script>
+
+<div class="ui modal" id="updateModal">
+    <i class="close icon"></i>
+    <input type="hidden" id="tmplId"/>
+    <div class="header">财务审批流程修改</div>
+    <div class="content">
+        <form class="ui form">
+            <div class="three  fields">
+                <div class=" required field">
+                    <label>产品大类</label>
+                    <select name="flowControlTmpl.productTypeId"
+                             class="ui dropdown" disabled>
+                        <option value="">请选择</option>
+                        <%for(productType in productTypes){%>
+                        <option value="${productType.id}">${productType.name}</option>
+                        <%}%>
+                    </select>
+                </div>
+
+                <div class=" required field">
+                    <label>产品名称</label>
+                    <select name="flowControlTmpl.productId" class="product ui dropdown" disabled id="product">
+                    </select>
+                </div>
+
+                <div class=" required field">
+                    <label>财务审批流程名称</label>
+                    <input name="flowControlTmpl.name" type="text" placeholder='财务审批流程名称'/>
+                </div>
+            </div>
+
+
+            <div class="required field">
+                <label>财务审批流程描述</label>
+                <input name="flowControlTmpl.description" type="text" placeholder='财务审批流程描述'>
+            </div>
+
+            <div class="ui grouped required  fields">
+                <label>是否生效</label>
+                <div class="  field">
+                    <%for(sta in status){%>
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="flowControlTmpl.status" value="${sta}">
+                        <label>${sta.description}</label>
+                    </div>
+                    <%}%>
+                </div>
+            </div>
+
+
+
+            <div class="field right aligned">
+                <span onclick="addNode(this)" class="ui teal small basic button"><i class="plus icon"></i>新增节点</span>
+                <span onclick="delNode(this)" class="ui red small basic button"><i class="remove icon"></i>删除最后节点</span>
+            </div>
+
+            <!-- 节点 -->
+            <table class="ui very basic table">
+                <thead>
+                <tr>
+                    <th>节点编号</th>
+                    <th>节点名称</th>
+                    <th>角色</th>
+                    <th>最低审批金额(元)</th>
+                    <th>是否参与用印</th>
+                </tr>
+                </thead>
+                <tbody class="nodeArea">
+
+                </tbody>
+            </table>
+
+
+        </form>
+
+
+    </div>
+    <div class="actions">
+        <div class="ui teal button js-updateSubmit">修改数据</div>
+    </div>
+</div>

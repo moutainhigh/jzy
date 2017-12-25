@@ -1,0 +1,277 @@
+<script type="text/mustach-template" id="loanedTemplate">
+    <div class="ui bottom teal segment">
+        <a class="ui teal left ribbon label">贷后信息</a>
+
+        <div class="ui segment form">
+            <div class="ui grid">
+                {{#isBill}}
+                    {{#post_loan}}
+                    {{#postLoan}}
+                    <div class="three column row">
+                        <div class="column">
+                            <b for="">
+                                还款期数：
+                            </b>
+                            <span>{{period}}</span>
+                        </div>
+                        <div class="column">
+                            <b for="">
+                                应还日期：
+                            </b>
+                            <span>{{s_dueDate}}</span>
+                        </div>
+                        <div class="column">
+                            <b for="">
+                                逾期天数：
+                            </b>
+                            <span>{{dueDays}}</span>
+                        </div>
+                    </div>
+
+                    <div class="three column row">
+                        <div class="column">
+                            <b for="">
+                                应还金额：
+                            </b>
+                            <span>{{s_amount}}元</span>
+                        </div>
+                    </div>
+                    {{/postLoan}}
+                    {{/post_loan}}
+                {{^post_loan}}
+
+                {{/post_loan}}
+                {{/isBill}}
+                {{^isBill}}
+                    {{#post_loan}}
+                    {{#postLoan}}
+                    <div class="three column row">
+                        <div class="column">
+                            <b for="">
+                                还款期数：
+                            </b>
+                            <span>{{period}}</span>
+                        </div>
+                        <div class="column">
+                            <b for="">
+                                应还日期：
+                            </b>
+                            <span>{{s_dueDate}}</span>
+                        </div>
+                        <div class="column">
+                            <b for="">
+                                逾期天数：
+                            </b>
+                            <span>{{dueDays}}</span>
+                        </div>
+                    </div>
+
+                    <div class="three column row">
+                        <div class="column">
+                            <b for="">
+                                应还本金：
+                            </b>
+                            <span>{{s_amount}}元</span>
+                        </div>
+                        <div class="column">
+                            <b for="">
+                                应还利息：
+                            </b>
+                            <span>{{s_interest}}元</span>
+                        </div>
+                        <div class="column">
+                            <b for="">
+                                应还罚息：
+                            </b>
+                            <span>{{s_overdueFee}}元</span>
+                        </div>
+                    </div>
+                    {{/postLoan}}
+                    {{/post_loan}}
+                    {{^post_loan}}
+
+                    {{/post_loan}}
+                {{/isBill}}
+                {{#post_loan}}
+                <div class="three column row" id="dynamicFee">
+                    {{#postLoanFeeList}}
+                    <div class="column">
+                        <b for="">
+                            {{f_feeType_post}}：
+                        </b>
+                        <span>{{f_feeAmount_post}}元</span>
+                    </div>
+                    {{/postLoanFeeList}}
+                </div>
+                <div class="three column row" id="dynamicFee2">
+                    {{#postLoanFeeListOther}}
+                    <div class="column">
+                        <b for="">
+                            {{f_feeType_post_other}}：
+                        </b>
+                        <span>{{f_feeAmount_post_other}}元</span>
+                    </div>
+                    {{/postLoanFeeListOther}}
+                </div>
+                {{/post_loan}}
+                {{^post_loan}}
+
+                {{/post_loan}}
+                {{#loan_time}}
+                <div class="row">
+                    <div class="column ks-hidden" id="js_al_loanTime">
+                        <b>实际放款日期:</b>
+                        <span>{{sl_loanTime}}</span>
+                    </div>
+                </div>
+                {{/loan_time}}
+
+            <div class="row">
+                <div class="column">
+                    <b for="">
+                        还款计划：
+                    </b>
+                    <table class="ui celled table" id="">
+                        {{#isBill}}
+                        <thead>
+                        <tr>
+                            <th>期数</th>
+                            <th>票号</th>
+                            <th>到期日期</th>
+                            <th>调整天数（天）</th>
+                            <th class="right aligned">应还金额（元）</th>
+                            <th>还款状态</th>
+                            <th>还款记录</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#loanRepayList}}
+                        <tr>
+                            <td>{{loanRepay.period}}</td>
+                            <td>{{billNo}}</td>
+                            <td>{{p_dueDate}}</td>
+                            <td>{{overdueDays}}</td>
+                            <td class="right aligned">{{p_amount}}</td>
+                            <td>{{p_status}}</td>
+                            <td class="single line"><a class="ui button mini basic" href="javascript:;" onclick="view_post_repay('{{id}}')"><i class="info circle icon"></i>查看</a></td>
+                        </tr>
+                        {{/loanRepayList}}
+                        {{^loanRepayList}}
+                        <tr><td colspan="6" class="center aligned">暂无数据</td></tr>
+                        {{/loanRepayList}}
+                        </tbody>
+                        {{/isBill}}
+                        {{^isBill}}
+                        <thead>
+                        <tr>
+                            <th>期数</th>
+                            <th>应还日期</th>
+                            <th class="right aligned">应还本金（元）</th>
+                            <th class="right aligned">应还利息（元）</th>
+                            <th class="right aligned">剩余本金（元）</th>
+                            <th>还款状态</th>
+                            <th>还款记录</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#loanRepayList}}
+                        <tr>
+                            <td>{{period}}</td>
+                            <td>{{p_dueDate}}</td>
+                            <td class="right aligned">{{p_amount}}</td>
+                            <td class="right aligned">{{p_interest}}</td>
+                            <td class="right aligned">{{p_leftAmount}}</td>
+                            <td>{{p_status}}</td>
+                            <td class="single line"><a class="ui button mini basic" href="javascript:;" onclick="view_post_repay('{{id}}')"><i class="info circle icon"></i>查看</a></td>
+                        </tr>
+                        {{/loanRepayList}}
+                        {{^loanRepayList}}
+                        <tr><td colspan="6" class="center aligned">暂无数据</td></tr>
+                        {{/loanRepayList}}
+                        </tbody>
+                        {{/isBill}}
+                    </table>
+                </div>
+            </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <div class="ui modal" id="gatherRecordViewModalForPost">
+        <i class="close icon"></i>
+        <div class="header">
+            还款记录
+        </div>
+        <div class="content">
+            <form class="ui form">
+                <div class="ui segment">
+                    <table class="ui teal celled table" id="repayViewTable">
+                        <thead id="repay-th-view">
+
+                        </thead>
+                        <tbody id="repay-tb-view"></tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</script>
+
+<script type="text/mustach-template" id="repay-template">
+    {{#isBill}}
+    <thead>
+    <th>序号</th>
+    <th>还款日期</th>
+    <th class="right aligned">实还金额（元）</th>
+    </thead>
+    <tbody>
+    {{#loanRepayRecordList}}
+    <tr>
+        <td>{{period}}</td>
+        <td>{{f_repayDate}}</td>
+        <td class="right aligned">{{f_repayAmount}}</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    {{^loanRepayRecordList}}
+    <tr>
+        <td colspan="3" class="center aligned">暂无数据</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    </tbody>
+    {{/isBill}}
+    {{^isBill}}
+    <thead>
+    <th>序号</th>
+    <th>还款日期</th>
+    <th class="right aligned">实还本金（元）</th>
+    <th class="right aligned">实还利息（元）</th>
+    {{#loanFeeList}}
+    <th class="right aligned">{{f_feeType}}（元）</th>
+    {{/loanFeeList}}
+    <th class="right aligned">总计（元）</th>
+    </thead>
+    <tbody>
+    {{#loanRepayRecordList}}
+    <tr>
+        <td>{{period}}</td>
+        <td>{{f_repayDate}}</td>
+        <td class="right aligned">{{f_repayAmount}}</td>
+        <td class="right aligned">{{f_repayInterest}}</td>
+        {{#feeList}}
+        <td class="right aligned">{{repayFeeAmount}}</td>
+        {{/feeList}}
+        <td class="right aligned">{{f_repayTotalAmount}}</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    {{^loanRepayRecordList}}
+    <tr>
+        <td colspan="8" class="center aligned">暂无数据</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    </tbody>
+    {{/isBill}}
+</script>

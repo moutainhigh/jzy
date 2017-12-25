@@ -1,0 +1,299 @@
+<%var jsPart = {%>
+<script src="/js/plugins/laydate-1.1/laydate.js"></script>
+<script>
+    (function(){
+        function init(){
+            var date = moment(new Date()).format('YYYY-MM-DD');
+            var y_date = moment().subtract('days',1).format('YYYY-MM-DD');
+            var minDate = moment(moment(new Date()).format('YYYY-MM-DD HH:mm'));
+            if(minDate >= moment(date+' 12:30')){
+                $("#report_time").val(date);
+            }else{
+                $("#report_time").val(y_date);
+            }
+
+            $("#report_time").click(function(){
+                laydate({});
+            })
+            initTable();
+        }
+        init();
+
+        //导出
+        $('#export_btn').click(function(){
+            var report_time = $("#report_time").val();
+            window.open('/report/riskControl_export?report_time='+report_time,'_blank');
+        });
+
+        $("#search").click(function () {
+            dtTable.ajax.reload();
+        });
+
+        $("#reset").click(function(){
+            var date = moment(new Date()).format('YYYY-MM-DD');
+            $("#report_time").val(date);
+        });
+
+        function initTable(){
+            dtTable = $("#reportTable").DataTable({
+                serverSide: true,//服务端分页
+                searching: false,//显示默认搜索框
+                ordering: false,//开启排序
+                autoWidth: true,//自适应宽度
+                "ajax": {
+                    "url": $(document).api.settings.api['query risk report'],
+                    "data": function (d) {
+                        var data = {};
+                        data.report_time=$('#report_time').val();
+                        var _d = $.extend({}, {searchKeys:data},{start:d.start,length:d.length,draw:d.draw});
+                        return JSON.stringify(_d);
+                    },
+                    "type": "POST",
+                },
+                columns: [
+                    {data: null},
+                    {data: 'productName'},
+                    {data: 'ljfkCount'},
+                    {data: null},
+                    {data: 'dsdkCount'},
+                    {data: null},
+                    {data: null},
+                    {data: 'yq030Count'},
+                    {data: null},
+                    {data: null},
+
+                    {data: 'yq3160Count'},
+                    {data: null},
+                    {data: null},
+                    {data: 'yq6190Count'},
+                    {data: null},
+                    {data: null},
+                    {data: 'yq91180Count'},
+                    {data: null},
+                    {data: null},
+                    {data: 'yq180Count'},
+
+                    {data: null},
+                    {data: null},
+                    {data: 'yqTotalCount'}
+                ],
+                columnDefs: [{
+                    targets:[0],
+                    className:'single line'
+                },{
+                    targets:[1,2,4,7,10,13,16,19,22],
+                    className:'single line',
+                },{
+                    targets:3,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.ljfkMoney,'',2,',','.');
+                    }
+                },{
+                    targets:5,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.dsdkPrincipal,'',2,',','.');
+                    }
+                },{
+                    targets:6,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.dsdkInterest,'',2,',','.');
+                    }
+                },{
+                    targets:8,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.yq030Principal,'',2,',','.');
+                    }
+                },{
+                    targets:9,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.yq030Interest,'',2,',','.');
+                    }
+                },{
+                    targets:11,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.yq3160Principal,'',2,',','.');
+                    }
+                },{
+                    targets:12,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.yq3160Interest,'',2,',','.');
+                    }
+                },{
+                    targets:14,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.yq6190Principal,'',2,',','.');
+                    }
+                },{
+                    targets:15,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.yq6190Interest,'',2,',','.');
+                    }
+                },{
+                    targets:17,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.yq91180Principal,'',2,',','.');
+                    }
+                },{
+                    targets:18,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.yq91180Interest,'',2,',','.');
+                    }
+                },{
+                    targets:20,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.yq180Principal,'',2,',','.');
+                    }
+                },{
+                    targets:21,
+                    className:'right aligned single line',
+                    render: function (data, type, row, meta) {
+                        return accounting.formatMoney(data.yq180Interest,'',2,',','.');
+                    }
+                }],
+                "iDisplayLength": 50,
+                "aLengthMenu": [
+                    [50],
+                    [50]
+                ],
+                fnDrawCallback:function(oSettings){
+                    var json = jQuery.parseJSON(oSettings.jqXHR.responseText);
+                    var data = json.data;
+                    var name = [],name_value =[],name_key=[],z=0;
+                    for(i in data){
+                        var typeName = data[i].productType;
+                        name.push(typeName)
+                    }
+                    for(var i =0 ;i< name.length;){
+                        var count = 0;
+                        for (var j = i; j < name.length; j++) {
+                            if (name[i] == name[j]) {
+                                count++;
+                            }
+                        }
+                        name_value.push(count);
+                        name_key.push(name[i]);
+                        i += count;
+                    }
+                    $('#reportTable tbody tr').each(function(i,ele){
+                        $(this).children('td:eq(0)').remove();
+                    });
+                    for(var l=0;l<name_value.length;l++){
+                        if(l==0){
+                            z = 0;
+                        }else{
+                            z += name_value[l-1]
+                        }
+                        $('#reportTable tbody tr:eq('+z+')').prepend('<td style="border-right: 1px solid rgba(34,36,38,.1)" rowspan='+name_value[l]+'>'+name_key[l]+'</td>')
+                    }
+                },
+            });
+        }
+
+    })()
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment teal">
+                <form class="ui fluid  form">
+                    <div class="fields">
+                        <div class="five wide field">
+                            <label>查询时间</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input readonly="readonly" class="prompt" type="text" placeholder="查询时间" id="report_time" name="report_time">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="search" class="ui teal mini button">查询</div>
+                    <div id="reset" class="ui clear mini button">重置</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--列表-->
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">报表列表</a>
+                <div class="overflow">
+                    <div class="chevron right">
+                        (每天12点30更新今天数据，12点30之前为昨天数据)
+                        <a class="ui teal small button" id="export_btn" href="javascript:;">
+                            <i class="external share icon"></i>导出
+                        </a>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;overflow-y: hidden;">
+                    <table class="ui celled small table" id="reportTable" >
+                        <thead>
+                        <tr>
+                            <th class="center aligned" rowspan="2">产品大类</th>
+                            <th class="center aligned" rowspan="2">产品子类</th>
+                            <th class="center aligned" colspan="2">累计放款</th>
+                            <th class="center aligned" colspan="3">待收贷款</th>
+                            <th class="center aligned" colspan="3">逾期0-30天</th>
+                            <th class="center aligned" colspan="3">逾期31-60天</th>
+                            <th class="center aligned" colspan="3">逾期61-90天</th>
+                            <th class="center aligned" colspan="3">逾期91-180天</th>
+                            <th class="center aligned" colspan="3">逾期181天以上</th>
+                            <th class="center aligned" rowspan="2">逾期总笔数</th>
+                        </tr>
+                        <tr>
+                            <th style="border-left: 1px solid rgba(34,36,38,.1)">笔数</th>
+                            <th>金额（元）</th>
+
+                            <th>笔数</th>
+                            <th>待收本金（元）</th>
+                            <th>待收利息（元）</th>
+
+                            <th>笔数</th>
+                            <th>逾期本金（元）</th>
+                            <th>逾期利息（元）</th>
+
+                            <th>笔数</th>
+                            <th>逾期本金（元）</th>
+                            <th>逾期利息（元）</th>
+
+                            <th>笔数</th>
+                            <th>逾期本金（元）</th>
+                            <th>逾期利息（元）</th>
+
+                            <th>笔数</th>
+                            <th>逾期本金（元）</th>
+                            <th>逾期利息（元）</th>
+
+                            <th>笔数</th>
+                            <th>逾期本金（元）</th>
+                            <th style="border-right: 1px solid rgba(34,36,38,.1)">逾期利息（元）</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"风控报表"}){}%>

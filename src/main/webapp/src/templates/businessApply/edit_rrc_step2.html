@@ -1,0 +1,246 @@
+
+<script type="text/mustach-template" id="step2Template">
+    <div class="column sixteen wide">
+        <form id="step2Form" class="ui form">
+            <div class="ui segment teal">
+                <a class="ui teal left ribbon label">产品信息</a>
+                <div class="five fields margin20t">
+                        <div class="field disabled">
+                            <label>申请金额</label>
+                            <input name="amount" type="text" value="${loan.amount}">
+                        </div>
+                        <div class="field">
+                            <label>借款期限</label>
+                            <select class="ui dropdown" name="termType">
+                                {{#termTypeChoices}}
+                                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                                {{/termTypeChoices}}
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>&emsp;</label>
+                            <input name="term" type="text" value="${loan.term}">
+                        </div>
+                        <div class="field">
+                            <label>&emsp;</label>
+                            <select class="ui fluid dropdown ks-hidden" name="calculateMethodAboutDay" id="calculateMethodAboutDay">
+                                {{#calculateDayTypeChoices}}
+                                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                                {{/calculateDayTypeChoices}}
+                            </select>
+                        </div>
+                        <div class="field required">
+                            <label>还款方式</label>
+                            <select class="ui fluid dropdown" name="repayMethod">
+                                <option value="">请选择还款方式</option>
+                                {{#repayMethodChoices}}
+                                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                                {{/repayMethodChoices}}
+                            </select>
+                        </div>
+                </div>
+                <div class="fields five wide">
+                    <div class="field">
+                        <label>借款利息</label>
+                        <select class="ui dropdown" name="loanLimitType">
+                            <!--{{#interestTypeChoices}}-->
+                            <!--<option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>-->
+                            <!--{{/interestTypeChoices}}-->
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>&emsp;</label>
+                        <div id="prdDate"
+                             data-day_amount="${prd.dayInterestAmount}"
+                             data-day_rate="${prd.dayInterestRate}"
+                             data-month_amount="${prd.monthInterestAmount}"
+                             data-month_rate="${prd.monthInterestRate}"
+                             data-fix_amount="${prd.interestAmount}"
+                             data-fix_rate="${prd.interestRate}"
+                             data-loan_amount="${loan.interestAmount}"
+                             data-loan_rate="${loan.interestRate}"
+                             data-loan_limittype="${loan.loanLimitType}">
+                        </div>
+                        <input name="interestAmount" type="text" class="ks-hidden">
+                        <input name="interestRate" type="text" class="ks-hidden">
+                    </div>
+                    <div class="field">
+                        <label>收息时间</label>
+                        <select class="ui fluid dropdown" name="repayDateType">
+                            {{#repayDateTypeChoices}}
+                            <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                            {{/repayDateTypeChoices}}
+                        </select>
+                    </div>
+                    <div class="required field">
+                        <label>实际放款金额（元）</label>
+                        <input type="text" name="actualAmount" value="" id="actualLoanAmount" placeholder="选择还款方式自行计算" readonly>
+                    </div>
+                </div>
+
+                <table class="ui celled striped table small">
+                    <thead>
+                    <tr><th colspan="5">费用说明</th></tr>
+                    <tr><th>费用名称</th><th>收费频率</th><th>收取方式</th><th>收费节点</th><th>收费金额</th></tr>
+                    </thead>
+                    <tbody id="edit_loan_fee">
+
+                    </tbody>
+                </table>
+
+                <div class="ui button teal" onclick="generateRepayPlan()">生成还款计划</div>
+                <table class="ui celled striped table small">
+                    <thead>
+                    <tr>
+                        <th>期数</th>
+                        <th>应还日期</th>
+                        <th>应还本金</th>
+                        <th>应还利息</th>
+                        <th>应还本息</th>
+                        <th>剩余本金</th>
+                    </tr>
+                    </thead>
+                    <tbody id="loanRepayPlan">
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div class="ui error message"></div>
+            <%if(loan.loanStatus == "SAVE" || loan.loanStatus == "CHANNELSAVE"){%>
+            <div class="actions">
+                <div id="btn-submit-step2" class="ui button teal">确定</div>
+            </div>
+            <%}%>
+
+            <input type="hidden" name="id" value="${loan.id}">
+        </form>
+    </div>
+
+</script>
+
+<script type="text/javascript">
+    function generateRepayPlan(){
+        var amount = $("input[name='amount']").val();
+        var loanTermType = $("select[name='termType']").val();
+        var term = $.trim($("input[name='term']").val());
+        var repayMethod = $("select[name='repayMethod']").val();
+        var loanLimitType = $("select[name='loanLimitType']").val();
+        var interestRate = $.trim($("input[name='interestRate']").val());
+        var interestAmount = $.trim($("input[name='interestAmount']").val());
+        var repayDateType = $("select[name='repayDateType']").val();
+        var minInterestAmount = $("input[name='minInterestAmount']").val();
+        var calculateMethodAboutDay = $("select[name='calculateMethodAboutDay']").val();
+        if(term==''){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '失败',
+                text: '借款期限不能为空',
+                time: 3
+            });
+            return false;
+        }else{
+            if((loanTermType=='DAYS' || loanTermType=='MOTHS')&&isNaN(term)){
+                $.uiAlert({
+                    type: "danger",
+                    textHead:  '失败',
+                    text: '借款期限格式不对',
+                    time: 3
+                });
+                return false;
+            }
+        }
+        if(repayMethod==''){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '失败',
+                text: '还款方式不能为空',
+                time: 3
+            });
+            return false;
+        }
+        if((loanLimitType=='FIX_AMOUNT'&& (interestAmount=='' || isNaN(interestAmount))) || (loanLimitType=='FIX_RATE'&& (interestRate=='' || isNaN(interestRate))) ){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '失败',
+                text: '借款利息格式不对',
+                time: 3
+            });
+            return false;
+        }
+
+        if((loanTermType=='DAYS' || loanTermType=='FIXED_DATE') && !(repayMethod=='INTEREST_DAYS' || repayMethod=='BULLET_REPAYMENT')){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '借款方式对应的还款方式不对',
+                text: '',
+                time: 3
+            });
+            return false;
+        }
+        if(loanTermType=='MOTHS' && !(repayMethod=='INTEREST_MONTHS' || repayMethod=='EQUAL_INSTALLMENT'  || repayMethod=='BULLET_REPAYMENT')){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '借款方式对应的还款方式不对',
+                text: '',
+                time: 3
+            });
+            return false;
+        }
+        if(repayDateType=='REPAY_PRE' && !(repayMethod=='INTEREST_DAYS' || repayMethod=='INTEREST_MONTHS')){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '收息时间不对',
+                text: '',
+                time: 3
+            });
+            return false;
+        }
+//        if(minInterestAmount=='' || isNaN(minInterestAmount)){
+//            $.uiAlert({
+//                type: "danger",
+//                textHead:  '最小利息金额不对',
+//                text: '',
+//                time: 3
+//            });
+//            return false;
+//        }
+
+        if (loanTermType) {
+            var data={
+                amount:amount,
+                loanTermType:loanTermType,
+                term:term,
+                repayMethod:repayMethod,
+                loanLimitType:loanLimitType,
+                interestRate:interestRate,
+                interestAmount:interestAmount,
+                repayDateType:repayDateType,
+                minInterestAmount:minInterestAmount,
+                calculateMethodAboutDay:calculateMethodAboutDay
+            };
+            $.post("/loan/calculate",data,function(data){
+                if(data){
+                    var loanRepayList={loanRepayPlan:data.repayments};
+                    loanRepayList.f_dueDate = function(){
+                        return moment(this.dueDate).format("YYYY-MM-DD");
+                    }
+                    loanRepayList.f_amount = function () {
+                        return accounting.formatNumber(this.principal,2,",");
+                    };
+                    loanRepayList.f_interest = function () {
+                        return accounting.formatNumber(this.interest,2,",");
+                    };
+                    loanRepayList.f_total = function () {
+                        return accounting.formatNumber(this.interest+this.principal,2,",");
+                    };
+                    loanRepayList.f_outstanding = function () {
+                        return accounting.formatNumber(this.outstanding,2,",");
+                    };
+                    $("#loanRepayPlan").html(utils.render("#loanRepayPlanTemplate",loanRepayList));
+                }
+            });
+        }
+    }
+</script>

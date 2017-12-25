@@ -1,0 +1,423 @@
+<%var jsPart = {%>
+<script src="/js/pages/seal/index.js"></script>
+<%};%>
+
+
+<%var htmlPart = {%>
+<!--用印管理列表-->
+<form class="ui segment teal js-searchForm">
+    <div class="ui equal width form small">
+        <div class="fields">
+            <div class="field">
+                <label>业务单号</label>
+                <input type="text" id="bussinessNo" name="bussinessNo">
+            </div>
+            <div class="field">
+                <label>借款人</label>
+                <input type="text" id="borrower" name="borrower">
+            </div>
+        </div>
+    </div>
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>借款时间</label>
+                <input type="text" id="s_loanDate" name="s_loanDate">
+            </div>
+            <div class="field">
+                <label>已经用印</label>
+                <select name="s_used" id="s_used" class="ui dropdown">
+                    <option value="ALL">全部</option>
+                    <% for(sealStatus in sealStatusList){%>
+                    <% if(sealStatus=="UNUSED") {%>
+                    <option value="${sealStatus}" SELECTED>${sealStatus.description}</option>
+                    <%}else{%>
+                    <option value="${sealStatus}">${sealStatus.description}</option>
+                    <%}%>
+                    <%}%>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="field">
+        <div class="aligned center">
+            <div class="ui teal submit button mini">查询</div>
+            <div  class="ui clear button mini">重置</div>
+        </div>
+    </div>
+</form>
+
+
+<div class="ui hidden divider"></div>
+
+<div class="row" >
+    <div class="column">
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label"> 用印列表</a>
+            <table class="ui center aligned celled table compact  small" id="sealTable">
+                <thead >
+                <tr>
+                    <th>业务单号</th>
+                    <th>机构</th>
+                    <th>业务员</th>
+                    <th>借款人</th>
+                    <th>借款时间</th>
+                    <th>审批状态</th>
+                    <th>用印时间</th>
+                    <th>已经用印</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="ui modal small" id="edit_seal_else">
+    <i class="close icon"></i>
+    <div class="header">
+        确认用印
+        <a target="_blank"  class="ui basic mini frt button js_view_business"><i class="info circle icon"></i>查看业务单</a>
+    </div>
+    <div class="content" id="type_detail">
+        <form class="ui form" id="edit_seal_fromElse">
+                <input type="hidden" name="status" >
+                <input type="hidden" name="id">
+                <input type="hidden" name="loanId">
+                <div class="ui grid">
+                    <div class="two column row">
+                        <div class="column seven wide">
+                            <b>借款人：</b>
+                            <span class="js_seal_info" data-name="borrserName"></span>
+                        </div>
+
+                        <div class="column nine side">
+                            <b>证件号码：</b>
+                            <span class="js_seal_info" data-name="borrserIDType"></span>
+                            <span class="js_seal_info" data-name="borrserNameID"></span>
+                        </div>
+                    </div>
+                    <div class="two column row  js_borrower_type_tmp">
+                        <div class="column seven wide">
+                            <b>共同借款人：</b>
+                            <span class="js_seal_info" data-name="masterBorrserName"></span>
+                        </div>
+
+                        <div class="column nine side">
+                            <b>证件号码：</b>
+                            <span class="js_seal_info" data-name="masterBorrserIDType"></span>
+                            <span class="js_seal_info" data-name="masterBorrserID"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ui grid margin5t" id="borrower_type_detail">
+
+                </div>
+
+                <div class="ui grid">
+                    <div class="column row">
+                        <div class="column">
+                            <b>申请金额：</b>
+                            <span class="js_seal_info" data-name="amount"></span>元
+                        </div>
+                    </div>
+                    <div class="column row">
+                        <div class="column">
+                            <b>借款期限：</b>
+                            <span class="js_seal_info" data-name="loanTerm"></span>
+                            <span class="js_seal_info ui header orange small" data-name="calculateMethodAboutDay">123</span>
+                        </div>
+                    </div>
+                    <div class="column row">
+                        <div class="column">
+                            <b>借款利息：</b>
+                            <span class="js_seal_info" data-name="loanInterest"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ui grid">
+                    <div class="column row">
+                        <div class="column">
+                            <div class="ui teal button js_edit_btn" data-status="USED">确认用印</div>
+                            <div class="ui teal button js_edit_btn" data-status="PREUSED">拟用印</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+    </div>
+</div>
+
+<div class="ui modal small" id="edit_seal_hongben">
+    <i class="close icon"></i>
+    <div class="header">
+        确认用印
+        <a target="_blank"  class="ui basic mini frt button js_view_business"><i class="info circle icon"></i>查看业务单</a>
+    </div>
+    <div class="content" id="hongben_detail">
+        <form class="ui form" id="edit_seal_fromHongben">
+            <input type="hidden" name="status">
+            <input type="hidden" name="id">
+            <input type="hidden" name="loanId">
+            <div class="ui grid">
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>借款人：</b>
+                        <span class="js_seal_info" data-name="borrserName"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>证件号码：</b>
+                        <span class="js_seal_info" data-name="borrserIDType"></span>
+                        <span class="js_seal_info" data-name="borrserNameID"></span>
+                    </div>
+                </div>
+                <div class="two column row js_borrower_tmp">
+                    <div class="column six wide">
+                        <b>共同借款人：</b>
+                        <span class="js_seal_info" data-name="masterBorrserName"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>证件号码：</b>
+                        <span class="js_seal_info" data-name="masterBorrserIDType"></span>
+                        <span class="js_seal_info" data-name="masterBorrserID"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui grid margin5t"  id="hongben_borrower_detail">
+
+            </div>
+
+            <div class="ui grid ">
+                <div class="column row">
+                    <div class="column">
+                        <b>申请金额：</b>
+                        <span class="js_seal_info" data-name="amount"></span>元
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>借款期限：</b>
+                        <span class="js_seal_info" data-name="loanTerm"></span>
+                        <span class="js_seal_info ui header green small" data-name="calculateMethodAboutDay"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>借款利息：</b>
+                        <span class="js_seal_info" data-name="loanInterest"></span>
+                    </div>
+                </div>
+
+                <div class="two column row js_house_tmp">
+                    <div class="column nine wide">
+                        <b>房产地址：</b>
+                        <span class="js_seal_info" data-name="address"></span>
+                    </div>
+                    <div class="column seven wide">
+                        <b>房产证号：</b>
+                        <span class="js_seal_info" data-name="code"></span>
+                    </div>
+                </div>
+                <div id="house_info">
+
+                </div>
+            </div>
+
+            <div class="ui grid">
+                <div class="column row">
+                    <div class="column">
+                        <div class="ui teal button js_edit_btn" data-status="USED">确认用印</div>
+                        <div class="ui teal button js_edit_btn" data-status="PREUSED">拟用印</div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="ui modal small" id="edit_seal_piaoju">
+    <i class="close icon"></i>
+    <div class="header">
+        确认用印
+        <a target="_blank"  class="ui basic mini frt button js_view_business"><i class="info circle icon"></i>查看业务单</a>
+    </div>
+    <div class="content" id="bill_detail">
+        <form class="ui form" id="edit_seal_formPiaoju">
+            <input type="hidden" name="status">
+            <input type="hidden" name="id">
+            <input type="hidden" name="loanId">
+            <div class="ui grid">
+                <div class="column row">
+                    <div class="column">
+                        <b>放款主体：</b>
+                        <span class="js_seal_info" data-name="loanSubject"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>贴现人：</b>
+                        <span class="js_seal_info" data-name="discounter"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>营业执照：</b>
+                        <span class="js_seal_info" data-name="businessNumber"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>票面总金额（元）：</b>
+                        <span class="js_seal_info" data-name="billTotalAmount"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>付款金额（元）：</b>
+                        <span class="js_seal_info" data-name="amount"></span>
+                    </div>
+                </div>
+                <div class="three column row js_bill_tmp">
+                    <div class="column">
+                        <b>票号：</b>
+                        <span class="js_seal_info break-all" data-name="billNo"></span>
+                    </div>
+                    <div class="column">
+                        <b>实际到期日：</b>
+                        <span class="js_seal_info" data-name="actualDueDate"></span>
+                    </div>
+                    <div class="">
+                        <b>出票金额（元）：</b>
+                        <span class="js_seal_info" data-name="amount"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="ui grid" id="bill_info">
+
+            </div>
+
+            <div class="ui grid">
+                <div class="column row">
+                    <div class="column">
+                        <div class="ui teal button js_edit_btn" data-status="USED">确认用印</div>
+                        <div class="ui teal button js_edit_btn" data-status="PREUSED">拟用印</div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="ui modal small" id="edit_seal_baoli">
+    <i class="close icon"></i>
+    <div class="header">
+        确认用印
+        <a target="_blank"  class="ui basic mini frt button js_view_business"><i class="info circle icon"></i>查看业务单</a>
+    </div>
+    <div class="content" id="baoli_detail">
+        <form class="ui form" id="edit_seal_formBaoli">
+            <input type="hidden" name="status">
+            <input type="hidden" name="id">
+            <input type="hidden" name="loanId">
+            <div class="ui horizontal divider">保理合同</div>
+            <div class="ui grid">
+                <div class="column row">
+                    <div class="column">
+                        <b>融资主体名称：</b>
+                        <span class="js_seal_info" data-name="borrserName"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>营业执照编号：</b>
+                        <span class="js_seal_info" data-name="borrserNameID"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>放款主体：</b>
+                        <span class="js_seal_info" data-name="loanSubject"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>借款利率：</b>
+                        <span class="js_seal_info" data-name="loanInterest"></span>
+                    </div>
+                </div>
+
+                <div class="two column row js_baoli_tmp1">
+                    <div class="column">
+                        <b>收款人：</b>
+                        <span class="js_seal_info" data-name="name"></span>
+                    </div>
+                    <div class="column">
+                        <b>开户行：</b>
+                        <span class="js_seal_info" data-name="bank"></span>
+                    </div>
+                </div>
+                <div class="column row js_baoli_tmp2">
+                    <div class="column">
+                        <b>收款账号：</b>
+                        <span class="js_seal_info" data-name="account"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui grid" id="baoli_info">
+
+            </div>
+
+            <div class="ui horizontal divider">保理业务执行单</div>
+            <div class="ui grid">
+                <div class="column row">
+                    <div class="column">
+                        <b>交易买方名称：</b>
+                        <span class="js_seal_info" data-name="buyerName"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>应收账款金额（元）：</b>
+                        <span class="js_seal_info" data-name="re_amount"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>融资申请金额（元）：</b>
+                        <span class="js_seal_info" data-name="amount"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>借款期限：</b>
+                        <span class="js_seal_info" data-name="loanTerm"></span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b>宽限期（天）：</b>
+                        <span class="js_seal_info" data-name="grace"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui grid">
+                <div class="column row">
+                    <div class="column">
+                        <div class="ui teal button js_edit_btn" data-status="USED">确认用印</div>
+                        <div class="ui teal button js_edit_btn" data-status="PREUSED">拟用印</div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"用印管理"}){}%>
+

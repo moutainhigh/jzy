@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查看图片</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <link rel="stylesheet" type="text/css" href="/semantic/dist/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/dataTables.semanticui.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <script src="/js/plugins/jquery-3.1.1.min.js"></script>
+    <script src="/js/plugins/jquery.dataTables.min.js"></script>
+    <script src="/js/plugins/dataTables.semanticui.min.js"></script>
+
+    <script src="/semantic/dist/semantic.min.js"></script>
+    <script src="/js/plugins/mustache.min.js"></script>
+
+    <script src="/js/common/settings.js"></script>
+    <script src="/js/common/utils.js"></script>
+    <script src="/js/common/regExp.js"></script>
+    <script src="/js/common/api.js"></script>
+    <script src="/js/common/ui-dialog.js"></script>
+    <script src="/js/common/serialize-object.js"></script>
+    <script src="/js/common/enums.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/ui-alert.css">
+    <script src="/js/common/ui-alert.js"></script>
+</head>
+
+<body>
+<style>
+    .js_image{
+        position: relative;
+        height: auto;
+        max-width: 100%;
+    }
+    .js-side{
+        -webkit-user-select: none;
+        margin-bottom: 40px;
+    }
+</style>
+
+<div class="ks-hidden" id="parentHtm"></div>
+<div id="checkFiled">
+
+</div>
+
+<script type="text/mustach-template" id="applyFileTmps">
+    <div class="center" style="text-align:center;padding: 40px;">
+        <div id="fileSide ui shape" style="vertical-align: middle">
+            {{#data_List}}
+            <div class="js-side">
+                {{#is_Image}}
+                <button class="extra content ui button imageRoute" data-cur="1"><i class="repeat icon"></i>旋转</button>
+                <div class="box" align="center" style="margin-top: 5px;">
+                    <div class="p_image_box ui shape">
+                        <img src="{{href}}" class="js_image image">
+                    </div>
+                </div>
+                {{/is_Image}}
+                <div class="hidden divider ui"></div>
+            </div>
+            {{/data_List}}
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    if( window.opener !=null){
+        var obj = window.opener.document.getElementById('source_file').getAttribute('data-form');
+        if (window.opener.document.getElementById(obj)) {
+            var obj = window.opener.document.getElementById(obj);
+            data = [];
+            $('#parentHtm').append(obj.innerHTML);
+            renderTmp();
+            showFileTmp();
+
+            window.onload =function() {
+                //渲染设置高度
+                $('.box').each(function(){
+                    var w = $(this).find('.js_image').width();
+                    var h = $(this).find('.js_image').height();
+                    if(w-h >0){
+                        t = (w-h)/2;
+                        $(this).find('.p_image_box').css({
+                            'height':w,
+                            'vertical-align':'middle',
+                        })
+                        $(this).find('.js_image').css('top',t+'px');
+                    }else{
+                        $(this).find('.p_image_box').css({
+                            'height':h,
+                            'vertical-align':'middle',
+                        })
+                    }
+                });
+
+                //为每个图片增加旋转事件
+                var detail = [];
+                for(var i = 0 ;i<$('.imageRoute').length;i++){
+                    detail[i] = 0;
+                }
+                $('.imageRoute').on('click',function(){
+                    var h = $(this).siblings('.box').find('.js_image').height();
+                    var w = $(this).siblings('.box').find('.js_image').width();
+                    if(h>w){
+                        var h_a = w;
+                    }else{
+                        var h_a = h;
+                    }
+
+                    var cur = $('.imageRoute').index($(this));
+                    detail[cur] =( detail[cur] + 1)%4;
+
+                    //旋转
+                    if(detail[cur] != 0){
+                        var curDeg = (90*detail[cur])%360;
+                    }else{
+                        var curDeg = 0;
+                    }
+                    if(curDeg == 90 || curDeg == 270) {
+                        $(this).siblings('.box').find('.js_image').css({
+                            'transform-origin': '50% 50%',
+                            'transform': 'rotate(' + curDeg + 'deg)',
+                            'height':h_a+'px',
+                            'width':'auto'
+                        });
+                    }else{
+                        $(this).siblings('.box').find('.js_image').css({
+                            'transform-origin': '50% 50%',
+                            'transform': 'rotate(' + curDeg + 'deg)',
+                            'width':'100%',
+                            'height':'auto'
+                        });
+                    }
+                });
+            }
+        }
+
+    }else{
+        alert('父窗口状态异常,无法获取资源');
+    }
+
+
+    function renderTmp(){
+        $('#parentHtm .js-temp').each(function(i,ele){
+            var href = $(ele).attr('href');
+            var fileType = href.split('.')[href.split('.').length-1].toLowerCase();
+            if(fileType =='png' || fileType =='jpg' || fileType =='gif' || fileType =='jpeg' || fileType =='bmp' || fileType == 'svg'){
+                var isImage = 'true';
+            }else{
+                var isImage = 'false';
+            }
+            data.push({
+                href:$(ele).attr('href'),
+                name:$(ele).data('name'),
+                fileType:fileType,
+                isImage:isImage
+            })
+        });
+    }
+
+    function showFileTmp(){
+        data.data_List = data;
+        data.is_Image = function(){
+            if(this.isImage =='true'){
+                return true;
+            }
+        };
+        var $applyFileTmp = utils.render("#applyFileTmps",data);
+        $('#checkFiled').html($applyFileTmp);
+    }
+</script>
+
+</body>
+</html>

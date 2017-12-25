@@ -1,0 +1,185 @@
+<%var jsPart = {%>
+
+
+<script type="text/javascript">
+
+    /**
+     * 重置表单
+     */
+    function queryFormReset(){
+        $("#queryForm")[0].reset();
+    }
+
+    function list() {
+
+        dtTable = $("#flowControlList").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            bDestroy:true,
+            "ajax": {
+                "url":"/flow_control/list",
+                "data":function(d) {
+                    var data = {};
+                    data.code = $("#search_code").val();
+                    data.name = $("#search_name").val();
+                    data.productType = $("#search_prdtpye").val();
+                    data.product = $("#search_product").val();
+                    data.type = $("#flowControlType").val();
+                    var _d = $.extend({},{searchKeys:data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "dataSrc": function (json) {
+                    for (var i = 0; i < json.data.length; i++) {
+                        json.data[i].status = json.data[i].status==='DISABLED'?'不生效':"生效";
+                    }
+                    return json.data
+                },
+                "type": "POST"
+            },
+            columns: [
+                {data: 'code'},
+                {data: 'name'},
+                {data: 'description'},
+                {data: 'status'},
+                {data:null}
+            ],
+            columnDefs:[{
+                targets: 4,
+                render: function (data, type, row, meta) {
+                    return '<button onclick="showUpdate('+row.id+');"  class="ui grey basic button">编辑</button>';
+                }
+            }
+            ],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+        });
+
+    }
+
+    list();
+
+
+    //打开新增窗口
+    function showAdd(){
+        $('#addModal').height(screen.height*0.8);
+        $('#addModal').modal({
+            allowMultiple: true,
+            closable:false,
+            onHidden:function(){
+                point=1;
+                addFormReset();
+            }
+        }).modal("show");
+    }
+
+    //打开新增窗口
+    function showUpdate(id){
+        $('#updateModal').height(screen.height*0.8);
+        fetch(id);
+        $('#updateModal').modal({
+            allowMultiple: true,
+            closable:false,
+            onHidden:function(){
+                point=1;
+                updateFormReset();
+            }
+        }).modal("show");
+    }
+
+    /**
+     * 修改产品大类,查找到所有的产品
+     */
+    function queryProductByType(cur){
+         var productType = $(cur).val();
+        $(cur).parents(".fields").find(".product").html("");
+        $("html").api({
+                    url:"/product/queryByType",
+                    on:"ajax",
+                    method:"post",
+                    data:{"typeId":productType},
+                    onSuccess:function(data){
+                        if(data.ok){
+                            for(var i=0; i<data.data.length; i++){
+                                $(cur).parents(".fields").find(".product").append("<option value='"+data.data[i].id+"'>"+data.data[i].name+"</option>");
+                            }
+                        }
+                    }
+                }
+        ).trigger("ajax");
+    }
+
+
+
+</script>
+
+<%};%>
+<%var htmlPart = {%>
+<h1 class="ui header">${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程</h1>
+<div class="ui segment">
+    <input type="hidden" value="${type}" id="flowControlType" />
+    <div class="ui equal width form" id="queryForm">
+        <div class="inline two fields">
+            <div class=" field">
+                <label>${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程编号</label>
+                <input type="text" placeholder='${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程编号' id="search_code">
+            </div>
+            <div class="field">
+                <label>${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程名称</label>
+                <input type="text" placeholder='${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程名称' id="search_name">
+            </div>
+        </div>
+        <div class="inline two fields">
+            <div class="field">
+                <label>&emsp;&emsp;&emsp;&emsp;产品大类</label>
+                <select onchange="queryProductByType(this)" id="search_prdtpye">
+                   <option  value="">请选择</option>
+                    <%for(productType in productTypes){%>
+                    <option value="${productType.id}">${productType.name}</option>
+                    <%}%>
+                </select>
+            </div>
+            <div class="field">
+                <label>&emsp;&emsp;&emsp;&emsp;产品名称</label>
+                <select class="product" id="search_product">
+              </select>
+            </div>
+        </div>
+    </div>
+    <div>
+      <button onclick="list();"  class="ui grey basic button">查询</button>
+        <button onclick="queryFormReset()" class="ui grey basic button">重置</button>
+        <button onclick="showAdd()" class="ui grey basic button">新增</button>
+    </div>
+
+</div>
+
+
+
+<div class="ui hidden divider"></div>
+<!--流程列表-->
+<div class="row" >
+    <div class="column">
+        <table class="ui celled table" id="flowControlList">
+            <thead>
+            <tr>
+                <th>${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程编号</th>
+                <th>${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程名称</th>
+                <th>${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程说明</th>
+                <th>是否生效</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<% includeFileTemplate("add.html"){} %>
+<% includeFileTemplate("update.html"){} %>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart}){}%>

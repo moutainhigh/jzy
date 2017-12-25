@@ -1,0 +1,33 @@
+<%var jsPart = {%>
+
+<script></script>
+
+<%};%>
+<style type="text/css">
+
+</style>
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+
+            <div class="ui  vertical masthead center aligned segment">
+
+                <div class="ui text container">
+
+                    <h1 class="ui icon header">
+                        <!---->
+                        <!--<img class="ui inline icon image" src="/image/rocket.png" style="margin-bottom: 15px">-->
+                        <img class="ui inline icon image" src="/image/logopuhui.png" style="margin-bottom: 50px;margin-top: 50%;">
+                        欢迎登录业务管理系统
+                    </h1>
+                    <p class="">Welcome to Business Management System</p>
+                    <!--<div class="ui huge primary button">Get Started <i class="right arrow icon"></i></div>-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"首页"}){}%>

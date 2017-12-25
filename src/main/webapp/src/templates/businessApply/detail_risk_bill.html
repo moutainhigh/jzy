@@ -1,0 +1,42 @@
+<script type="text/mustach-template" id="riskBillTemplate">
+    <div class="column">
+        <b for="">
+            企业资料：
+        </b>
+        <table class="ui celled  center aligned small table" id="">
+            <thead>
+            <tr>
+                <th>资料名称</th>
+                <th>是否必填</th>
+                <th>资料文件</th>
+                <th>上传人</th>
+                <th>上传时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#billMediaAttaches}}
+            <tr>
+                <td>{{itemName}}</td>
+                <td>
+                    {{#required}}
+                    <span class="ui red label">必填</span>
+                    {{/required}}
+                    {{^required}}
+                    <span class="ui label">选填</span>
+                    {{/required}}
+                </td>
+                <td>
+                    {{#productMediaAttachDetails}}
+                    <div class="js-canBeDel right aligned">
+                        <span class="js-temp button mini ui" data-name="{{attachName}}" href="{{url}}">{{attachName}}</span>
+                    </div>
+                    {{/productMediaAttachDetails}}
+                </td>
+                <td>{{#url}}{{updateBy}}{{/url}}</td>
+                <td>{{#url}}{{updateTime}}{{/url}}</td>
+            </tr>
+            {{/billMediaAttaches}}
+            </tbody>
+        </table>
+    </div>
+</script>

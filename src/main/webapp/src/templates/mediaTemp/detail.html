@@ -1,0 +1,132 @@
+<%var jsPart = {%>
+<!--js 获取数据引入-->
+<script src="/js/pages/mediaTemp/media_temp.js"></script>
+<script src="/js/pages/mediaTemp/media_temp_detail.js"></script>
+<%};%>
+<%var htmlPart = {%>
+<style>
+    .dataTablel .fluid.dropdown{
+        box-sizing: border-box;
+    }
+</style>
+<div>
+    <!--查看影像资料配置-->
+    <div class="ui grid">
+        <div class="row ">
+            <div class="column">
+                <div class=" ui segment teal">
+                    <form class="ui form js-saveForm">
+                        <h4>基本信息</h4>
+                        <div class="ui segment">
+                            <div class="four fields">
+                                <div class="field">
+                                    <label>产品影像资料编码</label>
+                                    <input type="text" name="mediaTmpl.code" id="code" value="${productMediaTmpl.code}" readonly="readonly">
+                                    <input type="hidden" name="mediaTmpl.id" id="id" value="${productMediaTmpl.id}">
+                                </div>
+                                <div class="field">
+                                    <label>产品影像资料名称</label>
+                                    <input type="text"  readonly="readonly" name="mediaTmpl.name" id="name" value="${productMediaTmpl.name}">
+                                </div>
+                                <div class="field">
+                                    <label>状态</label>
+
+                                        <% if(productMediaTmpl.status=='ABLE'){%>
+                                    <input type="text"  readonly="readonly"  value="生效">
+                                        <%}else{%>
+                                    <input type="text"  readonly="readonly"  value="失效">
+                                        <%}%>
+                                </div>
+                                <div class="field">
+                                    <label>产品影像资料说明</label>
+                                    <input type="text" readonly="readonly"  name="mediaTmpl.description" id="description" value="${productMediaTmpl.description}">
+                                </div>
+                            </div>
+                            <div class="four fields">
+                                <div class="field">
+                                    <label>创建人</label>
+                                    <input type="text" readonly="readonly"  name="productMediaTmpl.createBy" value="${productMediaTmpl.createBy}">
+                                </div>
+                                <div class="field">
+                                    <label>创建时间</label>
+                                    <input type="text" readonly="readonly" id="c_time" name="creatTime" value="${creatTime}">
+                                </div>
+                                <div class="field">
+                                    <label>修改人</label>
+                                    <input type="text" readonly="readonly" name="productMediaTmpl.updateBy"  value="${productMediaTmpl.updateBy}">
+                                </div>
+                                <div class="field">
+                                    <label>修改时间</label>
+                                    <input type="text" readonly="readonly" name="productMediaTmpl.updateTime"  value="${updateTime}">
+                                </div>
+                            </div>
+                        </div>
+                        <h4>影像资料</h4>
+                        <div class="ui segment">
+                            <div class="ui top attached tabular menu viewDateMenu">
+                                <a class="item active" data-tab="first">业务影像资料</a>
+                                <a class="item" data-tab="second">风控影像资料</a>
+                                <a class="item" data-tab="third">财务影像资料</a>
+                                <a class="item" data-tab="fourth">贷后影像资料</a>
+                            </div>
+                            <div class="ui bottom attached tab segment active" data-tab="first">
+                                <h4 class="ui dividing header">业务影像</h4>
+                                <a class="ui teal left ribbon label">业务影像列表</a>
+                                <table id="y_dataTabel"  class="ui celled five column table" cellspacing="0" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>影像资料名称</th>
+                                        <!--<th>影像资料类型</th>-->
+                                        <th>是否必填</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="ui bottom attached tab segment" data-tab="second">
+                                <h4 class="ui dividing header">风控影像</h4>
+                                <a class="ui teal left ribbon label">风控影像列表</a>
+                                <table id="f_dataTabel"  class="ui celled five column table" cellspacing="0" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>影像资料名称</th>
+                                        <!--<th>影像资料类型</th>-->
+                                        <th>是否必填</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div class="ui bottom attached tab segment" data-tab="third">  <h4 class="ui dividing header">财务影像 </h4>
+                                <a class="ui teal left ribbon label">财务影像列表</a>
+                                <table id="c_dataTabel"  class="ui celled five column table" cellspacing="0" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>影像资料名称</th>
+                                        <!--<th>影像资料类型</th>-->
+                                        <th>是否必填</th>
+                                    </tr>
+                                    </thead>
+                                </table> </div>
+                            <div class="ui bottom attached tab segment" data-tab="fourth"> <h4 class="ui dividing header">贷后影像</h4>
+                                <a class="ui teal left ribbon label">贷后影像列表</a>
+                                <table id="d_dataTabel"  class="ui celled five column table" cellspacing="0" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>影像资料名称</th>
+                                        <!--<th>影像资料类型</th>-->
+                                        <th>是否必填</th>
+                                    </tr>
+                                    </thead>
+                                </table>  </div>
+                        </div>
+                        <div class="ui small  floated gray  button backButton">返回列表</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"查看影像配置"}){}%>

@@ -1,0 +1,209 @@
+<div class="column sixteen wide">
+    <form id="step3Form" class="ui form">
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label">业务信息</a>
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">项目信息</span>
+            </h5>
+            <div class="fields">
+                <div class="field sixteen wide required">
+                    <label>项目信息说明：</label>
+                    <textarea class="item" name="item_content">${productInfoItemData.item_content}</textarea>
+                </div>
+            </div>
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">资产包信息</span>
+            </h5>
+            <div class="three fields">
+                <div class="field required">
+                    <label>交易买方名称</label>
+                    <input class="item" name="name" type="text" value="${productInfoItemData.name}">
+                </div>
+                <div class="field required">
+                    <label>交易买方营业执照</label>
+                    <input class="item" name="license" type="text" value="${productInfoItemData.license}">
+                </div>
+                <div class="field required">
+                    <label>交易买方法人代表</label>
+                    <input class="item" name="agent_name" type="text" value="${productInfoItemData.agent_name}">
+                </div>
+            </div>
+            <div class="three fields">
+                <div class="field required">
+                    <label>应收账款金额（元）</label>
+                    <input class="item" name="re_amount" type="text" value="${productInfoItemData.re_amount}">
+                </div>
+                <div class="field required">
+                    <label>应收账款合同编号</label>
+                    <input class="item" name="agree_number" type="text" value="${productInfoItemData.agree_number}">
+                </div>
+            </div>
+            <div class="fields">
+                <div class="field sixteen wide required">
+                    <label>买方企业简介</label>
+                    <textarea class="item" name="qy_content">${productInfoItemData.qy_content}</textarea>
+                </div>
+            </div>
+
+            <input type="hidden" class="item" name="amount_scale" id="amountScale">
+        </div>
+
+        <div class="ui error message"></div>
+        <%if(loan.loanStatus == "SAVE" || loan.loanStatus == "CHANNELSAVE"){%>
+        <div class="actions">
+            <div id="btn-submit-step3" class="ui button teal">确定</div>
+        </div>
+        <%}%>
+    </form>
+</div>
+
+<script>
+    var step3FormOption = {
+        inline:true,
+        fields:{
+            'item_content':{
+                identifier: 'item_content',
+                rules: [{
+                    type:'empty',
+                    prompt:'不为空'
+                },{
+                    type:'maxLength[500]',
+                    prompt:'最多500位字符'
+                }]
+            },
+            'name':{
+                identifier: 'name',
+                rules:[{
+                    type:'empty',
+                    prompt:'不为空'
+                },{
+                    type:'maxLength[20]',
+                    prompt:'最多20位字符'
+                }]
+            },license:{
+                identifier: 'license',
+                rules:[{
+                    type:'empty',
+                    prompt:'不为空'
+                },{
+                    type:'maxLength[20]',
+                    prompt:'最多20位字符'
+                }]
+            },
+            'agent_name':{
+                identifier:'agent_name',
+                rules:[{
+                    type:'empty',
+                    prompt:'不为空'
+                },{
+                    type:'maxLength[20]',
+                    prompt:'最多20位字符'
+                }]
+            },
+            're_amount':{
+                identifier:'re_amount',
+                rules:[{
+                    type:'empty',
+                    prompt:'应收账款金额不为空'
+                },{
+                    type:'validateNumFloat',
+                    prompt:'金额范围在0.01-99999999.99'
+                }]
+            },
+            'agree_number':{
+                identifier:'agree_number',
+                rules:[{
+                    type:'empty',
+                    prompt:'不为空'
+                },{
+                    type:'maxLength[30]',
+                    prompt:'最多30个字符'
+                }]
+            },
+            'qy_content':{
+                identifier:'qy_content',
+                rules:[{
+                    type:'empty',
+                    prompt:'不为空'
+                },{
+                    type:'maxLength[200]',
+                    prompt:'简介最多200个字符'
+                }]
+            }
+        }
+    };
+
+    $('#btn-submit-step3').click(function(){
+        var amount = $('#step2Form input[name="amount"]').val();
+        var re_amount =$('#step3Form input[name="re_amount"]').val();
+        $('#step3Form #amountScale').val(divFloat(amount,re_amount).toFixed(4));
+
+        $("#step3Form").form(step3FormOption).api({
+            action: "update loan business",
+            method: 'POST',
+            beforeSend: function(settings) {
+                var _step = "";
+                if($("#linkStep1").hasClass("completed")) {
+                    _step += "1"
+                }else {
+                    _step += "0"
+                }
+                if($("#linkStep2").hasClass("completed")) {
+                    _step += "1"
+                }else {
+                    _step += "0"
+                }
+                _step += "1"
+                if($("#linkStep4").hasClass("completed")) {
+                    _step += "1"
+                }else {
+                    _step += "0"
+                }
+                settings.data["step"] = _step;
+
+                var loanId = $("#stepData").data("loan_id")
+                var tmplId = $("#stepData").data("product_info_tmpl_id")
+                settings.data["id"] = loanId;
+                var items = [];
+                $("#step3Form .item").each(function(i) {
+                    var isDate = $(this).hasClass("laydate");
+                    if(isDate) {
+                        var type = 'date';
+                    } else {
+                        var type = $(this).attr('type');
+                    }
+
+                    if(type == 'checkbox') {
+                        var checked = $(this).prop("checked");
+                        if(checked) {
+                            var dataValue = "true";
+                        } else {
+                            var dataValue = "false";
+                        }
+                    } else {
+                        var dataValue = $(this).val();
+                    }
+
+                    items.push({
+                        'loanId': loanId,
+                        'tmplId': tmplId,
+                        'keyName': $(this).attr('name'),
+                        'dataValue': dataValue,
+                        'type': type
+                    })
+                });
+
+                settings.data["items"] = JSON.stringify(items);
+                return settings;
+            },
+            onSuccess: function (response) {
+                $("#linkStep3").addClass("completed");
+                goStep("Step4");
+            },
+            onFailure: function(response) {
+                $.uiAlert({type: "danger", textHead: '保存失败', text: response.msg, time: 3});
+            }
+        });
+        $("#step3Form").submit();
+    });
+</script>

@@ -1,0 +1,274 @@
+<%var jsPart = {%>
+<script src="/js/pages/specialApply/mortgage/list_apply.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui attached message">
+    <div class="header" id="titleName"></div>
+</div>
+<form action="" class="ui form attached fluid segment" id="editForm">
+    <input type="hidden" name="mortgageCode">
+    <div class="four fields">
+        <div class="field  required">
+            <label>类型</label>
+            <select name="channel">
+                <option value="ZY">自营</option>
+                <option value="QD">渠道</option>
+            </select>
+        </div>
+        <div class="field  required" id="businessSearchDiv">
+            <label>业务员</label>
+            <div id="businessSearch" class="ui search">
+                <div class="ui icon input">
+                    <input type="hidden" name="businessId" data-validate="saleId">
+                    <input value="" class="prompt" type="text" placeholder="业务员" name="businessName" >
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+
+        </div>
+
+        <div class="field required ks-hidden" id="channelSearchDiv">
+            <label>业务来源</label>
+            <div id="channelSearch" class="ui search">
+                <div class="ui icon input">
+                    <input type="hidden" name="businessId" data-validate="channelId">
+                    <input value="" class="prompt" type="text" placeholder="输入渠道名称/渠道简称" name="businessName" >
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+
+        </div>
+
+
+        <div class="field  required">
+            <label>房产抵押地</label>
+            <select name="houseMortgageType">
+                <option value="SHENZHEN">深圳房产抵押</option>
+                <option value="GUANGZHOU">广州房产抵押</option>
+            </select>
+        </div>
+        <div class="field required">
+            <label>放款主体</label>
+            <select name="loanSubjectId">
+                <% for(subject in loanSubjectList) {%>
+                <option value="${subject.id}">${subject.name}</option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+
+    <h5 class="ui dividing header teal margin20t">
+        <span class="padding50r">申请信息</span>
+    </h5>
+    <div class="ui button teal mini js_addHouse"><i class="add icon"></i>新增抵押房产</div>
+    <div class="ui segment js_houseList">
+        <div class="ui button red mini right floated js_removeHouse ks-hidden">删除</div>
+        <input type="hidden" name="houseId">
+        <div class="three fields margin50t">
+            <div class="field required">
+                <label>房地产权证号</label>
+                <input type="text" name="housePropertyNumber">
+            </div>
+            <div class="field required">
+                <label>房产地址</label>
+                <input type="text" name="address">
+            </div>
+            <div class="field required">
+                <label>房产面积（㎡）</label>
+                <input type="text" name="area">
+            </div>
+        </div>
+
+        <div class="three fields">
+            <div class="field required">
+                <label>借款利息%/月</label>
+                <input type="text" name="loanInterestRate">
+            </div>
+            <div class="field required">
+                <label>最高借款金额（元）</label>
+                <input type="text" name="maximumLoanAmount">
+            </div>
+            <div class="field required">
+                <label>内部评估价值（元）</label>
+                <input type="text" name="internalEvaluationValue">
+            </div>
+            <div class="field required">
+                <label>借款时间</label>
+                <input type="text" name="startBorrowingTime">
+            </div>
+        </div>
+
+        <h4 class="ui horizontal divider header teal"> 权利人信息 </h4>
+        <div class="ui button teal mini right floated js_addUser"><i class="add icon"></i>新增权利人</div>
+
+        <div class="five fields margin50t js_userList">
+            <div class="field required">
+                <label>权利人</label>
+                <input type="text" name="name">
+            </div>
+            <div class="field required">
+                <label>证件号</label>
+                <select name="certifType">
+                    <option value="">请选择</option>
+                    <option value="ID">身份证号</option>
+                    <option value="BUSINESS_LICENSE">营业执照</option>
+                    <option value="PASS_ID">港澳台证件号</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>&emsp;</label>
+                <input type="text" name="certificateNo" >
+            </div>
+            <div class="field">
+                <label>家庭住址</label>
+                <input type="text" name="homeAddress">
+            </div>
+            <div class="field">
+                <label>&emsp;</label>
+                <div class="ui button mini red js_userRemove ks-hidden">删除</div>
+            </div>
+        </div>
+    </div>
+
+</form>
+<div class="ui divider hidden"></div>
+<div class="actions" align="center">
+    <div class="ui  teal button" onclick="init.add()">保存</div>
+    <a class="ui black button" href="/mortgage/index">返回</a>
+</div>
+<div class="ui divider hidden"></div>
+
+<script type="text/mustach-template" id="editTemplate">
+    <input type="hidden" name="mortgageId" value="{{id}}">
+    <div class="four fields">
+        <div class="field">
+            <label>类型</label>
+            <select name="channel" value="{{channel}}">
+                <option value="ZY">自营</option>
+                <option value="QD">渠道</option>
+            </select>
+        </div>
+
+        <div class="field  required" id="businessSearchDiv">
+            <label>业务员</label>
+            <div id="businessSearch" class="ui search">
+                <div class="ui icon input">
+                    <input type="hidden" name="businessId" data-validate="saleId" value="{{saleId}}">
+                    <input class="prompt" type="text" placeholder="业务员" name="businessName" value="{{saleName}}">
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+
+        </div>
+
+        <div class="field required" id="channelSearchDiv">
+            <label>业务来源</label>
+            <div id="channelSearch" class="ui search">
+                <div class="ui icon input">
+                    <input type="hidden" name="businessId" data-validate="channelId" value="{{channelId}}">
+                    <input class="prompt" type="text" placeholder="输入渠道名称/渠道简称" name="businessName" value="{{channelName}}">
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+
+        </div>
+        <div class="field">
+            <label>房产抵押地</label>
+            <select name="houseMortgageType" value="{{houseMortgageType}}">
+                <option value="SHENZHEN">深圳房产抵押</option>
+                <option value="GUANGZHOU">广州房产抵押</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>放款主体</label>
+            <select name="loanSubjectId" value="{{loanSubjectId}}">
+                <% for(subject in loanSubjectList) {%>
+                <option value="${subject.id}">${subject.name}</option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+
+    <h5 class="ui dividing header teal margin20t">
+        <span class="padding50r">申请信息</span>
+    </h5>
+    <div class="ui button teal mini js_addHouse"><i class="add icon"></i>新增抵押房产</div>
+    {{#mortgageHouseList}}
+    <div class="ui segment js_houseList">
+        <div class="ui button red mini right floated js_removeHouse">删除</div>
+        <input type="hidden" name="houseListId" value="{{id}}">
+        <input type="hidden" name="houseId" value="{{house.id}}">
+        <div class="three fields margin50t">
+            <div class="field">
+                <label>房地产权证号</label>
+                <input type="text" name="housePropertyNumber" value="{{house.housePropertyNumber}}">
+            </div>
+            <div class="field required">
+                <label>房产地址</label>
+                <input type="text" name="address" value="{{house.address}}">
+            </div>
+            <div class="field required">
+                <label>房产面积（㎡）</label>
+                <input type="text" name="area" value="{{house.area}}">
+            </div>
+        </div>
+
+        <div class="three fields">
+            <div class="field required">
+                <label>借款利息%/月</label>
+                <input type="text" name="loanInterestRate" value="{{loanInterestRate}}">
+            </div>
+            <div class="field">
+                <label>最高借款金额（元）</label>
+                <input type="text" name="maximumLoanAmount" value="{{maximumLoanAmount}}">
+            </div>
+            <div class="field">
+                <label>借款时间</label>
+                <input type="text" name="startBorrowingTime" value="{{startTime}}~{{endTime}}">
+            </div>
+        </div>
+
+        <h4 class="ui horizontal divider header teal"> 权利人信息 </h4>
+        <div class="ui button teal mini right floated js_addUser"><i class="add icon"></i>新增权利人</div>
+        <br>
+        <br>
+        {{#house.equityHolderList}}
+        <div class="five fields  js_userList">
+            <input type="hidden" name="userId" value="{{id}}">
+            <div class="field required">
+                <label>权利人</label>
+                <input type="text" name="name" value="{{name}}">
+            </div>
+            <div class="field required">
+                <label>证件号</label>
+                <select name="certifType" value="{{certifType}}">
+                    <option value="">请选择</option>
+                    <option value="ID">身份证号</option>
+                    <option value="BUSINESS_LICENSE">营业执照</option>
+                    <option value="PASS_ID">港澳台证件号</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>&emsp;</label>
+                <input type="text" name="certificateNo" value="{{certificateNo}}">
+            </div>
+            <div class="field">
+                <label>家庭住址</label>
+                <input type="text" name="homeAddress" value="{{homeAddress}}">
+            </div>
+            <div class="field">
+                <label>&emsp;</label>
+                <div class="ui button mini red js_userRemove">删除</div>
+            </div>
+        </div>
+        {{/house.equityHolderList}}
+    </div>
+    {{/mortgageHouseList}}
+</script>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"房产抵押申请"}){}%>

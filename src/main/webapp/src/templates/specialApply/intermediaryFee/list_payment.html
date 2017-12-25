@@ -1,0 +1,182 @@
+<%var jsPart = {%>
+<script src="/js/pages/specialApply/intermediaryApply/list_payment.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui tabular menu" id="tab_menu">
+        <a data-status="loan" class="item active teal">待放款 </a>
+        <a data-status="loaned" class="item teal">已放款</a>
+    </div>
+
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>业务单号</label>
+                <input type="text" name="businessCode" id="businessCode">
+            </div>
+            <div class="field">
+                <label>提单日期</label>
+                <input type="text" name="submitDate" id="submitDate">
+            </div>
+            <div class="field disabled" id="disableLoanTime">
+                <label>居间费放款日</label>
+                <input type="text" name="loanTime" id="loanTime">
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <div class="ui tiny button teal" onclick="init.search()">查询</div>
+                <div class="ui tiny button clear" onclick="init.reset()">重置</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" id="part_one">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">待放款</a>
+            <table class="ui  celled table compact  small" id="loanTable">
+                <thead>
+                <tr>
+                    <th>业务单号</th>
+                    <th>放款申请编号</th>
+                    <th>产品子类</th>
+                    <th>借款人</th>
+                    <th>提单日期</th>
+                    <!--<th>放款日期</th>-->
+                    <th>居间人</th>
+                    <th>居间费（元）</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row ks-hidden" id="part_two">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">已放款</a>
+            <table class="ui  celled table compact  small" id="loanedTable">
+                <thead>
+                <tr>
+                    <th>业务单号</th>
+                    <th>放款申请编号</th>
+                    <th>产品子类</th>
+                    <th>借款人</th>
+                    <th>提单日期</th>
+                    <th>放款日期</th>
+                    <th>居间人</th>
+                    <th>居间费（元）</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="ui modal" id="loanAmountInfo">
+    <i class="close icon"></i>
+    <div class="header">
+        放款信息
+    </div>
+    <div class="content">
+        <div class="ui grid" id="loanInfo">
+            <div class="two column row">
+                <div class="column">
+                    <div class="column">
+                        <b>放款主体：</b>
+                        <input type="hidden" name="loanId">
+                        <span class="item" data-name="loanSubject"></span>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="column">
+                        <b></b>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="two column row">
+                <div class="column">
+                    <div class="column">
+                        <b>居间人：</b>
+                        <span class="item" data-name="name"></span>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="column">
+                        <b>税后居间费（元）：</b>
+                        <span class="item" data-name="intermediaryFee"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="two column row">
+                <div class="column">
+                    <div class="column">
+                        <b>身份证号：</b>
+                        <span class="item" data-name="idNumber"></span>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="column">
+                        <b>手机号</b>
+                        <span class="item" data-name="phone"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="two column row">
+                <div class="column">
+                    <div class="column">
+                        <b>开户行：</b>
+                        <span class="item" data-name="bank"></span>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="column">
+                        <b>账号：</b>
+                        <span class="item" data-name="account"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="column row">
+                <div class="column">
+                    <div class="column">
+                        <b>地址：</b>
+                        <span class="item" data-name="address"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="column row">
+                <div class="column">
+                    <div class="column">
+                        <b> 服务协议下载：</b>
+                        <div id="js-urlBox" class="box">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <button class="ui teal button" onclick="init.printApply()">打印居间费付费审批单</button>
+        <button class="ui teal button" onclick="init.loanAmount()">确认放款</button>
+    </div>
+
+
+</div>
+
+
+
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"居间费放款"}){}%>

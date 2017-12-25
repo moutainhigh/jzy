@@ -1,0 +1,68 @@
+<%var jsPart = {%>
+<!--js 获取数据引入-->
+<script src="/js/pages/mediaTemp/media_temp.js"></script>
+<script>
+    (function initApp() {
+        init();
+        bindEvents();
+    })();
+</script>
+<script src="/js/pages/mediaTemp/media_temp_update.js"></script>
+<script type="text/dt-template" id="addOrgTemplate">
+    <div class="ui teal small button addButton">
+        <i class="add icon"></i>新增影像配置
+    </div>
+</script>
+<%};%>
+<%var htmlPart = {%>
+
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment mini teal">
+                <form class="ui fluid  form js-searchForm">
+                    <div class="three fields">
+                        <div class="field">
+                            <label>产品影像资料编码</label>
+                            <input type="text" placeholder="请输入正确的编号" name="code" id="code">
+                        </div>
+                        <div class="field">
+                            <label>产品影像资料名称</label>
+                            <input type="text" placeholder="请输入正确的名称" name="name" id="name">
+                        </div>
+                        <div class="field">
+                            <label>选择状态</label>
+                            <select class="ui fluid dropdown" id="status">
+                                <option value="">请选择状态</option>
+                                <option value="true">生效</option>
+                                <option value="false">失效</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ui teal mini submit button searchButton">查询</div>
+                    <div class="ui clear mini button resetButton">重置</div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--影像资料配置列表-->
+    <div class="row" id="mediaTempList">
+        <div class="column">
+            <div class=" ui segment small teal"><a class="ui teal left ribbon label">影像配置列表</a>
+                <table class="ui celled small table" id="mediaTempTable">
+                    <thead>
+                    <tr>
+                        <th>产品影像编码</th>
+                        <th>产品影像资料名称</th>
+                        <th>产品影像资料说明</th>
+                        <th>是否生效</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"影像配置"}){}%>

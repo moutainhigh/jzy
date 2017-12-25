@@ -1,0 +1,123 @@
+<!--修改、新增组织弹出modal-->
+<div class="ui small modal js-editOrgnModal">
+    <i class="close icon"></i>
+    <div class="header js-editOrgn__header">
+        编辑
+    </div>
+    <div class=" content">
+        <form class="ui form">
+            <div class="ui   field">
+                <label>组织名称</label>
+                <input type="text" placeholder="组织名称" name="org.name" >
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black  deny button">
+            取消
+        </div>
+        <div class="ui primary ok button">确定</div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $.extend(Orgnaztion, {
+            /**
+             * 新增和修改
+             * @param type 操作类型：add/update
+             * @param id 节点id
+             */
+            save: function (type,id) {
+                var id = id;
+                var text="";
+                var actions="";
+                var _data = {};
+                if(type=="add"){
+                    text="新增";
+                    actions="add orgnazition";
+                    _data ={
+                        "org.parentId": id,
+                        "org.organizeCode":SETTINGS.ORGANIZITION.ORGANIZE,
+                        "org.path": STORAGE.chosedTreeItemData.path + "," + STORAGE.chosedTreeItemData.id,
+                    }
+                }else if (type=="update"){
+                    text="修改";
+                    actions="edit orgnazition";
+                    _data ={
+                        "org.id": id,
+                        "org.organizeCode": SETTINGS.ORGANIZITION.ORGANIZE,
+                    }
+                }
+                $(".js-editOrgn__header").text(text);
+
+                var $modal = $(".js-editOrgnModal");
+                var $form = $modal.find(".ui.form");
+                $modal.modal({
+                    blurring: true,
+                    onShow: function () {
+                        $form.form('clear').form({
+                            inline: true,
+                            fields: {
+                                name: {
+                                    identifier: 'org.name',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                }
+                            },
+                            onSuccess: function (e, fidlds) {
+                                e.preventDefault();
+                            }
+                        }).api({
+                            action: actions,
+                            method: 'POST',
+                            serializeForm: true,
+                            data: _data,
+                            onSuccess: function (response) {
+                                $modal.modal({
+                                    onHidden: function () {
+                                        if (response.ok) {
+                                            $.uiAlert({
+                                                type: "success",
+                                                textHead: text+'成功',
+                                                text: '成功'+text+'组织',
+                                                time: 1,
+                                                onClosed: function () {
+                                                    window.location.reload()
+                                                }
+                                            });
+                                        } else {
+                                            $.uiAlert({
+                                                type: "danger",
+                                                textHead: text+'失败',
+                                                text: response.msg,
+                                                time: 1
+                                            });
+                                        }
+                                    }
+                                }).modal("hide");
+                            }
+                        })
+                        if(type=="update"){
+                            $form.form('set values', {
+                                'org.name': STORAGE.chosedTreeItemData.name,
+                            })
+                        }
+
+                    },
+                    onApprove: function () {
+                        $(this).find(".form").submit();
+                        return false;
+                    },
+                    onDeny: function () {
+//                        window.alert('Wait not yet!');
+                    }
+                }).modal('show');
+            }
+        })
+    })
+</script>

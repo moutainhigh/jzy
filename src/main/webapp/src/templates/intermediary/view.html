@@ -1,0 +1,59 @@
+<div class="ui modal" id="viewIntermediary">
+    <i class="close icon"></i>
+    <div class="header">
+        查看居间人
+    </div>
+    <div class="content">
+        <form class="ui form">
+            <div class="ui segment">
+                <div class="two fields">
+                    <div class=" field required">
+                        <label>居间人姓名</label>
+                        <input type="text" name="name" class="js_init" readonly>
+                    </div>
+                    <div class=" field required">
+                        <label id="idNumberUpdate">身份证号码</label>
+                        <input type="text" name="idNumber" class="js_init" readonly>
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class=" field required">
+                        <label class="three wide">电话</label>
+                        <input type="text" name="phone" class="js_init" readonly/>
+                    </div>
+                    <div class=" field required">
+                        <label>地址</label>
+                        <input type="text" name="address" class="js_init" readonly>
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class=" field required">
+                        <label class="three wide">开户行</label>
+                        <input type="text" name="bank" class="js_init" readonly/>
+                    </div>
+                    <div class=" field required">
+                        <label>账号</label>
+                        <input type="text" name="account" class="js_init" readonly>
+                    </div>
+                </div>
+                <div class="fields">
+                    <label>身份证件：</label>
+                    <a href="JavaScript:;" target="_blank" class="js-fileName">暂无</a>
+                    <input type="hidden" name="contractFileName">
+                    <input type="hidden" name="contractFileUrl">
+                    <input type="hidden" name="contractFileUrls" class="js_init">
+                </div>
+            </div>
+            <div class=" grouped fields">
+                <label class="four wide">状态：</label>
+                <input id="using" type="radio" name="status" checked disabled/>生效
+                <input id="stop" type="radio" name="status" disabled/>失效
+            </div>
+            <div class="actions">
+                <div class="ui gray deny button">
+                    取消
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

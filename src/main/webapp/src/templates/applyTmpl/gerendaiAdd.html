@@ -1,0 +1,133 @@
+<div class="column sixteen wide">
+    <form id="step3Form" class="ui form">
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label">业务信息</a>
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">借款用途</span>
+            </h5>
+            <div class="fields">
+                <div class="field required inline">
+                    <label>借款用途：</label>
+                    <select name="use_of_loan" class="item">
+                        <option value="">请选择</option>
+                        <option value="DAY_COST">日常消费</option>
+                        <option value="CASH_COST">资金周转</option>
+                    </select>
+                </div>
+            </div>
+
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">个人贷信息</span>
+            </h5>
+            <div class="fields">
+                <div class="field sixteen wide required">
+                    <label>项目说明</label>
+                    <textarea class="item" name="person_content">${productInfoItemData.person_content}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui error message"></div>
+        <%if(loan.loanStatus == "SAVE" || loan.loanStatus == "CHANNELSAVE"){%>
+        <div class="actions">
+            <div id="btn-submit-step3" class="ui button teal">确定</div>
+        </div>
+        <%}%>
+    </form>
+</div>
+
+<script>
+    $('select[name="use_of_loan"]').val('${productInfoItemData.use_of_loan}');
+    var step3FormOption = {
+        inline:true,
+        fields:{
+            'person_content':{
+                identifier:'person_content',
+                rules:[{
+                    type:'empty',
+                    prompt:'项目说明不为空'
+                },{
+                    type:'maxLength[300]',
+                    prompt:'项目说明最多位300个字符'
+                }]
+            },
+            'use_of_loan':{
+                identifier: 'use_of_loan',
+                rules: [{
+                    type:'empty',
+                    prompt:'请选择借款用途'
+                }]
+            },
+        }
+    };
+
+    $('#btn-submit-step3').click(function(){
+        $("#step3Form").form(step3FormOption).api({
+            action: "update loan business",
+            method: 'POST',
+            beforeSend: function(settings) {
+                var _step = "";
+                if($("#linkStep1").hasClass("completed")) {
+                    _step += "1"
+                }else {
+                    _step += "0"
+                }
+                if($("#linkStep2").hasClass("completed")) {
+                    _step += "1"
+                }else {
+                    _step += "0"
+                }
+                _step += "1"
+                if($("#linkStep4").hasClass("completed")) {
+                    _step += "1"
+                }else {
+                    _step += "0"
+                }
+                settings.data["step"] = _step;
+
+                var loanId = $("#stepData").data("loan_id")
+                var tmplId = $("#stepData").data("product_info_tmpl_id")
+                settings.data["id"] = loanId;
+                var items = [];
+                $("#step3Form .item").each(function(i) {
+                    var isDate = $(this).hasClass("laydate");
+                    if(isDate) {
+                        var type = 'date';
+                    } else {
+                        var type = $(this).attr('type');
+                    }
+
+                    if(type == 'checkbox') {
+                        var checked = $(this).prop("checked");
+                        if(checked) {
+                            var dataValue = "true";
+                        } else {
+                            var dataValue = "false";
+                        }
+                    } else {
+                        var dataValue = $(this).val();
+                    }
+
+                    items.push({
+                        'loanId': loanId,
+                        'tmplId': tmplId,
+                        'keyName': $(this).attr('name'),
+                        'dataValue': dataValue,
+                        'type': type
+                    })
+                });
+
+                settings.data["items"] = JSON.stringify(items);
+                return settings;
+            },
+            onSuccess: function (response) {
+                $("#linkStep3").addClass("completed");
+                goStep("Step4");
+            },
+            onFailure: function(response) {
+                $.uiAlert({type: "danger", textHead: '保存失败', text: response.msg, time: 3});
+            }
+        });
+        $("#step3Form").submit();
+    });
+</script>

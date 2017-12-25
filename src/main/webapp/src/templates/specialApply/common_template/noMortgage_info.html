@@ -1,0 +1,221 @@
+<script type="text/mustach-template" id="noMortgageTemplate">
+    <a class="ui teal left ribbon label">解押详情</a>
+    <h4 class="ui top attached block small  header">基本信息</h4>
+
+    <div class="ui  padded attached  small segment">
+        <div class="ui grid">
+            <div class="three column row">
+                <div class="column">
+                    <b>房产解押编号：</b>
+                    <span>{{houseNoMortgageApply.applyCode}}</span>
+                </div>
+                <div class="column">
+                    <b>业务来源：</b>
+                    <span>{{houseNoMortgageApply.businessSource}}</span>
+                </div>
+                <div class="column">
+                    <b>类型：</b>
+                    <span>{{address_type}}</span>
+                </div>
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b>填单人：</b>
+                    <span>{{houseNoMortgageApply.createBy}}</span>
+                </div>
+                <div class="column">
+                    <b>提交时间：</b>
+                    <span>{{houseNoMortgageApply.submitDate}}</span>
+                </div>
+                <div class="column">
+                    <a class="ui button mini teal" target="_blank" href="/flow/to_approval_list?id={{houseNoMortgageApply.id}}&flowConfigureType=DECOMPRESSION">查看审批流程</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <h4 class="ui top attached block small  header">房产信息</h4>
+    <div class="ui  padded attached  small segment">
+        <div class="ui grid">
+            <div class="three column row">
+                <div class="column">
+                    <b>业务单号：</b>
+                    <a class="ui small" target="_blank" href="/business_apply/detail?id={{houseNoMortgageApply.loanId}}&tab=business">{{houseNoMortgageApply.businessCode}}</a>
+                </div>
+                <div class="column">
+                    <a class="ui small" target="_blank" href="/business_apply/detail?id={{houseNoMortgageApply.loanId}}&tab=financial&mortgage=mortgage">贷后信息</a>
+                </div>
+
+            </div>
+        </div>
+        <div class="ui horizontal divider margin20t">房产信息</div>
+        {{#houseInfoList}}
+        <div class="ui grid">
+            <div class="three column row">
+                <div class="column">
+                    <b for="">房产证号：</b>
+                    <span>{{code}}</span>
+                </div>
+                <div class="column">
+                    <b for="">房产地址：</b>
+                    <span>{{address}}</span>
+                </div>
+                <div class="column">
+                    <b for="">房产面积（㎡）：</b>
+                    <span>{{area}}</span>
+                </div>
+            </div>
+
+            {{#userList}}
+            <div class="two column row">
+                <div class="column">
+                    <b for="">权利人：</b>
+                    <span>{{name}}</span>
+                </div>
+                <div class="column">
+                    <b for="">{{type}}：</b>
+                    <span>{{idNumber}}</span>
+                </div>
+            </div>
+            {{/userList}}
+
+            <div class="column row">
+                <div class="column">
+                    {{#codeType}}
+                    <b>他项权证号：</b>
+                    {{/codeType}}
+                    {{^codeType}}
+                    <b>抵押登记编号：</b>
+                    {{/codeType}}
+                    <span>{{warrantNumber}}</span>
+                </div>
+            </div>
+
+            <div class="one column row">
+                <div class="ui button small teal" onclick="checkFile('{{loan_id}}','{{id}}','{{address_type_name}}','{{apply_id}}')">单证查看</div>
+            </div>
+
+        </div>
+        {{/houseInfoList}}
+
+        <div class="ui inverted divider"></div>
+        <div class="ui grid">
+            <div class="three column row">
+                <div class="column">
+                    <b>借款金额（元）：</b>
+                    <span>{{loan_amount}}</span>
+                </div>
+                <div class="column">
+                    <b>结清日期：</b>
+                    <span>{{clear_Date}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 单证下载 -->
+    <div class="ui modal" id="fileUploadModal">
+
+    </div>
+
+</script>
+
+<script type="text/mustach-template" id="fileModalTemplate">
+    <i class="close icon"></i>
+    <div class="header">单证下载</div>
+    <div class="content">
+        {{#_data}}
+        <div class="fields inline mb_5">
+            <div class="field">
+                <label>{{name}}</label>
+                <a class="ui button teal mini" target="_blank" href="/house_noMortgage_apply/document_download?mortgageDocumentType={{type}}&houseId={{houseId}}&loanId={{loanId}}&applyId={{applyId}}">下载</a>
+            </div>
+        </div>
+        {{/_data}}
+        {{^_data}}
+        <p>暂无单证信息</p>
+        {{/_data}}
+    </div>
+</script>
+
+
+<script>
+   if(templateType =='noMortgage'){
+
+       function checkFile(loanId,houseId,addressType,applyId){
+           $(document).api({
+               on:'now',
+               method:'post',
+               action:'noMortgage file list',
+               data:{
+                   addressType:addressType
+               },
+               onSuccess:function(data){
+                   var Data ={
+                       '_data':data
+                   };
+
+                   Data.loanId = loanId;
+                   Data.houseId = houseId;
+                   Data.applyId = applyId;
+
+                   var htm = utils.render("#fileModalTemplate",Data);
+                   $('#fileUploadModal').html(htm);
+                   $('#fileUploadModal').modal('show');
+               }
+           })
+       }
+
+       $(document).api({
+           on: "now",
+           method: 'post',
+           action: "query noMortgage detail",
+           data: {
+               loanId:utils.getUrlParam("id"),
+               applyId:utils.getUrlParam("applyId"),
+           },
+           onSuccess:function(data){
+               var flag = data.houseNoMortgageApply.addressType =='SZMORTGAGE' ? false:true
+               data.codeType = flag;
+
+               data.loan_amount = function(){
+                    return accounting.formatNumber(this.loanAmount,2,",");
+               };
+               data.loan_id = function(){
+                   return data.houseNoMortgageApply.loanId;
+               };
+               data.apply_id = function(){
+                   return data.houseNoMortgageApply.id;
+               };
+               data.address_type_name = function(){
+                   return data.houseNoMortgageApply.addressType;
+               };
+               data.clear_Date = function(){
+                   if(this.clearDate){
+                       return moment(this.clearDate).format('YYYY-MM-DD');
+                   }else{
+                       return '';
+                   }
+               };
+               data.address_type = function(){
+                   return enums.addressType[this.houseNoMortgageApply.addressType]
+               };
+               for(i in data.houseInfoList){
+                   if(data.houseInfoList[i].owerStr){
+                       var ower = data.houseInfoList[i].owerStr
+                       data.houseInfoList[i].userList = JSON.parse(ower)
+                   }
+               }
+
+               var $applyTemplate = utils.render("#noMortgageTemplate", data);
+               $("#detailTemplate").append($applyTemplate);
+
+           },
+           onFailure:function(data){
+               $.uiAlert({type: "danger", textHead: '获取数据失败', text: data.msg, time: 4});
+           }
+       })
+   }
+
+</script>

@@ -1,0 +1,295 @@
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui width form">
+        <div class="four fields">
+            <div class="field">
+                <label>业务来源/业务员</label>
+                <input type="text" id="apply" placeholder="请填写业务员姓名查询">
+            </div>
+                <div class="field">
+                    <label>产品大类</label>
+                    <select name="productType" class="ui dropdown" id="productType">
+                    </select>
+                </div>
+                <div class="field">
+                    <label>产品子类</label>
+                    <select name="product" class="ui dropdown" id="product">
+                    </select>
+                </div>
+            <div class="field">
+                <label>状态</label>
+                <select name="status" id="status" class="ui dropdown">
+                    <option value="">全部</option>
+                    <% for(status in statusList){%>
+                    <option value="${status}">${status.description}</option>
+                    <%}%>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>组织</label>
+                <div class="ui search js-orgSearch">
+                    <div class="ui icon input">
+                        <input type="hidden" name="orgId" id="orgId">
+                        <input class="prompt js-input" type="text" placeholder="输入组织名称或代码查询">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </div>
+        </div>
+        <div class="four fields">
+            <div class="field">
+                <label>借款人</label>
+                <input type="text" id="borrower" placeholder="请填写借款人">
+            </div>
+            <div class="field">
+                <label>借款人证件号码</label>
+                <div class="ui search js-NumSearch">
+                    <div class="ui icon input">
+                        <input type="hidden" name="certifNumber" id="certifNumber">
+                        <input class="prompt js-input" type="text" placeholder="输入组织名称或代码查询">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </div>
+            <div class="field">
+                <label>放款时间</label>
+                <div class="ui search">
+                    <div class="ui icon input">
+                        <input class="prompt" type="text" placeholder="放款时间" name="loanTime" id="loanTime">
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </div>
+            <div class="field">
+                <label>业务来源：</label>
+                <div class="ui radio checkbox"   id="channel0" >
+                    <input type="radio" value="0" name="channel">
+                    <label>自营</label>
+                </div>
+                <div class="ui radio checkbox"  id="channel1" >
+                    <input type="radio" value="1" name="channel">
+                    <label>渠道</label>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <lable>&emsp;</lable>
+            <div class="aligned center">
+                <button class="ui tiny submit button teal" onclick="queryList();">查询</button>
+                <button class="ui tiny button clear" onclick="search.reset();" type="reset">重置</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+
+<!--流程列表-->
+<!--列表-->
+<div class="row" id="">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">业务申请列表</a>
+            <table class="ui  celled table compact  small" id="loanList">
+                <thead>
+                <tr>
+                    <th>业务单号</th>
+                    <th>产品大类</th>
+                    <th>产品子类</th>
+                    <th>组织</th>
+                    <th>业务来源</th>
+                    <th>借款人</th>
+                    <th>申请金额（元）</th>
+                    <th>期限</th>
+                    <th>状态</th>
+                    <th>审批状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colspan="10" class="center aligned">暂无数据</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<%};%>
+
+
+<%var jsPart = {%>
+<script type="text/javascript" src="/js/plugins/moment.min.js"></script>
+<script type="text/javascript" src="/js/plugins/jquery.daterangepicker.js"></script>
+<script type="text/javascript" src="/js/common/two-cascade.js"></script>
+<script>
+    var  productTypeCascade = TwoCascade({parentSelect:$("#productType"),subSelect:$("#product")})
+    productTypeCascade.create();
+    /**
+     * 查询列表
+     */
+    function queryList() {
+        var dtTable = $("#loanList").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            bDestroy: true,
+            "ajax": {
+                "url": "/business_apply/query_list_all",
+                "data": function(d){
+                    var data = {};
+                    data.orgId = $('#orgId').val();
+                    data.apply = $("#apply").val();
+                    data.loanTime = $('#loanTime').val();
+                    data.borrower = $("#borrower").val();
+                    data.channel = $("input[name='channel']:checked").val();
+                    data.status = $("#status").val();
+                    data.productType = $('#productType').val();
+                    data.product = $('#product').val();
+                    data.borrowerId = $('#certifNumber').val();
+                    var _d = $.extend({},{searchKeys:data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST"
+            },
+            columns: [
+                {data: 'code'},
+                {data: "productTypeName"},
+                {data: "productName"},
+                {data: "organizeName"},
+                {data: "saleName"},
+                {data: "borrserName"},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null}
+            ],
+            columnDefs: [{
+                targets:6,
+                className:'right aligned',
+                render:function(data, type, row, meta){
+                    var strAmount = accounting.formatMoney(data.amount,'',2,',','.');
+                    return strAmount;
+                }
+            },{
+                targets: 7,
+                render: function (data, type, row, meta) {
+                    if("FIXED_DATE"==data.termType){
+                        return "至"+data.term;
+                    }else{
+                        if(data.termType!=undefined && enums.loanTermType[data.termType] != undefined){
+                            return data.term + enums.loanTermType[data.termType];
+                        }else{
+                            return "--";
+                        }
+                    }
+                }
+            }, {
+                targets: 8,
+                render: function (data, type, row, meta) {
+                    return enums.loan_status[data.loanStatus];
+                }
+            }, {
+                targets: 9,
+                render: function (data, type, row, meta) {
+                    if("CANCEL" == row.loanStatus || "SAVE" == row.loanStatus){
+                        return enums.loan_status[row.loanStatus];
+                    }
+                    if("APPROVEEND" == row.loanStatus || "LOANED" == row.loanStatus || "CLEARED" == row.loanStatus || "OVERDUE" == row.loanStatus || "APPROVEREJECT" == row.loanStatus){
+                        return data.approveStatus;
+                    }else {
+                        if(null != data.nextStatus){
+                            return data.nextStatus+'-等待审批';
+                        }
+                        return data.approveStatus;
+                    }
+                }
+            }, {
+                className: "single line",
+                targets: 10,
+                render: function (data, type, row, meta) {
+                    return '<a target="_blank" href="/business_apply/detail?id=' + row.id + '&tab=slBusiness&process=false&comeFrom='+window.location.pathname+'&isDays='+data.termType+'" class="ui basic mini button"><i class="info circle icon"></i>查看</a>';
+                }
+            }
+            ],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+        });
+    }
+
+    var search = {
+        reset:function(){
+            $("#apply").val("");
+            $("#borrower").val("");
+            $("#submitTime").val("");
+            $("#status").val("");
+            $("#orgId").val("");
+            $('#loanTime').val("");
+            $('.js-input').val("");
+            productTypeCascade.reset();
+            $('#certifNumber').val("");
+            $('input[name="channel"]').prop("checked", false);
+        },
+        initOrgSearch :function(){
+            $('.js-orgSearch').search({
+                apiSettings: {
+                    method: "post",
+                    url: $(document).api.settings.api['search organizition'] + '?search={query}'
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },
+                onSelect: function (result, response) {
+                    $(this).find('input[name="orgId"]').val(result.id)
+                },
+
+            })
+
+            $('.js-orgSearch  .js-input').on('input propertychange', function () {
+                $(this).prev('input').val($(this).val());
+            })
+        },
+        inintNumSearch : function(){
+            $('.js-numSearch').search({
+                  apiSettings: {
+                      method: "post",
+                      url: $(document).api.settings.api['query listByCertifNumber'] + '?certifNumber={query}'
+                  },
+                  fields: {
+                      results: 'data',
+                      title: 'certifNumber',
+                      description: 'name'
+                  },
+                  // minCharacters : 3
+                  onSelect: function (result, response) {
+                      $(this).find('input[name="certifNumber"]').val(result.id)
+                  },
+
+              })
+
+            $('.js-numSearch  .js-input').on('input propertychange', function () {
+                $(this).prev('input').val($(this).val());
+            })
+        }
+    }
+
+    function init(){
+        search.initOrgSearch();
+        search.inintNumSearch();
+        $("#loanTime").dateRangePicker({separator:'~'});
+    }
+    init();
+
+</script>
+<%};%>
+
+
+<% include("/common/menu.html", {jsSection:jsPart, htmlSection:htmlPart,title:"业务查询"}){} %>

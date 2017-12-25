@@ -1,0 +1,142 @@
+<style>
+    .media_container .button{
+        position:relative;
+        z-index: 1;
+    }
+</style>
+
+<script type="text/mustach-template" id="riskFormTemplate">
+    <!--风控审批信息：表单-->
+    <form class="ui bottom teal segment form" id="riskMediaForm">
+        <a class="ui teal left ribbon label">风控审批信息</a>
+        <div class="ui hidden divider"></div>
+
+        <div class="ui  required  field">
+            <label>授信方案</label>
+            <textarea name="content" style="word-wrap: break-word;">{{media.loanRiskInfo.content}}</textarea>
+        </div>
+        <div id="risk_info">
+            <div class="required field ">
+                <label>资料清单</label>
+                <table class="ui celled center aligned table small" id="">
+                    <thead>
+                    <tr>
+                        <th>资料名称</th>
+                        <th>是否必填</th>
+                        <th>资料文件</th>
+                        <th>上传人</th>
+                        <th>上传时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#media}}
+                    {{#productMediaAttachs}}
+                    <tr class="mediaItem">
+                        <input type="hidden" name="itemName" value="{{itemName}}">
+                        <input type="hidden" name="required" value="{{required}}">
+                        <input type="hidden" name="mediaItemType" value="RISK">
+                        <input type="hidden" name="mediaDetail" value="">
+                        <input type="hidden" name="productMediaAttachId" value="{{id}}">
+                        <td>{{itemName}}</td>
+                        <td>
+                            {{#required}}
+                            <span class="ui red label">必填</span>
+                            {{/required}}
+                            {{^required}}
+                            <span class="ui label">选填</span>
+                            {{/required}}
+                        </td>
+                        <td class="js-medias">
+                            {{#productMediaAttachDetails}}
+                            <div class="js-canBeDel right aligned">
+                                <span class="js-temp button ui mini" data-name="{{attachName}}" target="_blank" href="{{url}}">{{attachName}}</span>&emsp;
+                                <a href="javascript:;" class="js-remove ui basic red left label">删除</a>
+                            </div>
+                            {{/productMediaAttachDetails}}
+                        </td>
+                        <td>{{#url}}{{updateBy}}{{/url}}</td>
+                        <td>{{#url}}{{updateTime}}{{/url}}</td>
+                        <td class="single line media_container">
+                            <div class="ui basic  mini button js-uploadBtn" data-dir="{{code}}/RISK">上传</div>
+                        </td>
+                    </tr>
+                    {{/productMediaAttachs}}
+                    {{/media}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br>
+        <div id="riskBill_info">
+
+        </div>
+        <div class="ui error message"><ul class="list"></ul></div>
+        <br>
+        <div class="ui button teal submit">保存</div>
+    </form>
+    <!--/风控审批信息：表单-->
+
+    <!--风控审批流程：表单-->
+    <div class="ui bottom teal segment ">
+        <form class="ui form" id="riskFlowForm">
+            {{#isBill}}
+            <a class="ui teal left ribbon label">居间费立项审批</a>
+            <div class="ui grouped fields">
+                <label>&emsp;</label>
+                <div class="field">
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="intermediary" value="true" checked>
+                        <label>同意居间费立项</label>
+                    </div>
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="intermediary" value="false">
+                        <label>不同意居间费立项</label>
+                    </div>
+                </div>
+            </div>
+            {{/isBill}}
+
+            {{#enterprise}}
+            <a class="ui teal left ribbon label">用印审批</a>
+            <div class="ui grouped fields">
+                <label>&emsp;</label>
+                <div class="field">
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="enterprise" value="true">
+                        <label>同意用印</label>
+                    </div>
+                    <div class="ui radio checkbox">
+                        <input type="radio" name="enterprise" value="false">
+                        <label>不同意用印</label>
+                    </div>
+                </div>
+            </div>
+            {{/enterprise}}
+            {{#workItem}}
+            <a class="ui teal left ribbon label">风控审批流程</a>
+            <h3 class="ui header">审批流程节点：<span id="risk_arrorval">{{taskKey}}-{{taskName}}</span></h3>
+            <input type="hidden" id="taskKey" value="{{taskKey}}">
+            <div class="ui grouped required  fields">
+                <label>审批结果</label>
+                <div class="field ">
+                    {{#resultEnums}}
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="approvalCode" value="{{value}}">
+                        <label>{{name}}</label>
+                    </div>
+                    {{/resultEnums}}
+                </div>
+            </div>
+            <div class="required field ">
+                <label>审批意见</label>
+                <textarea name="content"></textarea>
+            </div>
+            <input type="hidden" name="needRepeatFlow" value="false">
+            <div class="ui button teal" id="riskFlowSubmitBnt">提交</div>
+            <div class="ui error message"></div>
+            {{/workItem}}
+        </form>
+    </div>
+    <!--/风控审批流程：表单-->
+</script>

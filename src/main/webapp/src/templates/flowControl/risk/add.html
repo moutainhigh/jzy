@@ -1,0 +1,351 @@
+<script type="text/mustach-template" id="nodeTemplate">
+    <tr class="fields" style="display: table-row">
+        <td>
+            {{point}}
+        </td>
+        <td class="field">
+            <input type='text' name="pointName" class='name'/>
+        </td>
+        <td class="field">
+            <div class="ui search js-postSearch">
+                <div class="ui icon input">
+                    <input type="hidden" name="postId">
+                    <input class="prompt js-input" name="pointRole" type="text" placeholder="输入角色名称查询">
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+        </td>
+        <td  class="field">
+            <input type='text' name="approveAmount" value="{{approveAmount}}" />
+        </td>
+        <td class="field">
+            <select name="enterprise">
+                <option value="false">不参与</option>
+                <option value="true">参与</option>
+            </select>
+        </td>
+    </tr>
+
+</script>
+
+
+<script type="application/javascript">
+    $(function () {
+
+        window.point = 1;
+
+        var addData = {
+            flowControlItems: []
+        }
+
+        function initPostSearch() {
+            //岗位查询
+            $('.js-postSearch').search({
+                apiSettings: {
+                    method: "post",
+                    url: $(document).api.settings.api['get roleListByName'] + '?name={query}'
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },
+// minCharacters : 3
+                onSelect: function (result, response) {
+                    $(this).find('input[name="postId"]').val(result.id)
+                },
+
+            })
+            $('.js-postSearch  .js-input').on('input propertychange', function () {
+                $(this).prev('input').val("");
+            })
+        }
+
+        /**
+         * 新增节点
+         */
+        window.addNode = function addNode(cur) {
+            var _data = {
+                point: point
+            };
+            var $nodeTemplate = utils.render("#nodeTemplate", _data);
+            $(cur).parents(".modal").find(".nodeArea").append($nodeTemplate);
+            initPostSearch();
+            point++;
+        }
+
+        /**
+         * 删除节点
+         */
+        window.delNode = function delNode(cur) {
+            if (point>2) {
+                $(cur).parents(".modal").find(".nodeArea").find("tr:last").remove();
+                point--;
+            }
+        }
+
+        /**
+         * 重置表单
+         */
+        window.addFormReset = function addFormReset() {
+            var $form = $("#addModal").find("form");
+            $form.form("reset");
+            $("#addModal").find(".nodeArea").html("");
+        }
+
+
+        /**
+         * 提交前 组装json
+         */
+        function add() {
+            //组装json
+            var $tr = $("#addModal").find(".nodeArea").find("tr");
+            addData.flowControlItems = [];
+            $tr.each(function () {
+                var name = $(this).find(".name").val();
+                var organizeId = $(this).find("input[name='postId']").val();
+                var approveAmount  =  $(this).find("input[name='approveAmount']").val();
+                var enterprise = $(this).find("select[name='enterprise']").val();
+                if ("" != name && "" != organizeId) {
+                    var item = new Object();
+                    item.name = name;
+                    item.organizeId = organizeId;
+                    item.approveAmount = approveAmount;
+                    item.enterprise = enterprise;
+                    addData.flowControlItems.push(item);
+                }
+
+            });
+        }
+
+        var ponitForm = {
+            inline:true,
+            fields: {
+                pointName: {
+                    identifier: 'pointName',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '节点不为空'
+                        }
+                    ]
+                },
+                pointRole: {
+                    identifier: 'pointRole',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '角色不为空'
+                        }
+                    ]
+                },
+                approveAmount: {
+                    identifier: 'approveAmount',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '最低审批金额不能为空'
+                        },{
+                            type:'canBeDecimal',
+                            prompt: '最低审批金额不正确'
+                        }
+                    ]
+                },
+                onSuccess: function (e, fidlds) {
+
+                    e.preventDefault();
+                }
+            }
+        };
+
+        /**
+         * 初始化表单： 增加
+         */
+        function initAddForm() {
+            $("#addModal .form").form({
+                inline: true,
+                fields: {
+                    productTypeId: {
+                        identifier: 'flowControlTmpl.productTypeId',
+                        rules: [
+                            {
+                                type: 'empty',
+                                prompt: '请选择产品大类'
+                            }
+                        ]
+                    },
+                    productId: {
+                        identifier: 'flowControlTmpl.productId',
+                        rules: [
+                            {
+                                type: 'empty',
+                                prompt: '请选择产品'
+                            }
+                        ]
+                    },
+                    name: {
+                        identifier: 'flowControlTmpl.name',
+                        rules: [
+                            {
+                                type: 'empty',
+                                prompt: '请填写流程名称'
+                            }
+                        ]
+                    },
+                    description: {
+                        identifier: 'flowControlTmpl.description',
+                        rules: [
+                            {
+                                type: 'empty',
+                                prompt: '请填写流程描述'
+                            }
+                        ]
+                    },
+                    status: {
+                        identifier: 'flowControlTmpl.status',
+                        rules: [
+                            {
+                                type: 'checked',
+                                prompt: '请选择一个状态'
+                            }
+                        ]
+                    },
+                },
+                onSuccess: function (e, fidlds) {
+                    e.preventDefault();
+                }
+            }).api({
+                url: "/flow_control/add",
+                serializeForm: true,
+                method: "post",
+
+                beforeSend:function(settings){
+                    add();
+                    settings.data["flowControlItems"] = JSON.stringify(addData.flowControlItems);
+                    settings.data["flowControlTmpl.type"] = $("#flowControlType").val();
+                    return settings
+                },
+                onSuccess: function (response) {
+                    $.uiAlert({
+                        type: "success",
+                        textHead: '新增成功',
+                        text: '成功新增风控流程',
+                        time: 1,
+                        onClosed: function () {
+                           window.location.reload()
+
+                        }
+                    });
+                },
+                onFailure: function (response) {
+                    $.uiAlert({
+                                  type: "danger",
+                                  textHead: '新增失败',
+                                  text: response.msg,
+                                  time: 1
+                              });
+                }
+            });
+        };
+
+        function bindEvents() {
+            $(document).on("click", ".js-addSubmit", function () {
+                var $form = $("#addModal").find(".form");
+                var flag = true;
+                $("#addModal").find(".nodeArea").find("tr").each(function () {
+                    var s_flag = $(this).form(ponitForm).form("validate form");
+                    flag =s_flag && flag;
+                });
+                if(flag){
+                    $form.submit();
+                }
+            })
+        }
+
+        initAddForm();
+        bindEvents();
+
+    })
+</script>
+
+
+
+<div class="ui modal" id="addModal">
+    <i class="close icon"></i>
+    <div class="header">风控审批流程新增</div>
+    <div class="content">
+        <form class="ui form">
+            <div class="three  fields">
+                <div class=" required field">
+                    <label>产品大类</label>
+                    <select name="flowControlTmpl.productTypeId" onchange="queryProductByType(this)" class="ui dropdown">
+                        <option value="">请选择</option>
+                        <%for(productType in productTypes){%>
+                        <option value="${productType.id}">${productType.name}</option>
+                        <%}%>
+                    </select>
+                </div>
+
+                <div class=" required field">
+                    <label>产品名称</label>
+                    <select name="flowControlTmpl.productId" class="product ui dropdown">
+                    </select>
+                </div>
+                <div class=" required field">
+                    <label>风控审批流程名称</label>
+                    <input name="flowControlTmpl.name" type="text"
+                           placeholder='风控审批流程名称'/>
+                </div>
+            </div>
+
+
+            <div class="required field">
+                <label>风控审批流程描述</label>
+                <input name="flowControlTmpl.description" type="text"
+                       placeholder='风控审批流程描述'>
+            </div>
+
+            <div class="ui grouped required  fields">
+                <label>是否生效</label>
+                <div class="  field">
+                    <%for(sta in status){%>
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="flowControlTmpl.status" value="${sta}">
+                        <label>${sta.description}</label>
+                    </div>
+                    <%}%>
+                </div>
+            </div>
+            <div class="field right aligned">
+                <span onclick="addNode(this)" class="ui teal small basic button"><i class="plus icon"></i>新增节点</span>
+                <span onclick="delNode(this)" class="ui red small basic button"><i class="remove icon"></i>删除最后节点</span>
+            </div>
+
+            <!-- 节点 -->
+            <table class="ui very basic table">
+                <thead>
+                <tr>
+                    <th>节点编号</th>
+                    <th>节点名称</th>
+                    <th>角色</th>
+                    <th>最低审批金额(元)</th>
+                    <th>是否参与用印</th>
+                </tr>
+                </thead>
+                <tbody class="nodeArea">
+
+                </tbody>
+            </table>
+
+            <div>
+
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+
+        <button class="ui teal button js-addSubmit">保存数据</button>
+
+    </div>
+</div>

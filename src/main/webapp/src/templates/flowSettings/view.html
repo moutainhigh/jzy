@@ -1,0 +1,137 @@
+<%var jsPart = {%>
+<script src="/js/pages/flowSettings/detail.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui attached message">
+    <div class="header">查看流程</div>
+</div>
+<form class="ui form attached fluid segment" id="editForm">
+    <div class="two fields">
+        <div class="field disabled">
+            <label>流程类型：</label>
+            <select name="flowType" id="js_flowType">
+            </select>
+        </div>
+        <div class="field disabled">
+            <label>流程名称：</label>
+            <input type="text" name="flowName" id="flowName">
+        </div>
+    </div>
+
+    <div class="fields">
+        <div class="field disabled">
+            <label>流程说明：</label>
+            <textarea name="flowDesc" id="flowDesc" placeholder="请输入流程描述" rows="3" cols="200"></textarea>
+        </div>
+    </div>
+
+    <div class="fields ">
+        <div class="sixteen wide field disabled">
+            <label>关联产品：</label>
+            <select name="productId" id="productList" multiple="" class="ui fluid normal dropdown ks-hidden">
+
+            </select>
+        </div>
+    </div>
+
+    <!--<div class="ui teal small button" id="add_flowModal"><i class="plus icon"></i>添加业务模块</div>-->
+    <div class="ui divider hidden"></div>
+
+    <div id="flow_box">
+
+    </div>
+    <div class="ui error message" id="errorMessage"></div>
+
+    <div class="ui divider hidden"></div>
+    <div class="actions" align="center">
+        <!--<div class="ui  teal button" id="editForm_btn">保存</div>-->
+        <a class="ui black button" href="/flow_configure_control/index">返回</a>
+    </div>
+</form>
+
+
+<div class="js_demo ks-hidden ui grey segment js_demo_box">
+    <input type="hidden" name="modalId">
+    <input type="hidden" name="tempId">
+    <!--<div class="ui red mini button right floated js_remove">删除模块</div>-->
+    <div class="two fields">
+        <div class="field disabled">
+            <label>业务模块：</label>
+            <select name="businessModal" class="js_modal dropdown">
+            </select>
+        </div>
+        <div class="field disabled">
+            <label>&emsp;</label>
+            <!--<div class="ui teal mini button add_flowNode"><i class="plus icon"></i>新增节点</div>-->
+        </div>
+    </div>
+
+    <table class="ui very basic table">
+        <thead>
+        <th>节点编号</th>
+        <th>节点名称</th>
+        <th>角色</th>
+        <th>限额（元）</th>
+        <th>是否用印</th>
+        </thead>
+        <tbody class="tbody">
+        <tr class="js_node">
+            <td class="node_num">1</td>
+            <td class="field disabled">
+                <input type="text" name="pointName">
+            </td>
+            <td class="field disabled">
+                <div class="ui search js-postSearch">
+                    <div class="ui icon input">
+                        <input type="hidden" name="postId">
+                        <input class="prompt js-input" name="pointRole" type="text" placeholder="输入角色名称查询">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </td>
+            <td class="field disabled">
+                <input type="text" name="approveAmount"  placeholder="最低审批金额">
+            </td>
+            <td class="field disabled">
+                <select name="enterprise">
+                    <option value="false">否</option>
+                    <option value="true">是</option>
+                </select>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<table class="ks-hidden">
+    <tr class="js_node js_node_demo ks-hidden">
+        <td class="node_num">1</td>
+        <td class="field disabled">
+            <input type="text" name="pointName">
+        </td>
+        <td class="field disabled">
+            <div class="ui search js-postSearch">
+                <div class="ui icon input">
+                    <input type="hidden" name="postId">
+                    <input class="prompt js-input" name="pointRole" type="text" placeholder="输入角色名称查询">
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+        </td>
+        <td class="field disabled">
+            <input type="text" name="approveAmount" placeholder="最低审批金额">
+        </td>
+        <td class="field disabled">
+            <select name="enterprise">
+                <option value="false">否</option>
+                <option value="true">是</option>
+            </select>
+        </td>
+    </tr>
+</table>
+
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"查看流程配置"}){}%>

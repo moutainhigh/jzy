@@ -1,0 +1,57 @@
+<% var jsPart = { %>
+<script src="/js/pages/flowSettings/list.js"></script>
+<%};%>
+<% var htmlPart = { %>
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="two fields">
+            <div class="field">
+                <label>流程类型</label>
+                <select id="js_flowType">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+            <div class="field"></div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <button class="ui tiny submit button teal" onclick="flowInit.search()">查询</button>
+                <button class="ui tiny button clear" onclick="flowInit.reset()">重置</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+
+<div class="row" >
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">流程维护</a>
+            <div class="overflow">
+                <div class="chevron right">
+                    <div class="ui teal small button" onclick="flowInit.linkPath('add')">
+                        <i class="plus icon"></i>添加流程
+                    </div>
+                </div>
+            </div>
+            <table class="ui  celled table compact  small" id="flowList">
+                <thead>
+                <tr>
+                    <th>流程编号</th>
+                    <th>流程类型</th>
+                    <th>业务流程名称</th>
+                    <th>描述</th>
+                    <th>是否生效</th>
+                    <th>操作</th>
+                    <th>状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%};%>
+<% include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"流程维护"}){}%>

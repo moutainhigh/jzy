@@ -1,0 +1,61 @@
+
+
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>产品大类编号</label>
+                <input type="text" id="code">
+            </div>
+            <div class="field">
+                <label>产品大类名称</label>
+                <input type="text" id="name">
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <div class="ui tiny submit button teal" onclick="table_init.search()">查询</div>
+                <div class="ui tiny button clear" onclick="table_init.search_reset()">重置</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+
+<div class="row">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">产品列表</a>
+            <table class="ui  celled table compact  small" id="profit_table">
+                <thead>
+                <tr>
+                    <th>产品大类编号</th>
+                    <th>产品大类名称</th>
+                    <th>担保类型</th>
+                    <th>业务类型</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="position">
+
+<%
+include("/profit/detail_tmp.html"){}
+%>
+
+
+<%};%>
+
+<%var jsPart = {%>
+<script type="text/javascript" src="/js/pages/profit/index.js"></script>
+<%};%>
+
+<% include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"利润计算数据"}){}%>

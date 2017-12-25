@@ -1,0 +1,247 @@
+<link rel="stylesheet" href="/js/plugins/laydate-1.1/need/laydate.css"/>
+
+<style>
+    .padding0 {
+        margin-bottom: -20px !important;
+    }
+
+    .padding80 {
+        padding-left: 80px !important;
+        padding-right: 80px !important;
+        position: relative;
+    }
+
+    .margin80 {
+        margin-left: 80px !important;
+        margin-right: 80px !important;
+        position: relative;
+    }
+
+    .margin20t {
+        margin-top: 20px !important;
+    }
+
+    .margin80t {
+        margin-top: 80px !important;
+    }
+
+    .margin0b {
+        margin-bottom: 0 !important;
+    }
+
+    .padding13l {
+        padding-left: 13px !important;
+    }
+
+    .actions {
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 60px;
+    }
+
+    .hidden.transition {
+        display: none !important;
+    }
+
+    .floatBtn {
+        position: absolute;
+        right: -20px;
+        top: 25px;
+    }
+
+    .relative {
+        position: relative;
+    }
+
+    .padding50r {
+        padding-right: 50px;
+    }
+
+    .pull-right {
+        float: right;
+    }
+
+    .ui.dividing.header {
+        line-height: 30px;
+    }
+
+    .borrower-name, .borrower-certifNumber, .borrower-phone {
+        margin-right: 50px;
+    }
+
+    .font-20 {
+        font-size: 20px !important;
+    }
+
+    #mainBorrowerList .item {
+        width: 100%;
+    }
+
+    #commonBorrowerList .item {
+        width: 100%;
+    }
+
+    .header .borrower-name {
+        font-size: 14px;
+    }
+
+    td.js-medias {
+        min-width: 200px;
+    }
+    .js-canbedel{
+        margin-bottom: 5px;
+        padding: 5px;
+    }
+</style>
+
+
+<%var htmlPart = {%>
+<input type="hidden" id="baseUrl" value="/business_apply/to_update?id=${parameter.id}">
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+            <div class="ui ordered steps fluid mini">
+                <a href="javascript:void(0);" id="linkStep1" class="completed step <%if(flag==1){%> active<%}%>"
+                   data-step="divStep1">
+                    <div class="content">
+                        <div class="title">借款人信息</div>
+                    </div>
+                </a>
+                <a href="javascript:void(0);" id="linkStep2"
+                   class='<%if(strutil.subStringTo(loan.step,1,2)=="1"){%>completed<%}%> step <%if(flag==2){%> active<%}%>'
+                   data-step="divStep2">
+                    <div class="content">
+                        <div class="title">产品信息</div>
+                    </div>
+                </a>
+                <a href="javascript:void(0);" id="linkStep3"
+                   class='<%if(strutil.subStringTo(loan.step,2,3)=="1"){%>completed<%}%> step <%if(flag==3){%> active<%}%>'
+                   data-step="divStep3">
+                    <div class="content">
+                        <div class="title">业务信息</div>
+                    </div>
+                </a>
+                <a href="javascript:void(0);" id="linkStep4"
+                   class='<%if(strutil.subStringTo(loan.step,3,4)=="1"){%>completed<%}%> step <%if(flag==4){%> active<%}%>'
+                   data-step="divStep4">
+                    <div class="content">
+                        <div class="title">资料清单</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="three column row left aligned padding0">
+        <div class="column">
+            业务单号: ${loan.code}
+            <a target="_blank" href="/flow/to_approval_list?id=${loan.id}&flowConfigureType=BORROW_APPLY" class="ui basic teal mini button">查看审批流程</a>
+        </div>
+        <div class="column center aligned">
+            创建人: ${loan.createBy}
+        </div>
+        <div class="column right aligned">
+            创建时间: ${loan.createTime, dateFormat="yyyy-MM-dd HH:mm:ss"}
+        </div>
+    </div>
+
+    <div id="stepData"
+         data-userType = "${user.type}"
+         data-channel_type = "${channelType}"
+         data-loan_id="${loan.id}"
+         data-prd_id="${prd.id}"
+         data-product_info_tmpl_id="${productInfoTmpl.id}"
+         data-term_type="${prd.loanTermType}"
+         data-repay_method="${prd.repayMethod}"
+         data-interest_type="${prd.interestType}"
+         data-interest_day_type="${prd.dayInterestType}"
+         data-interest_month_type="${prd.monthInterestType}"
+         data-repay_date_type="${prd.repayDateType}"
+         data-min_days="${prd.minDays}"
+         data-max_days="${prd.maxDays}"
+         data-min_months="${prd.minMonths}"
+         data-max_months="${prd.maxMonths}"
+         data-min_amount="${prd.minAmount}"
+         data-max_amount="${prd.maxAmount}"
+         data-min_interest_rate="${prd.minInterestRate}"
+         data-min_interest_amount="${prd.minInterestAmount}"
+         data-min_interest_day_rate="${prd.dayMinInterestRate}"
+         data-min_interest_day_amount="${prd.dayMinInterestAmount}"
+         data-min_interest_month_rate="${prd.monthMinInterestRate}"
+         data-min_interest_month_amount="${prd.monthMinInterestAmount}"
+         data-loan_term_type="${loan.termType}"
+         data-loan_repay_method="${loan.repayMethod}"
+         data-loan_limit_type="${loan.loanLimitType}"
+         data-loan_repay_date_type="${loan.repayDateType}"
+         data-loan_calculate_method_about_day="${loan.calculateMethodAboutDay}">
+    </div>
+    <div id="divStep1" class="row stepContent <%if(flag!=1){%>transition hidden<%}%>">
+        <% include("./edit_rrc_step1.html"){} %>
+    </div>
+
+    <div id="divStep2" class="row stepContent <%if(flag!=2){%>transition hidden<%}%>">
+        <% include("./edit_rrc_step2.html"){} %>
+    </div>
+
+    <div id="divStep3" class="row stepContent <%if(flag!=3){%>transition hidden<%}%>">
+        <% include(productInfoTmpl.addUrl){} %>
+    </div>
+
+    <div id="divStep4" class="row stepContent <%if(flag!=4){%>transition hidden<%}%>">
+
+        <% include("./edit_step4.html"){} %>
+    </div>
+
+</div>
+<%};%>
+
+
+<%var jsPart = {%>
+<script type="text/mustach-template" id="loanRepayPlanTemplate">
+    {{#loanRepayPlan}}
+    <tr>
+        <td>{{period}}</td>
+        <td>{{f_dueDate}}</td>
+        <td>{{f_amount}}</td>
+        <td>{{f_interest}}</td>
+        <td>{{f_total}}</td>
+        <td>{{f_outstanding}}</td>
+    </tr>
+    {{/loanRepayPlan}}
+</script>
+
+<script src="/js/plugins/laydate-1.1/laydate.js"></script>
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/common/upload.js"></script>
+<script src="/js/common/bin-choices.js"></script>
+
+<script>
+    var comeFrom = utils.getUrlParam('comeFrom');
+    function goStep(step) {
+        $(".steps .step.active").removeClass("active");
+        $("#link" + step).addClass('active');
+        $('.stepContent:visible').transition('hide');
+        $("#div" + step).transition('fly left in');
+        history.pushState(null, document.title, $("#baseUrl").val() + "&flag=" + step.split("Step")[1]+"&comeFrom="+comeFrom);
+    }
+
+    // 点击分步导航链接
+    $('.steps .step').click(function () {
+        var step = $(this).attr('id').split("Step")[1];
+        goStep("Step" + step);
+    });
+</script>
+<script src="/js/pages/businessApply/edit/step1.js"></script>
+<script src="/js/pages/businessApply/edit/edit_rrc_step2.js"></script>
+<script src="/js/pages/businessApply/edit/step4.js"></script>
+<script src="/js/common/checkfile.js"></script>
+<script>
+    $(".laydate").click(function () {
+        laydate({});
+    });
+
+</script>
+<%};%>
+
+
+<% include("/common/menu.html", {jsSection:jsPart, htmlSection:htmlPart,title:"编辑信息"}){} %>

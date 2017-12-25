@@ -1,0 +1,682 @@
+<%var jsPart = {%>
+<script src="/js/plugins/mustache.min.js"></script>
+<script type="text/mustach-template" id="planTemplate">
+    {{#repayments}}
+    <tr>
+        <td>{{period}}</td>
+        <td>{{dueDate}}</td>
+        <td>{{f_principal}}</td>
+        <td>{{f_interest}}</td>
+        <td>{{f_total}}</td>
+        <td>{{f_remainPrincipal}}</td>
+    </tr>
+    {{/repayments}}
+</script>
+
+<script type="text/mustach-template" id="feeTemplate">
+    {{#data}}
+    <div class="inline fields">
+        <div class="field">
+            <label>{{f_name}}:</label>
+            <label>{{feeAmount}}</label>元
+            <input type="hidden" name="feeType" value="{{feeType}}"/>
+        </div>
+        <div class="field">
+            <label>实收金额:</label>
+            <input type="text" name="repayFeeAmount"/>元
+        </div>
+        <div class="field">
+            <label>收款日期:</label>
+            <input type="text" name="repayDate" id="gatherTime_{{feeType}}"/>
+        </div>
+    </div>
+    {{/data}}
+</script>
+
+<script>
+    $(function(){
+        $("input[name='loanTime']").dateRangePicker({
+            singleDate: true,
+            extraClass: 'zIndex1001 dimmer',
+            autoClose: true,
+            showShortcuts: false,
+            singleMonth: true
+        });
+
+        $("input[name='loanSubjectType']").change(function(){
+            fillSubjectByType($(this).val());
+        });
+
+        $("#loanSubjectName").change(function(){
+            fillSubjectAccountById($(this).val());
+        });
+
+        $("#loanTermType").change(function(){
+            var loanTermType = $(this).val();
+            $("#repayMethod").empty();
+            if(loanTermType=='DAYS' || loanTermType=='FIXED_DATE'){
+                $("#repayMethod").append("<option value='INTEREST'>先息后本</option>");
+                $("#repayMethod").append("<option value='BULLET_REPAYMENT'>一次性还本付息</option>");
+            }else{
+                $("#repayMethod").append("<option value='INTEREST'>先息后本</option>");
+                $("#repayMethod").append("<option value='EQUAL_INSTALLMENT'>等额本息</option>");
+            }
+            if(loanTermType=='FIXED_DATE'){
+                $("input[name='dm']").hide();
+            }else{
+                $("input[name='dm']").show();
+            }
+            $("#repayMethod").trigger("change");
+        });
+
+        $("#repayMethod").change(function(){
+            var repayMethod = $(this).val();
+            $("#limitType").empty();
+            if(repayMethod=='INTEREST' || repayMethod=='BULLET_REPAYMENT'){
+                $("#limitType").append("<option value='FIX_AMOUNT'>固定费用</option>");
+                $("#limitType").append("<option value='FIX_RATE'>固定费率</option>");
+            }else{
+                $("#limitType").append("<option value='FIX_RATE'>固定费率</option>");
+            }
+
+            $("#repayDateType").empty();
+            if(repayMethod=='INTEREST'){
+                $("#repayDateType").append("<option value='REPAY_PRE'>期初收息</option>");
+                $("#repayDateType").append("<option value='REPAY_SUF'>期末收息</option>");
+            }else{
+                $("#repayDateType").append("<option value='REPAY_SUF'>期末收息</option>");
+            }
+        });
+
+        $(".confirm").click(function(){
+            var loanId = $("#loanId").val();
+            var loanAmount = $("#loanAmount").val();
+            var loanTime = $("#loanTime").val();
+            var arrs = new Array();
+            $(".loanFee .fields").each(function(){
+                arrs.push({
+                    feeType:$(this).find("input[name='feeType']").val(),
+                    repayFeeAmount:$(this).find("input[name='repayFeeAmount']").val(),
+                    repayDate:$(this).find("input[name='repayDate']").val()
+                })
+            });
+            $.post("/loan/confirm",{
+                loanId:loanId,
+                loanAmount:loanAmount,
+                loanTime:loanTime,
+                loanFeeInfo:JSON.stringify(arrs)
+            },function(data){
+                if(data){
+                    alert("放款成功");
+                }
+            });
+        });
+
+        //费用
+        $.get("/loan/queryFeeByLoanId",{
+            loanId:$("#loanId").val()
+        },function(data){
+            var d = {data:data};
+            d.f_name=function(){
+                return enums.feeType[this.feeType];
+            };
+            var htm = utils.render("#feeTemplate",d);
+            $(".loanFee").html(htm);
+            //初始化日期插件
+            for(i in data){
+                $("#gatherTime_"+data[i].feeType).dateRangePicker({
+                    singleDate: true,
+                    extraClass: 'zIndex1001 dimmer',
+                    autoClose: true,
+                    showShortcuts: false,
+                    singleMonth: true
+                });
+            }
+        });
+
+        $.get("/loan/fetch_by_id",{
+            loanId:$("#loanId").val()
+        },function(data){
+            var subjectId = data.loanSubjectId;
+            if(subjectId){
+                $.get("/loan_subject/fetch_by_id",{
+                    id:subjectId
+                },function(data){
+                    var accounts = data.accounts;
+                    $("input[name='loanSubjectType']").each(function(){
+                        if($(this).val()==data.type){
+                            $(this).attr("checked","checked");
+                            fillSubjectByType(data.type);
+                        }
+                    });
+                    $("#loanSubjectName").val(data.id);
+                    if(accounts.length>0){
+                        var account=accounts[0];
+                        $("#loanSubjectAccount").val(account.alias);
+                    }else{
+                        $("#loanSubjectAccount").empty();
+                    }
+                })
+            }
+        })
+    });
+
+    function fillSubjectByType(type){
+        $("#loanSubjectName").empty();
+        $("#loanSubjectAccount").empty();
+        $.ajax({
+            url:"/loan_subject/query_by_type",
+            type:"get",
+            async:false,
+            dataType: "json",
+            data: {type:type},
+            success:function(data){
+                for(i in data){
+                    $("#loanSubjectName").append("<option value='"+data[i].id+"'>"+data[i].name+"</option>");
+                }
+                var subjectId=$("#loanSubjectName").val();
+                if(subjectId){
+                    fillSubjectAccountById(subjectId);
+                }
+            }
+        });
+    }
+    function fillSubjectAccountById(id){
+        $("#loanSubjectAccount").empty();
+        $.get("/loan_subject/query_accounts_by_id",{id:id},function(data){
+            for(i in data){
+                $("#loanSubjectAccount").append("<option value='"+data[i].id+"'>"+data[i].alias+"</option>");
+            }
+        })
+    }
+
+    function genRepayPlan(){
+        $.get("/loan/calculate",{
+            loanId:$("#loanId").val(),
+            amount:$("input[name='amount']").val(),
+            loanTermType:$("#loanTermType").val(),
+            dm:$("input[name='dm']").val(),
+            repayMethod:$("#repayMethod").val(),
+            repayDateType:$("#repayDateType").val(),
+            limitType:$("#limitType").val(),
+            feeFr:$("input[name='fixFr']").val()
+        },function(res){
+            if (res) {
+                var loanRepayPlan = res.loanRepayPlan;
+                loanRepayPlan.f_total = function () {
+                    return this.total;
+                };
+                loanRepayPlan.f_interest = function () {
+                    return this.interest;
+                };
+                loanRepayPlan.f_principal = function () {
+                    return this.principal;
+                };
+                loanRepayPlan.f_outstanding = function () {
+                    return this.outstanding;
+                };
+                var principal = loanRepayPlan.principal;
+                loanRepayPlan.f_remainPrincipal = function(){
+                    return principal - this.principal;
+                }
+                var plans = utils.render("#planTemplate", loanRepayPlan);
+                $("#plans").html(plans);
+            }
+        })
+    }
+
+    function detail(obj){
+        $(".menu button").each(function(){
+            if($(this).data("value")==obj.data("value")){
+                $(this).removeClass();
+                $(this).addClass("ui blue button");
+            }else{
+                $(this).removeClass();
+                $(this).addClass("ui grey basic button");
+            }
+        });
+    }
+</script>
+
+<%};%>
+<style type="text/css">
+</style>
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="inline fields">
+            <div class="field">
+                <label>业务单号：</label>
+                <label>0100100100008888</label>
+            </div>
+
+        </div>
+        <div class="inline fields">
+            <div class="field">
+                <label>产品大类：</label>
+                <label>交易性赎楼</label>
+            </div>
+            <div class="field">
+                <label>业务员：</label>
+                <label>房贷-F001001-陈龙</label>
+            </div>
+            <div class="field">
+                <label>填单人：</label>
+                <label>王思聪</label>
+            </div>
+            <div class="field">
+                <label>填单日期：</label>
+                <label>2016-09-09 12:12:12</label>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="row menu">
+        <button onclick="detail($(this))" data-vaule="business" class="ui blue button">业务申请单详情</button>
+        <button onclick="detail($(this))" data-value="risk" class="ui grey basic button">风控审批详情</button>
+        <button onclick="detail($(this))" data-value="finance" class="ui grey basic button">财务审批详情</button>
+    </div>
+
+<div class="ui segment teal">
+    <input type="hidden" id="loanId" value="${loanId}"/>
+    <h4>借款人信息</h4>
+    <div style="margin-left: 20px;">
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>借款人信息：</label>
+                    <label>xxx</label>
+                </div>
+                <div class="field">
+                    <label>证件号码：</label>
+                    <label>身份证/422301198809090099</label>
+                </div>
+            </div>
+        </div>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>手机号码：</label>
+                    <label>13800008888</label>
+                </div>
+                <div class="field">
+                    <label>家庭住址：</label>
+                    <label>深圳罗湖区嘉宾路2022号88楼</label>
+                </div>
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="field">
+                <label>收款账户：</label>
+            </div>
+        </div>
+        <table class="ui structured celled table compact teal small">
+            <thead>
+            <tr>
+                <th>户名</th>
+                <th>开户行</th>
+                <th>收款账号</th>
+                <th>收款金额（元）</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>李四</td>
+                <td>招商银行南山分行科技园支行</td>
+                <td>4397098733112433</td>
+                <td>300,000</td>
+            </tr>
+            <tr>
+                <td>王五</td>
+                <td>招商银行南山分行科技园支行</td>
+                <td>4397098733112433</td>
+                <td>300,000</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>共同借款人：</label>
+                    <label>刘留</label>
+                </div>
+                <div class="field">
+                    <label>证件号码：</label>
+                    <label>身份证/422301198809090099 </label>
+                </div>
+            </div>
+        </div>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>手机号码：</label>
+                    <label>13800008888</label>
+                </div>
+                <div class="field">
+                    <label>家庭住址：</label>
+                    <label>深圳罗湖区嘉宾路2022号88楼</label>
+                </div>
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="field">
+                <label>收款账户：</label>
+                <label>无</label>
+            </div>
+        </div>
+    </div>
+    <h4>产品信息</h4>
+    <div style="margin-left:20px;">
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>申请金额：</label>
+                    <label>3,000,000.00元</label>
+                </div>
+                <div class="field">
+                    <label>借款期限：</label>
+                    <label>222天</label>
+                </div>
+            </div>
+        </div>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>还款方式：</label>
+                    <label>一次性还本付息</label>
+                </div>
+                <div class="field">
+                    <label>借款利率：</label>
+                    <label>13.8%/年</label>
+                </div>
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="field">
+                <label>费用说明：</label>
+            </div>
+        </div>
+        <table class="ui structured celled table compact teal small">
+            <thead>
+            <tr>
+                <th>费用名称</th>
+                <th>收费方式</th>
+                <th>费用规则</th>
+                <th>收费节点</th>
+                <th>金额（元）</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>服务费</td>
+                <td>一次性收取</td>
+                <td>本金*0.3%</td>
+                <td>放款时收取</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>资金管理费</td>
+                <td>每月收取</td>
+                <td>本金*0.04%</td>
+                <td>还款时收取</td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <h4>业务信息</h4>
+    <div style="margin-left:20px">
+        <h4>房产信息</h4>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>房产证号：</label>
+                    <label>10011000111</label>
+                </div>
+                <div class="field">
+                    <label>权属人：</label>
+                    <label>王大彪</label>
+                </div>
+                <div class="field">
+                    <label>房产面积：</label>
+                    <label>112平</label>
+                </div>
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="field">
+                <label>房产地址：</label>
+                <label>深圳市南山区桂花路3011号</label>
+            </div>
+        </div>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>房产估值：</label>
+                    <label>300万元</label>
+                </div>
+                <div class="field">
+                    <label>估值渠道：</label>
+                    <label>中科院不动产资产评估中心</label>
+                </div>
+            </div>
+        </div>
+
+        <h4>审批银行信息</h4>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>审批银行：</label>
+                    <label>中国银行深圳分行新安支行</label>
+                </div>
+                <div class="field">
+                    <label>审批时间：</label>
+                    <label>2016-01-09</label>
+                </div>
+                <div class="field">
+                    <label>审批金额：</label>
+                    <label>300万元</label>
+                </div>
+            </div>
+        </div>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>审批银行联系人：</label>
+                    <label>王华/13888880000</label>
+                </div>
+                <div class="field">
+                    <label>审批银行地址：</label>
+                    <label>深圳市宝安区新安1路222号</label>
+                </div>
+            </div>
+        </div>
+
+        <h4>赎楼银行信息</h4>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>赎楼银行：</label>
+                    <label>招商银行深圳分行新安支行</label>
+                </div>
+                <div class="field">
+                    <label>约定赎楼时间：</label>
+                    <label>2016-01-09 14:00 ~ 2016-01-09 16:00</label>
+                </div>
+            </div>
+        </div>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>赎楼银行联系人：</label>
+                    <label>王华/13888880000</label>
+                </div>
+                <div class="field">
+                    <label>赎楼银行地址：</label>
+                    <label>深圳市宝安区新安1路222号</label>
+                </div>
+            </div>
+        </div>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>赎楼账户户名：</label>
+                    <label>张开</label>
+                </div>
+                <div class="field">
+                    <label>赎楼账户账号：</label>
+                    <label>6226098801990011</label>
+                </div>
+            </div>
+        </div>
+
+        <h4>回款银行信息</h4>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>回款账户户名：</label>
+                    <label>张开</label>
+                </div>
+                <div class="field">
+                    <label>回款账户开户行：</label>
+                    <label>6226098801990011</label>
+                </div>
+            </div>
+        </div>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>回款账户账号：</label>
+                    <label>6226098801990011</label>
+                </div>
+            </div>
+        </div>
+
+        <h4>资料清单</h4>
+        <table class="ui structured celled table compact teal small">
+            <thead>
+            <tr>
+                <th>资料名称</th>
+                <th>是否必填</th>
+                <th>资料文件</th>
+                <th>上传人</th>
+                <th>上传时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>身份证复印件</td>
+                <td>必填</td>
+                <td>xxx\xxx\刘德华赎楼123123.jpg</td>
+                <td>xxxxx</td>
+                <td>xxxxx</td>
+                <td><a href="javascript:;">查看</a></td>
+            </tr>
+            <tr>
+                <td>身份证复印件</td>
+                <td>必填</td>
+                <td>xxx\xxx\刘德华赎楼123123.jpg</td>
+                <td>xxxxx</td>
+                <td>xxxxx</td>
+                <td><a href="javascript:;">查看</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="inline fields">
+            <div class="field">
+                <label>标的金额</label>
+                <input type="text" name="amount"/>
+            </div>
+            <div class="field">
+                <label>产品借款期限</label>
+                <select id="loanTermType">
+                    <option value="DAYS">天</option>
+                    <option value="MOTHS">月</option>
+                    <option value="FIXED_DATE">固定时间还款</option>
+                </select>
+                <input type="text" name="dm"/>
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="field">
+                <label>还款方式</label>
+                <select id="repayMethod">
+                    <option value="INTEREST">先息后本</option>
+                    <option value="BULLET_REPAYMENT">一次性还本付息</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>还款时间</label>
+                <select id="repayDateType">
+                    <option value="REPAY_PRE">期初收息</option>
+                    <option value="REPAY_SUF">期末收息</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="inline fields">
+            <div class="field">
+                <label>计息方式</label>
+                <select id="limitType">
+                    <option value="FIX_AMOUNT">固定费用</option>
+                    <option value="FIX_RATE">固定费率</option>
+                </select>
+                <input type="text" name="fixFr"/>
+            </div>
+        </div>
+    </div>
+    <button onclick="genRepayPlan();" class="ui teal button">生成还款计划</button>
+    <table class="ui structured celled table compact teal small">
+        <thead>
+        <tr>
+            <th>期数</th>
+            <th>应还日期</th>
+            <th>应还本金</th>
+            <th>应还利息</th>
+            <th>应还本息</th>
+            <th>剩余本金</th>
+        </tr>
+        </thead>
+        <tbody id="plans"></tbody>
+    </table>
+    <div class="ui segment teal">
+        <h4>应收费用</h4>
+        <div class="ui equal width form loanFee">
+        </div>
+        <h4>放款信息</h4>
+        <div class="ui equal width form">
+            <div class="inline fields">
+                <div class="field">
+                    <label>放款主体:</label>
+                    <input type="radio" name="loanSubjectType" value="ENTERPRISE" checked/>企业
+                    <input type="radio" name="loanSubjectType" value="PERSONAL"/>个人
+                    <select id="loanSubjectName">
+                    </select>
+                </div>
+                <div class="field">
+                    <label>放款账户：</label>
+                    <select id="loanSubjectAccount"></select>
+                </div>
+            </div>
+
+            <div class="inline fields">
+                <div class="field">
+                    <label>放款金额:</label>
+                    <input name="loanAmount" id="loanAmount"/>
+                </div>
+                <div class="field">
+                    <label>放款日期:</label>
+                    <input name="loanTime" />
+                </div>
+            </div>
+        </div>
+        <button onclick="javascript:;" class="ui teal button confirm">确认放款</button>
+    </div>
+</div>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart}){}%>

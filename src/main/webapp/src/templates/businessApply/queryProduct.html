@@ -1,0 +1,82 @@
+<style type="text/css">
+    body {
+        background-color: #DADADA;
+    }
+    body > .grid {
+        height: 100%;
+    }
+    /*.image {*/
+        /*margin-top: -100px;*/
+    /*}*/
+    .column {
+        max-width: 450px;
+    }
+    div label{
+        white-space: nowrap;
+    }
+    .product.icon {
+        line-height: 40px;
+        vertical-align: middle;
+        height: 40px;
+    }
+    .emptyInfo {
+        margin: -20px !important;
+    }
+</style>
+
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row">
+        <div class="two wide column"></div>
+        <div class="ui styled fluid accordion ten wide column" id="container">
+            <% for(item in result){ %>
+                <div class="active title"><i class="dropdown icon"></i> ${item["type"].name} </div>
+                <div class="active content">
+                    <div class="ui middle aligned divided list">
+                        <% for(prd in item["prds"]) { %>
+                        <div class="item">
+                            <div class="right floated content">
+                                <a onclick="ref(this)" data-id='${prd.id}'class="ui button tiny teal jd_ref">申请</a>
+                            </div>
+                            <i class="marker icon product"></i>
+                            <div class="content">${prd.name} </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% }elsefor{ %>
+            <div class="ui negative message emptyInfo">
+                <i class="close icon"></i>
+                <div class="header">提示</div>
+                <p>您还没有创建产品</p>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+<%};%>
+
+
+<%var jsPart = {%>
+<script>
+    $(function () {
+        $('.accordion').accordion();
+    });
+
+    function ref($this){
+        var ref;
+        var locationHref = window.location.href;
+        if(locationHref.indexOf('/business_apply/query_product') > -1){
+            ref = '/business_apply/to_process_list'
+        }else{
+            ref = '/business_apply/channel_process_list'
+        }
+        var id = $($this).attr('data-id');
+        window.location.href = '/business_apply/to_add?productId='+id+'&comeFrom='+ref
+    }
+</script>
+<%};%>
+
+
+<% include("/common/menu.html", {jsSection:jsPart, htmlSection:htmlPart,title:"产品选择"}){} %>

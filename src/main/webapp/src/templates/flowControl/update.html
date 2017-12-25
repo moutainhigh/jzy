@@ -1,0 +1,209 @@
+
+<script type="application/javascript" >
+
+    /**
+     * 重置表单
+     */
+    function updateFormReset(){
+        $("#updateModal").find("form")[0].reset();
+        $("#updateModal").find(".nodeArea").html("");
+    }
+
+    /**
+     * 获取信息用于修改
+     */
+    function fetch(id){
+        $("html").api({
+            url:"/flow_control/fetchById",
+            on:"ajax",
+            method:"post",
+            data:{"id":id},
+            onSuccess:function(data) {
+                if (data.ok) {
+                     //填充数据
+                    $("#updateModal").find("[name='flowControlTmpl.productTypeId']").val(data.tmpl.productTypeId);
+                    queryProductByType($("#updateModal").find("[name='flowControlTmpl.productTypeId']"));
+                    $("#updateModal").find("[name='flowControlTmpl.productId']").val(data.tmpl.productId);
+                    $("#updateModal").find("[name='flowControlTmpl.name']").val(data.tmpl.name);
+                    $("#updateModal").find("[name='flowControlTmpl.description']").val(data.tmpl.description);
+                    $("#updateModal").find("[name='flowControlTmpl.status']").val(data.tmpl.status);
+                    $("#updateModal").find("#tmplId").val(id);
+
+                    for(var i=0; i<data.items.length; i++){
+                        $("#updateModal").find(".nodeArea").append("<tr>" +
+                                "<td>"+point+"</td>" +
+                                "<td><input type='text' class='name' value='"+data.items[i].name+"' /></td>" +
+                                "<td><input type='text' class='organizeId' value='"+data.items[i].organizeId+"' /></td>" +
+                                "</tr>");
+                        point++;
+                    }
+
+
+                }
+            }
+        }).trigger("ajax");
+    }
+
+    /**
+     * 关闭模态窗
+     */
+    function closeUpdateModal(){
+        $("#updateModal").modal('hide');
+    }
+
+    function update(){
+        //组装json
+        var flowControlItems = [];
+        $("#updateModal").find(".nodeArea").find("tr").each(function(){
+            var name =  $.trim($(this).find(".name").val());
+            var organizeId = $(this).find(".organizeId").val();
+            if(""!=name&&""!=organizeId){
+                var item = new Object();
+                item.name =name;
+                item.organizeId =organizeId;
+                flowControlItems.push(item);
+            }
+
+        });
+
+
+        $("#updateModal").find(".form").form({
+            on: 'blur',
+            inline:true,
+            fields: {
+                productTypeId:{
+                    identifier: 'flowControlTmpl.productTypeId',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '请选择产品大类'
+                        }
+                    ]
+                },
+                productId:{
+                    identifier: 'flowControlTmpl.productId',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '请选择产品'
+                        }
+                    ]
+                },
+                name:{
+                    identifier: 'flowControlTmpl.name',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '请填写流程名称'
+                        }
+                    ]
+                },
+                description:{
+                    identifier: 'flowControlTmpl.description',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '请填写流程描述'
+                        }
+                    ]
+                }
+            }
+        }).api({
+            url:"/flow_control/update",
+            serializeForm:true,
+            method:"post",
+            data:{"flowControlItems":JSON.stringify(flowControlItems),"flowControlTmpl.id":$("#updateModal").find("#tmplId").val()},
+            beforeSend:function(settings){
+                for(i in settings.data){
+                    if(i !='user.roles'){
+                        var val = settings.data[i];
+                        settings.data[i] = $.trim(val);
+                    }
+                }
+                return settings
+            },
+            onSuccess:function(data){
+                alert(data.msg);
+                if(data.ok){
+                    $("#addModal").modal('hide');
+                    list();
+                }
+            }
+        });
+    }
+
+</script>
+
+<div class="ui modal" id="updateModal" style="overflow: scroll">
+    <i class="close icon"></i>
+    <input type="hidden" id="tmplId" />
+    <div class="header">${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程修改</div>
+    <div class="content">
+        <form class="ui form">
+            <div class="two inline fields">
+                <div class=" required field">
+                    <label >产品大类</label>
+                    <select ${type=="FINANCE_CONTROL"?"disabled":""} name="flowControlTmpl.productTypeId" onchange="queryProductByType(this)">
+                        <option value="">请选择</option>
+                        <%for(productType in productTypes){%>
+                        <option value="${productType.id}">${productType.name}</option>
+                        <%}%>
+                    </select>
+                </div>
+
+                <div class=" required field">
+                    <label>产品名称</label>
+                    <select ${type=="FINANCE_CONTROL"?"disabled":""} name="flowControlTmpl.productId" class="product">
+                    </select>
+                </div>
+            </div>
+
+            <div class="inline fields">
+                <div class=" required field" >
+                    <label>${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程名称</label>
+                    <input name="flowControlTmpl.name" type="text" placeholder='${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程名称' />
+                </div>
+            </div>
+
+
+            <div class="required field">
+                <label>${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程描述</label>
+                <input name="flowControlTmpl.description" type="text" placeholder='${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程描述'>
+            </div>
+
+            <div class="inline fields">
+                <div class=" required field">
+                    <label>是否生效</label>
+                    <select name="flowControlTmpl.status">
+                        <%for(sta in status){%>
+                        <option value="${sta}">${sta.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 节点 -->
+            <table class="ui very basic table">
+                <thead>
+                <tr>
+                    <th>节点编号</th>
+                    <th>节点名称</th>
+                    <th>岗位</th>
+                </tr>
+                </thead>
+                <tbody class="nodeArea">
+
+                </tbody>
+            </table>
+
+            <div>
+                <span onclick="addNode(this)"  class="ui grey basic button">新增节点</span>
+                <span onclick="delNode(this)" class="ui grey basic button">删除最后节点</span>
+                <button onclick="update()"  class="ui grey basic button">修改数据</button>
+                <span onclick="closeUpdateModal()" class="ui grey basic button" >关闭窗口</span>
+            </div>
+        </form>
+
+
+    </div>
+</div>

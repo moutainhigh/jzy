@@ -1,0 +1,304 @@
+<%var jsPart = {%>
+
+<script xmlns:s="http://www.w3.org/1999/html"></script>
+
+<%};%>
+
+
+<%var htmlPart = {%>
+<div class="ui grid">
+
+
+    <div class="twelve wide column">
+
+        <div class="ui tiny header">产品大类详情</div>
+        <div class="ui divider"></div>
+        <div class="ui form">
+            <div class="inline fields">
+                <div class="eight wide field">
+                    <label>产品大类编号</label>
+                    <input type="text" name="id" value="${productType.id}">
+                </div>
+                <div class="eight wide field">
+                    <label>产品大类名称</label>
+                    <input type="text" name="name" value="${productType.name}">
+                </div>
+            </div>
+            <div class="inline fields">
+                <div class="eight wide field">
+                    <label>产品大类说明</label>
+                    <input type="text" name="description" value="${productType.description}">
+                </div>
+            </div>
+
+            <div class="inline fields">
+                <label>是否生效</label>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <% if(productType.status=='1'){%>
+                        <input type="radio" name="status" value="1" checked ="checked" >
+                        <%}else{%>
+                        <input type="radio" name="status" value="1" >
+                        <%}%>
+                        <label>是</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <% if(productType.status=='0'){%>
+                        <input type="radio" name="status" value="0" >
+                        <%}else{%>
+                        <input type="radio" name="status" value="0" checked ="checked" >
+                        <%}%>
+                        <label>否</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui tiny header">产品列表</div>
+        <div class="ui divider"></div>
+        <button class="ui mini primary button" id="add_product" onclick="add_product()">添加</button>
+        <table class="ui fixed celled table single line">
+
+            <thead>
+            <tr>
+                <th>产品编号</th>
+                <th>产品大类</th>
+                <th>产品名称</th>
+                <th>产品说明</th>
+                <th>是否生效</th>
+                <th>备注</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--<% for(product in productList){ %>-->
+
+            <!--<tr>-->
+                <!--<td>${product.productId}</td>-->
+
+                <!--<td>${product.productType}</td>-->
+
+                <!--<td>${product.productName}</td>-->
+
+                <!--<td>${product.productDesc}</td>-->
+
+                <!--<td>${product.valid==true?"是":"否"}</td>-->
+
+                <!--<td>${product.productNote}</td>-->
+                <!--<td>-->
+                    <!--<button class="ui mini primary button" id="edit_product" onclick="edit_jump('${product.productId}')">编辑</button>-->
+
+                <!--</td>-->
+
+            <!--</tr>-->
+            <!--<% } %>-->
+            <td>001</td>
+            <td>车贷</td>
+            <td>车贷001</td>
+            <td>车贷001</td>
+            <td>车贷001</td>
+            <td>001</td>
+            </tbody>
+
+
+
+        </table>
+    </div>
+</div>
+
+
+<!--<div class="ui modal" id="add_product_modal">-->
+    <!--<form class="ui form" name="add_product_from" id="add_product_from">-->
+        <!--<input type="hidden"  name="typeId" value="${productType.typeId}">-->
+        <!--<h4 class="ui dividing header">产品新增</h4>-->
+        <!--<div class="inline fields">-->
+            <!--<div class="eight wide field">-->
+                <!--<label>产品编号</label>-->
+                <!--<input type="text" placeholder="产品编号" name="productId" id="productId">-->
+            <!--</div>-->
+            <!--<div class="eight wide field">-->
+                <!--<label>产品名称</label>-->
+                <!--<input type="text" placeholder="产品名称" name="productName" id="productName">-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="inline fields">-->
+            <!--<div class="eight wide field">-->
+                <!--<label>产品说明</label>-->
+                <!--<input type="text" placeholder="产品说明" name="productDesc" id="productDesc">-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="inline fields">-->
+            <!--<label>是否生效</label>-->
+            <!--<div class="field">-->
+                <!--<div class="ui radio checkbox">-->
+                    <!--<input type="radio" name="valid" checked="checked" value="1">-->
+                    <!--<label>是</label>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="field">-->
+                <!--<div class="ui radio checkbox">-->
+                    <!--<input type="radio" name="valid" value="0">-->
+                    <!--<label>否</label>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="actions" align="center">-->
+            <!--<button class="ui mini primary button" id="save_product" onclick="save()">保存</button>-->
+            <!--<button class="ui mini primary button" id="exit_product" onclick="cancelled()">取消</button>-->
+        <!--</div>-->
+    <!--</form>-->
+<!--</div>-->
+
+<!--<div class="ui modal" id="edit_product_modal">-->
+    <!--<form class="ui form" name="edit_product_from" id="edit_product_from">-->
+        <!--<input type="hidden"  name="typeId" value="${productType.typeId}">-->
+        <!--<h4 class="ui dividing header">产品修改</h4>-->
+        <!--<div class="inline fields">-->
+            <!--<div class="eight wide field">-->
+                <!--<label>产品编号</label>-->
+                <!--<input type="text" placeholder="产品编号" name="productId">-->
+            <!--</div>-->
+            <!--<div class="eight wide field">-->
+                <!--<label>产品名称</label>-->
+                <!--<input type="text" placeholder="产品名称" name="productName">-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="inline fields">-->
+            <!--<div class="eight wide field">-->
+                <!--<label>产品说明</label>-->
+                <!--<input type="text" placeholder="产品说明" name="productDesc">-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="inline fields">-->
+            <!--<label>是否生效</label>-->
+            <!--<div class="field">-->
+                <!--<div class="ui radio checkbox">-->
+                    <!--<input type="radio" name="valid" value="1" id="product_yes">-->
+                    <!--<label>是</label>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="field">-->
+                <!--<div class="ui radio checkbox">-->
+                    <!--<input type="radio" name="valid" value="0" id="product_no">-->
+                    <!--<label>否</label>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="actions" align="center">-->
+            <!--<button class="ui mini primary button" id="save_editProduct" onclick="save_edit()">保存</button>-->
+            <!--<button class="ui mini primary button" id="exit_editProduct" onclick="cancelled_edit()">取消</button>-->
+        <!--</div>-->
+    <!--</form>-->
+<!--</div>-->
+<script>
+
+//    $(document).ready(function () {
+//        $('.ui.modal').modal('hide');
+//    });
+//    //  添加跳转
+//    function add_product() {
+//        $('#add_product_modal').modal('show');
+//    }
+//    //修改跳转
+//    function edit_jump(id){
+//        var form = $("#edit_product_modal");
+//        var productIdVal = form.find("input[name ='productId']");
+//        var productNameVal = form.find("input[name ='productName']");
+//        var productDescVal = form.find("input[name ='productDesc']");
+//        var product_yes = form.find("input:radio[value='1']");
+//        var product_no = form.find("input:radio[value='0']");
+//        $.ajax({
+//            type:"POST",
+//            url : "/product/edit",
+//            data : {productId:id},
+//            dataType : "json",
+//            success : function(data) {
+//                if (data != null) {
+//                    productIdVal.val(data.map.product.productId);
+//                    productNameVal.val(data.map.product.productName);
+//                    productDescVal.val(data.map.product.productDesc);
+//                    if(data.map.product.valid != null && data.map.product.valid == true){
+//                        product_yes.attr("checked",'true');//全选
+//                    }else {
+//                        product_no.attr("checked",'true');//全选
+//                    }
+//                    $("#edit_product_modal").modal('show');
+//                } else {
+//                    alert('失败');
+//                }
+//            }
+//        });
+//
+//    }
+//    //新增
+//    function save() {
+//        var productData = $('#add_product_from').serialize();
+//        $.ajax({
+//            type:"POST",
+//            url : "/product/save",
+//            data : productData,
+//            dataType : "json",
+//            success : function(data) {
+//                if (data.ok) {
+//                    location.reload();
+//                    //alert("添加成功");
+//                } else {
+//                    alert(data.msg);
+//                }
+//            }
+//        });
+//    }
+//    //修改
+//    function save_edit() {
+//        var productData = $('#edit_product_from').serialize();
+//        $.ajax({
+//            type:"POST",
+//            url : "/product/save",
+//            data : productData,
+//            dataType : "json",
+//            success : function(data) {
+//                if (data.ok) {
+//                    //$('#edit_type_modal').modal('hide');
+//                    //alert("修改成功");
+//                    location.reload();
+//                } else {
+//                    alert(data.msg);
+//                }
+//            }
+//        });
+//    }
+//    //新增取消
+//    function cancelled(){
+//        $('.ui.modal').modal('hide');
+//    }
+//
+//    //修改取消
+//    function cancelled_edit(){
+//        $('#edit_product_modal').modal('hide');
+//    }
+
+</script>
+
+<style>
+    #tree_container {
+        display: none;
+    }
+
+    .chevron.right {
+        float: right;
+    }
+
+    .chevron.left {
+        float: left;
+    }
+
+    /*.current_choice{*/
+    /*background-color: yellow;*/
+    /*}*/
+</style>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart}){}%>
+

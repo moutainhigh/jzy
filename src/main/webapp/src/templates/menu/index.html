@@ -1,0 +1,725 @@
+<%var jsPart = {%>
+
+<!--person roles-->
+<script type="text/mustach-template" id="parentSelectTemplate">
+    <label>父级菜单</label>
+    <select class="ui dropdown js-dropdown__role" name="menu.parentId" onchange="changeParentId(this)">
+        <option value="999999">无</option>
+        {{#data}}
+        <option value="{{id}}">{{name}}--{{platform}}</option>
+        {{/data}}
+    </select>
+</script>
+<script type="text/dt-template" id="addMenuTemplate">
+    <div class="ui teal button js-addMenuBtn">
+        <i class="add icon"></i>新增菜单
+    </div>
+</script>
+<script type="text/dt-template" id="addButtonTemplate">
+    <div class="ui teal button js-addButtonBtn">
+        <i class="add icon"></i>新增按钮
+    </div>
+</script>
+
+<script type="text/dt-template" id="buttonTemplate">
+    <tr>
+        <td><input type="text"  data-name="name"></td>
+        <td><input type="text" data-name="alias"></td>
+        <td><input type="text" data-name="url"></td>
+        <td><input type="hidden"  data-name="id"  ><div class="ui button red mini js_node_remove">删除</div></td>
+    </tr>
+</script>
+
+<script>
+    var personQuery = {
+        data: {
+//            id: 0,
+            name: '',
+            parentName: ''
+        },
+        reset: function () {
+            this.data = {
+                name: '',
+                parentName: ''
+            }
+        }
+    }
+
+    /**
+     * 人员
+     * @type {{manage: Person.manage, add: Person.add, update: Person.update}}
+     */
+    var Person = {
+        /**
+         * manage抽象了新增和修改方法
+         * @param opts add/update
+         * @param opts
+         */
+        manage: function (type, opts) {
+            var defaults = {
+                action: "",
+                resOk: {
+                    textHead: '',
+                    text: ''
+                },
+                resFail: {
+                    textHead: ''
+                }
+            };
+            var options = $.extend(defaults, opts);
+
+            var $modal = $("#menuModal");
+            var $form = $modal.find(".ui.form");
+            var $submitBtn = $form.find(".submit.button");
+            $modal.modal({
+                        observeChanges: true,
+                        blurring: true,
+                        onApprove: function () {
+                            $(this).find(".form").submit();
+                            return false;
+                        },
+                        onShow: function () {
+                            $form.form({
+                                inline: true,
+                                fields: {
+                                    name: {
+                                        identifier: 'menu.name',
+                                        rules: [
+                                            {
+                                                type: 'empty',
+                                                prompt: '{name}不能为空'
+                                            },
+                                            {
+                                                type: 'maxLength[40]',
+                                                prompt: '{name}不能为超过40个字符'
+                                            }
+                                        ]
+                                    },
+                                    alias: {
+                                        identifier: 'menu.alias',
+                                        rules: [
+                                            {
+                                                type: 'maxLength[40]',
+                                                prompt: '{name}不能为超过40个字符'
+                                            }
+                                        ]
+                                    },
+                                    url: {
+                                        identifier: 'menu.url',
+                                        rules: [
+                                            {
+                                                type: 'maxLength[256]',
+                                                prompt: '{name}不能为超过256个字符'
+                                            }
+                                        ]
+                                    },
+                                    platform: {
+                                        identifier: 'menu.platform',
+                                        rules: [
+                                            {
+                                                type: 'checked',
+                                                prompt: '请选择所属平台'
+                                            }
+                                        ]
+                                    },
+                                    type:{
+                                        identifier: 'menu.type',
+                                        rules: [
+                                            {
+                                                type: 'checked',
+                                                prompt: '请选择类型'
+                                            }
+                                        ]
+                                    }
+
+                                },
+                                onSuccess: function (e, fidlds) {
+                                    e.preventDefault();
+                                }
+
+                            }).api({
+                                action: options.action,
+                                method: 'POST',
+                                serializeForm: true,
+                                data: {
+//                                 "user.organizeId": 1,       //目前用户不跟组织挂钩，默认填写1
+                                   "menu.id": options.info.id
+                                },
+                               beforeSend: function (settings) {
+                                 /*  for(i in settings.data){
+                                       if(i !='user.roles'){
+                                           var val = settings.data[i];
+                                           settings.data[i] = $.trim(val);
+                                       }
+                                   }*/
+                                   var menu = {
+                                       id:settings.data['menu.id'],
+                                       name:settings.data['menu.name'],
+                                       alias:settings.data['menu.alias'],
+                                       url:settings.data['menu.url'],
+                                       platform:settings.data['menu.platform'],
+                                       parentId:settings.data['menu.parentId'],
+                                       type:settings.data['menu.type']
+                                   };
+                                   var $btn = $("#buttonTable");
+                                   menu.buttonList = [];
+                                   $btn.children('tr').each(function(i,tr){
+                                       menu.buttonList.push({
+                                            'name':$(tr).find('input[data-name="name"]').val().toString(),
+                                            'alias':$(tr).find('input[data-name="alias"]').val().toString(),
+                                            'url':$(tr).find('input[data-name="url"]').val().toString(),
+                                            'id':$(tr).find('input[data-name="id"]').val().toString()
+                                        });
+                                   });
+                                   settings.data = JSON.stringify(menu);
+                                   return settings;
+                               },
+                                onSuccess: function (response) {
+                                    $.uiAlert({
+                                        type: "success",
+                                        textHead: options.resOk.textHead,
+                                        text: options.resOk.text,
+                                        time: 1,
+                                        onClosed: function () {
+                                            if (type == "add")
+                                                window.location.reload();
+                                            else {
+                                                dtTable.ajax.reload();   //按原条件刷新
+                                                $("#menuModal").modal("hide");
+                                                renderPesonRoles();//重新加载下拉列表
+                                            }
+                                        }
+                                    });
+
+                                },
+                                onFailure: function (response) {
+                                    $.uiAlert({
+                                        type: "danger",
+                                        textHead: options.resFail.textHead,
+                                        text: response.msg,
+                                        time: 2
+                                    });
+                                }
+                            });
+                            $("#buttonTable").empty();
+                            if (type == "add") {
+                                $modal.find(".js-menuHeader").html('新增菜单');
+                                $form.form('clear')
+                            } else if (type == "update") {
+                                $modal.find(".js-menuHeader").html('修改菜单');
+                                $form.form('clear').form('set values', {
+                                    'menu.name': options.info.name,
+                                    'menu.alias': options.info.alias,
+                                    'menu.url': options.info.url,
+                                    'menu.platform': options.info.platform,
+                                    'menu.parentId': options.info.parentId,
+                                    'menu.type':options.info.type
+                                });
+                                if(options.info.buttonList) {
+                                    for (var i = 0; i < options.info.buttonList.length; i++) {
+                                        var btn = options.info.buttonList[i];
+                                        var $btn = $($("#buttonTemplate").html());
+                                        $btn.find('input[data-name="name"]').val(btn.name);
+                                        $btn.find('input[data-name="alias"]').val(btn.alias);
+                                        $btn.find('input[data-name="url"]').val(btn.url);
+                                        $btn.find('input[data-name="id"]').val(btn.id);
+                                        $("#buttonTable").append($btn);
+                                    }
+                                }
+                            }
+                        }
+                    }
+            ).modal('show');
+        },
+        add: function () {
+            var othis = this;
+            othis.manage("add", {
+                action: "add menu",
+                resOk: {
+                    textHead: '新增成功',
+                    text: '成功新增菜单'
+                },
+                resFail: {
+                    textHead: '新增失败'
+                },
+                info: {
+                    id: ''
+                }
+            })
+        },
+        update: function (id) {
+            var othis = this;
+            $(document).api({
+                on: "now",
+                method: 'post',
+                action: "get MenuById",
+                data: {
+                    id: id
+                },
+                onSuccess: function (res) {
+                    var data = res.data;
+                    var info = {
+                        name: data.name,
+                        alias: data.alias ? data.alias : '',
+                        url: data.url ? data.url : '',
+                        platform: data.platform ? data.platform : '',
+                        type:data.type?data.type:'',
+                        parentId: data.parentId ? data.parentId : '',
+                        id: id,
+                        buttonList:data.buttonList
+                    };
+                    othis.manage("update", {
+                        action: "update menu",
+                        resOk: {
+                            textHead: '修改成功',
+                            text: '成功修改菜单'
+                        },
+                        resFail: {
+                            textHead: '修改失败'
+                        },
+                        info: info
+                    });
+                }
+            });
+        }
+    }
+
+    var dtTable;
+    var buttonTable;
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o) {
+            if (new RegExp("(" + k + ")").test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            }
+        }
+        return fmt;
+    }
+
+    function init() {
+        renderPesonRoles();
+        dtTable = $("#menuTable").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            "ajax": {
+                "url": $(document).api.settings.api['query menu'],
+                "data": function (d) {
+                    var data ={};
+                    data.name = $("#keyword").val();
+                    var _d = $.extend({},{searchKeys:data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST"
+            },
+            columns: [
+                {data: 'name'},
+                {data: 'alias'},
+                {data: 'url'},
+                {data: 'depth'},
+                {data: 'draworder'},
+                {
+                    data: function (row, type, set) {
+                        if (row.parent != null)
+                            return '<div class="ui label">' + row.parent.name + '</div>';
+                        else
+                            return '';
+                    }
+                },
+                {data: 'platform'},
+                {
+                    data: function (row, type, set) {
+                        if (row.type == '01')
+                            return '菜单';
+                        else
+                            return '页签';
+                    }
+                },
+            ],
+            columnDefs: [{
+                //   指定第最后一列
+                className:"single line",
+                targets: 8,
+                render: function (data, type, row, meta) {
+                    return '<button onclick="changePerson(\'' + row.id + '\')" class="ui mini basic button js-personChange" data-id="' + row.id + '"><i class="edit icon"></i>编辑</button><button onclick="delete_menu(\'' + row.id + '\',\'' + row.name + '\')" class="ui mini  button js-personChange" data-id="' + row.id + '">失效</button>';
+                }
+            }],
+            "iDisplayLength": 10,
+            initComplete: function () {
+                $(".right.aligned.eight.wide.column").append($("#addMenuTemplate").html());
+                $(document).on("click", ".js-addMenuBtn", function () {
+                    Person.add();
+                });
+                //添加按钮点击事件
+                $(document).on("click", ".js-addButtonBtn", function () {
+                    $("#buttonTable").append($("#buttonTemplate").html());
+                });
+                //添加按钮删除事件
+                $(document).on("click", ".js_node_remove", function () {
+                    $(this).parents('tr').remove();
+                });
+            }
+        })
+    }
+    init();
+
+
+    //查询
+    $(".js-searchForm").form({
+        inline: true,
+        onSuccess: function (e, fidlds) {
+            e.preventDefault();
+            //personQuery.reset();
+            //personQuery.data[fidlds.type] = fidlds.keyword;
+            dtTable.ajax.reload();
+        }
+    })
+
+    /**
+     * 获取用户角色
+     */
+    function renderPesonRoles() {
+        $(document).api({
+            on: "now",
+            method: 'post',
+            action: "get parentMenuList",
+            onSuccess: function (data) {
+                var $parentSelectTemplate = utils.render("#parentSelectTemplate", data);
+                $("#parentSelect").html($parentSelectTemplate);
+                //初始化父级选择框
+                $('.js-dropdown__role').dropdown({
+                    forceSelection: false
+                });
+            }
+        });
+    }
+
+    function addPerson() {
+        Person.add();
+    }
+    function changePerson(id) {
+        Person.update(id);
+    }
+    function changeParentId(obj) {
+        if(obj.value!= "" && obj.value != "999999"){
+            $('input[name="menu.alias"]').attr("disabled",false);
+            $('input[name="menu.url"]').attr("disabled",false);
+        }
+        else{
+            $('input[name="menu.alias"]').val('');
+            $('input[name="menu.url"]').val('');
+            $('input[name="menu.alias"]').attr("disabled",true);
+            $('input[name="menu.url"]').attr("disabled",true);
+        }
+    }
+    function delete_menu(id, name) {
+        $.uiDialog("菜单\"" + name + "\"及其所有子菜单将被失效，请确认操作？", {
+            onApprove: function () {
+                var $modal = $(this);
+                $(document).api({
+                    on: "now",
+                    method: 'post',
+                    action: "delete menu",
+                    data: {
+                        "id": id
+                    },
+                    onSuccess: function (response) {
+                        $modal.modal({
+                            onHidden: function () {
+                                $.uiAlert({
+                                    type: "success",
+                                    textHead: '失效成功',
+                                    text: '成功失效菜单及其所有子菜单',
+                                    time: 1,
+                                    onClosed: function () {
+                                        location.reload(true);
+                                    }
+                                });
+                            }
+                        }).modal("hide");
+                    },
+                    onFailure: function (data) {
+                        $.uiAlert({
+                            type: "danger",
+                            textHead: '失效失败',
+                            text: data.msg,
+                            time: 2
+                        });
+                    }
+                });
+
+                return false;
+            },
+            onDeny: function () {
+            }
+        })
+    }
+
+    function initBirthDate(obj) {
+        var idNumber = obj.value;
+        if (verify_card(idNumber))
+            $("#birthDate").val(idNumber.substring(6, 10) + "-" + idNumber.substring(10, 12) + "-" + idNumber.substring(12, 14));
+        else {
+            $("#birthDate").val("");
+            $("#certificateNumber").val("");
+            $.uiAlert({
+                type: "danger",
+                textHead: '格式有误',
+                text: "身份证格式不正确",
+                time: 2
+            });
+        }
+    }
+    function initLogin(obj) {
+        var mobile = obj.value;
+        var pat = /^0?(13|14|15|17|18)[0-9]{9}$/;
+        if (pat.test(mobile))
+            $("#login").val("zc_" + mobile);
+        else {
+            $("#login").val("");
+            $("#mobile").val("");
+            $.uiAlert({
+                type: "danger",
+                textHead: '格式有误',
+                text: "移动电话格式不正确",
+                time: 2
+            });
+        }
+    }
+
+    /*身份证验证*/
+    var Wi = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2, 1];    // 加权因子
+    var ValideCode = [1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2];            // 身份证验证位值.10代表X
+    function verify_card(value) {
+        var idCard = value;
+        idCard = trim(idCard.replace(/ /g, ""));               //去掉字符串头尾空格
+        if (idCard.length == 15) {
+            return isValidityBrithBy15IdCard(idCard);       //进行15位身份证的验证
+        } else if (idCard.length == 18) {
+            var a_idCard = idCard.split("");                // 得到身份证数组
+            if (isValidityBrithBy18IdCard(idCard) && isTrueValidateCodeBy18IdCard(a_idCard)) {   //进行18位身份证的基本验证和第18位的验证
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    /**
+     * 判断身份证号码为18位时最后的验证位是否正确
+     * @param a_idCard 身份证号码数组
+     * @return
+     */
+    function isTrueValidateCodeBy18IdCard(a_idCard) {
+        var sum = 0;                             // 声明加权求和变量
+        if (a_idCard[17].toLowerCase() == 'x') {
+            a_idCard[17] = 10;                    // 将最后位为x的验证码替换为10方便后续操作
+        }
+        for (var i = 0; i < 17; i++) {
+            sum += Wi[i] * a_idCard[i];            // 加权求和
+        }
+        valCodePosition = sum % 11;                // 得到验证码所位置
+        if (a_idCard[17] == ValideCode[valCodePosition]) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    /**
+     * 验证18位数身份证号码中的生日是否是有效生日
+     * @param idCard 18位书身份证字符串
+     * @return
+     */
+    function isValidityBrithBy18IdCard(idCard18) {
+        var year = idCard18.substring(6, 10);
+        var month = idCard18.substring(10, 12);
+        var day = idCard18.substring(12, 14);
+        var temp_date = new Date(year, parseFloat(month) - 1, parseFloat(day));
+        // 这里用getFullYear()获取年份，避免千年虫问题
+        if (temp_date.getFullYear() != parseFloat(year)
+                || temp_date.getMonth() != parseFloat(month) - 1
+                || temp_date.getDate() != parseFloat(day)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    /**
+     * 验证15位数身份证号码中的生日是否是有效生日
+     * @param idCard15 15位书身份证字符串
+     * @return
+     */
+    function isValidityBrithBy15IdCard(idCard15) {
+        var year = idCard15.substring(6, 8);
+        var month = idCard15.substring(8, 10);
+        var day = idCard15.substring(10, 12);
+        var temp_date = new Date(year, parseFloat(month) - 1, parseFloat(day));
+        // 对于老身份证中的你年龄则不需考虑千年虫问题而使用getYear()方法
+        if (temp_date.getYear() != parseFloat(year)
+                || temp_date.getMonth() != parseFloat(month) - 1
+                || temp_date.getDate() != parseFloat(day)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    //去掉字符串头尾空格
+    function trim(str) {
+        return str.replace(/(^\s*)|(\s*$)/g, "");
+    }
+</script>
+
+<%};%>
+
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment teal">
+                <form class="ui form js-searchForm">
+                    <div class=" fields">
+                        <div class="field">
+                            <div class="ui action left icon input">
+                                <i class="users icon"></i>
+                                <input type="text" placeholder="查询..." name="keyword" id="keyword">
+                                <div class="ui teal submit button " id="search">&nbsp;&nbsp;查询&nbsp;&nbsp;</div>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <!--<button class="ui teal button  blue js-addPerson" onclick="addPerson()"><i class="plus  icon"></i>新增</button>-->
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <!--人员列表-->
+            <div class="row" id="personList">
+                <div class="column">
+                    <div class=" ui segment  mini teal">
+                        <a class="ui teal left ribbon label">菜单列表</a>
+                        <table class="ui celled table small" id="menuTable">
+                            <thead>
+                            <tr>
+                                <th>菜单名称</th>
+                                <th>别名</th>
+                                <th>URL</th>
+                                <th>层级</th>
+                                <th>级别编码</th>
+                                <th>父级菜单</th>
+                                <th>所属平台</th>
+                                <th>所属类型</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<div class="ui hidden divider"></div>-->
+
+<!--新增人员弹出modal-->
+<div class="ui small modal" id="menuModal">
+    <i class="close icon"></i>
+    <div class="header js-menuHeader">
+        新增菜单
+    </div>
+    <div class=" content  ">
+        <form class="ui form">
+            <div class="equal width fields">
+                <div class="required field">
+                    <label>菜单名称</label>
+                    <input type="text" placeholder="菜单名称" name="menu.name">
+                </div>
+                <div class="field">
+                    <label>别名</label>
+                    <input type="text" placeholder="别名" name="menu.alias" disabled>
+                </div>
+            </div>
+            <div class="field">
+                <label>URL</label>
+                <input type="text" placeholder="URL" name="menu.url" disabled>
+            </div>
+            <div class="inline fields"  id="effectDiv">
+                <label for="menu.platform">所属平台：</label>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" name="menu.platform" checked="" value="PC">
+                        <label>PC</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" name="menu.platform" value="H5">
+                        <label>H5</label>
+                    </div>
+                </div>
+            </div>
+            <div class="inline fields"  id="typeDiv">
+                <label for="menu.type">所属类型：</label>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" name="menu.type" checked="" value="01">
+                        <label>菜单</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" name="menu.type" value="03">
+                        <label>页签</label>
+                    </div>
+                </div>
+            </div>
+            <div class="field" id="parentSelect">
+            </div>
+
+            <div class="row field" id="buttonList">
+                <div class="column">
+                    <div class=" ui segment  mini teal">
+                        <a class="ui teal left ribbon label">按钮列表</a>
+                        <div class="ui teal button js-addButtonBtn">
+                            <i class="add icon"></i>新增按钮
+                        </div>
+                        <table class="ui very basic table">
+                            <thead>
+                            <tr>
+                                <th>按钮名称</th>
+                                <th>别名</th>
+                                <th>URL</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody class="tbody" id="buttonTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black  deny button">
+            取消
+        </div>
+        <div class="ui teal ok button">确定</div>
+    </div>
+</div>
+</div>
+
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"菜单维护"}){}%>

@@ -1,0 +1,49 @@
+<!--详情模板-详细信息（业务补充部分）-->
+<script type="text/mustach-template" id="applyTemplate">
+    <h3 class="weui-cells__title f-black">借款用途</h3>
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    借款用途
+                </label>
+                <span class="weui-form-preview__value">{{useOfLoan}}</span>
+            </div>
+        </div>
+    </div>
+
+    <!--个人贷-->
+    <h3 class="weui-cells__title f-black">个人贷信息</h3>
+    <div class="weui-form-preview">
+        <div class="weui-article">
+            <h3 class="f-black f9">项目信息</h3>
+            <pre class="auto">{{person_content}}</pre>
+        </div>
+    </div>
+    <!--/个人贷-->
+</script>
+
+
+<script>
+    $(function(){
+        window.renderApplyTpml=function(){
+            $.ajax({
+                type: "get",
+                url: "/m/business_apply/query_business_info",
+                data: {
+                    id: id
+                },
+                async: true,
+                success: function (response) {
+                    var _data = response.data;
+                    _data.useOfLoan = function(){
+                        return enums.use_of_loan[this.use_of_loan]
+                    };
+                    var $applyTemplate = utils.render("#applyTemplate", _data);
+                    $("#applyInfoContainer").prepend($applyTemplate);
+                }
+            });
+        }
+    })
+
+</script>

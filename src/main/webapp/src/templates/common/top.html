@@ -1,0 +1,108 @@
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+
+
+    <link rel="stylesheet" type="text/css" href="/semantic/dist/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/dataTables.semanticui.min.css">
+
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+
+    <script src="/js/plugins/jquery-3.1.1.min.js"></script>
+    <script src="/js/plugins/jquery.dataTables.min.js"></script>
+    <script src="/js/plugins/dataTables.semanticui.min.js"></script>
+
+    <script src="/semantic/dist/semantic.min.js"></script>
+    <script src="/js/plugins/mustache.min.js"></script>
+
+    <script src="/js/common/settings.js"></script>
+    <script src="/js/common/utils.js"></script>
+    <script src="/js/common/regExp.js"></script>
+    <script src="/js/common/api.js"></script>
+    <script src="/js/common/ui-dialog.js"></script>
+    <script src="/js/common/serialize-object.js"></script>
+    <script src="/js/common/enums.js"></script>
+    <script src="/js/common/jquery.ajaxupload.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/ui-alert.css">
+    <script src="/js/common/ui-alert.js"></script>
+
+    <link rel="stylesheet" href="/css/daterangepicker.css">
+    <script type="text/javascript" src="/js/plugins/moment.min.js"></script>
+    <script type="text/javascript" src="/js/plugins/jquery.daterangepicker.js"></script>
+    <script type="text/javascript" src="/js/plugins/accounting.min.js"></script>
+
+
+    <title>
+        ${(title!'')+' - 佳兆业金融业务管理系统'}
+
+    </title>
+
+    <link rel="shortcut icon" href="/image/icon.ico">
+</head>
+<body>
+
+<div class="ui thin  vertical  sidebar left inverted  btSidebar  accordion menu visible " id="toc">
+    <div class="item">
+        <a class="ui logo icon image" href="/user/home">
+            <img class="logoimg" src="/image/logo-o.png">
+        </a>
+        <a href="/user/home">
+            <b>佳兆业普惠</b>
+        </a>
+    </div>
+
+    <% for(menu in session.menus){ %>
+    <% if(menu.self.platform=="PC") {%>
+    <% if(menu.sons==null){ %>
+    <a class="item  " href="${menu.self.url}">
+        <b class="title">${menu.self.name}</b>
+    </a>
+    <%}else{%>
+    <div class="item teal ">
+        <div class="title js-itemHeader"><i class="dropdown icon"></i><span
+                class="js-itemHeaderName">${menu.self.name}</span></div>
+        <div class="content menu js-itemMenu">
+            <% for(item in menu.sons){ %>
+            <% if(item.platform=="PC") {%>
+            <a class="item js-item" href="${item.url}">${item.name} </a>
+            <%}%>
+            <%}%>
+        </div>
+    </div>
+    <%}%>
+    <%}%>
+    <%}%>
+
+</div>
+
+<div class="layer ">
+    <div class="ui fixed main mini  menu " id="topmenu">
+        <div class="ui container layer__container ">
+            <div class="left menu">
+            </div>
+            <div class=" right menu">
+                <a href="javaScript:void(0)" class="launch  item">
+                    <i class="user icon"></i>${session.user.name}
+                </a>
+                <a href="/user/toResetPassword" class="launch  item">
+                    修改密码
+                </a>
+                <a href="/user/logout" class="launch  item">
+                    <i class="Sign Out icon"></i>退出</span>
+                </a>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="ui container layout pusher__container">
+        ${htmlSection}
+    </div>
+</div>
+<script src="/js/common/menu.js"></script>
+${jsSection}
+
+</body>
+</html>

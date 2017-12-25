@@ -1,0 +1,826 @@
+<%var jsPart = {%>
+<script>
+    var dtTableA,dtTableB,dtTableC
+    var init_time=moment().subtract(1, "months").format("YYYY-MM-DD") + '~' + moment().format("YYYY-MM-DD");
+    var loanSubject='',exportName='',status='',exportTime=moment().subtract(1, "months").format("YYYY-MM-DD") + '~' + moment().format("YYYY-MM-DD"),exportType=''
+    var formQuery = {
+        data: {
+            'reportName':'',
+            'reportTime':init_time,
+            'loanSubject':'',
+            'productTypeName':'',
+            'status':''
+        },
+        reset: function () {
+            this.data = {
+                'reportName':'',
+                'reportTime':init_time,
+                'loanSubject':'',
+                'productTypeName':'',
+                'status':''
+            }
+        }
+    };
+    var searchForm = {
+        init : function(){
+            //查询
+            $(".js-searchForm").form({
+                onSuccess: function (e, fields) {
+                    e.preventDefault();
+                    formQuery.reset();
+                    $.extend(formQuery.data, fields);
+                    formQuery.data.productTypeName=$("#reportName").find("option:selected").text()
+                    formQuery.data.status = $('select[name="status"]').val().toString();
+                    /*验证*/
+                    if(formQuery.data.reportTime=='' || formQuery.data.reportName==''){
+                        $.uiAlert({type: "danger", textHead: '提示', text: '查询字段不能为空', time: 3});
+                        return false;
+                    }
+                    var rpTime=formQuery.data.reportTime
+                    if(rpTime.indexOf('~')<=-1){
+                        $.uiAlert({type: "danger", textHead: '提示', text: '报表时间格式不正确', time: 3});
+                        return false;
+                    }
+                    var rpTime1=rpTime.split('~')[0]
+                    var rpTime2=rpTime.split('~')[1]
+                    var rpTimeNow=moment().format("YYYY-MM-DD")
+                    if(moment(rpTime1)>moment(rpTimeNow) || moment(rpTime2)>moment(rpTimeNow)){
+                        $.uiAlert({type: "danger", textHead: '提示', text: '报表时间不能大于当前时间', time: 3});
+                        return false;
+                    }
+                    var rpTimeYes=moment(rpTime2).subtract(1, "years")
+
+                    if(moment(rpTime1)<moment(rpTimeYes)){
+                        $.uiAlert({type: "danger", textHead: '提示', text: '报表时间最大区间为1年', time: 3});
+                        return false;
+                    }
+                    /*验证end*/
+
+                    exportName=formQuery.data.reportName;
+                    exportTime=formQuery.data.reportTime;
+                    exportType=formQuery.data.productTypeName;
+                    loanSubject=formQuery.data.loanSubject;
+                    status = formQuery.data.status;
+                    if(formQuery.data.reportName=='PIAOJU' || formQuery.data.reportName=='YINPIAO'){
+                        if(dtTableA==undefined){
+                            initLoanList_a()
+                        }else{
+                            initLoanList_a()
+                        }
+                        changeTab("a");
+                    }
+                    if(formQuery.data.reportName=='GERENDAI' || formQuery.data.reportName=='CHEDAI'){
+                        if(dtTableB==undefined){
+                            initLoanList_b()
+                        }else{
+                            initLoanList_b()
+                        }
+                        changeTab("b");
+                    }
+                    if(formQuery.data.reportName=='SHULOU' || formQuery.data.reportName=='HONGBEN'){
+                        if(dtTableC==undefined){
+                            initLoanList_c()
+                        }else{
+                            initLoanList_c()
+                        }
+                        changeTab("c");
+                    }
+                    $("#reportTable").show();
+                }
+            })
+        }
+    }
+    $(function(){
+        $("#reportTime").dateRangePicker({
+            endDate: moment(),
+            maxDate : moment(),
+            format : 'YYYY-MM-DD',
+            separator : '~'
+        });
+        $('#reportTime').val(init_time);
+
+        searchForm.init();
+
+        $(document).on("click", ".export_btn", function () {
+            if(exportName=='' || exportTime==''){
+                $.uiAlert({type: "danger", textHead: '提示', text: '导出字段不能为空', time: 3});
+                return false;
+            }
+            window.open('/report/report_export?reportName='+exportName+'&reportTime='+exportTime+'&productTypeName='+exportType+'&loanSubject='+loanSubject+'&status='+status)
+        })
+    })
+
+    //列表初始化
+    function initLoanList_a() {
+        dtTableA = $("#reportTable_a").DataTable({
+            destroy:true,
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query finance report'],
+                "data": function (d) {
+                    var _d = $.extend(formQuery.data,{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST",
+            },
+            columns: [
+                {data: 'businessOrderNo'},
+                {data: 'billCode'},
+                {data: 'drawer'},
+                {data: 'discountProposer'},
+                {data: 'billType'},
+                {data: 'operator'},
+                {data: 'businessDate'},
+                {data: 'billingDate'},
+                {data: 'expireDate'},
+                {data: 'actualExpireDate'},
+
+                {data: 'billReceivablesDate'},
+                {data: 'distanceExpireDay'},
+                {data: 'adjustedDay'},
+                {data: 'totalDay'},
+                {data: 'intermediaryTotalFee'},
+                {data: 'intermediaryName'},
+                {data: 'parValue'},
+                {data: 'billInterest'},
+                {data: 'otherFee'},
+                {data: 'capitalCost'},
+
+                {data: 'capitalInterestRate'},
+                {data: 'dailyAverageIncome'},
+                {data: 'dailyAverageCost'},
+                {data: 'loanSubject'},
+                {data: 'repayAmount'},
+                {data: 'repayFee'},
+                {data: 'repayTotal'},
+                {data: 'outstandingAmount'},
+
+                {data: 'outstandingFee'},
+                {data: 'outstandingTotal'},
+                {data: 'status'}
+            ],
+            columnDefs: [{
+                targets:[0,1,2,3,4,5,11,12,13,15,23],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return data
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[6,7,8,9,10],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--";
+                        }else{
+                            return moment(data).format('YYYY-MM-DD')
+                        }
+                    }else{
+                        return "--";
+                    }
+                }
+            },{
+                targets:[14],
+                className:'right aligned single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return accounting.formatMoney(data,'',6,',','.')
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[16,17,18,19,21,22,24,25,26,27,28,29],
+                className:'right aligned single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return accounting.formatMoney(data,'',2,',','.')
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets: 20,
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return data
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets: 30,
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return enums.loan_status[data]
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+            }
+        })
+
+
+    }
+
+    function initLoanList_b() {
+        dtTableB = $("#reportTable_b").DataTable({
+            destroy:true,
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query finance report'],
+                "data": function (d) {
+                    var _d = $.extend(formQuery.data,{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST",
+            },
+            columns: [
+                {data: 'businessNumber'},
+                {data: 'businessSource'},
+                {data: 'productType'},
+                {data: 'businesser'},
+                {data: 'borrower'},
+                {data: 'idNumber'},
+                {data: 'loanAmount'},
+                {data: 'loanTerm'},
+                {data: 'yearRate'},
+                {data: 'businessDate'},
+
+                {data: 'loanDueDate'},
+                {data: 'clearedDate'},
+                {data: 'totalDays'},
+                {data: 'repaymentMethods'},
+                {data: 'receivablePrincipal'},//应还本金
+                {data: 'repayAmount'},//实还本金
+                {data: 'outstandingAmount'},//未还本金
+                {data: 'receivableInterest'},//应还利息
+                {data: 'repayInterest'},//实还利息
+                {data: 'outstandingInterest'},//未还利息
+
+                {data: 'otherCharges'},
+                {data: 'financeCost'},
+                {data: 'financeRate'},
+                {data: 'averageDailyIncome'},
+                {data: 'averageDailyCost'},
+                {data: 'monthlyIncome'},
+                {data: 'monthlyCost'},
+                {data: 'loanSubject'},
+                //{data: 'receivableFee'},//应还费用
+                {data: 'repayFee'},//实还费用
+
+                {data: 'outstandingFee'},//未还费用
+                {data: 'repayTotal'},//实还合计
+                {data: 'outstandingTotal'},//未还合计
+                {data: 'total'},
+                {data: 'status'}
+            ],
+            columnDefs: [{
+                targets:[0,1,2,3,4,5,12,27],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return data
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[9,10,11],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return moment(data).format('YYYY-MM-DD')
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:7,
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(null != row.termType && row.termType == 'FIXED_DATE'){
+                            return  '至'+row.loanTerm;
+                        }else {
+                            return row.loanTerm == null ? '--' : row.loanTerm + "" + enums.loanTermType[row.termType];
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[6,14,15,16,17,18,19,20,21,22,23,24,25,26,28,29,30,31,32],
+                className:'right aligned single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return accounting.formatMoney(data,'',2,',','.')
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets: [8],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return (data).toFixed(2)+'%'
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets: 13,
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return enums.loanRepayMethod[data]
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets: 33,
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return enums.loan_status[data]
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+            }
+        })
+    }
+    //initLoanList_b();
+
+    function initLoanList_c() {
+        dtTableC = $("#reportTable_c").DataTable({
+            destroy:true,
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query finance report'],
+                "data": function (d) {
+                    var _d = $.extend(formQuery.data,{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST",
+            },
+            columns: [
+                {data: 'business_number'},
+                {data: 'source'},
+                {data: 'productType'},
+                {data: 'businesser'},
+                {data: 'borrower'},
+                {data: 'ID_number'},
+                {data: 'loan_amount'},
+                {data: 'loan_term'},
+                {data: 'year_rate'},
+                {data: 'business_date'},
+                {data: 'loanDueDate'},
+
+                {data: 'clearedDate'},
+                {data: 'total_days'},
+                {data: 'repaymentMethods'},
+                {data: 'receivablePrincipal'},
+                {data: 'receivableInterest'},
+                {data: 'other_charges'},
+                {data: 'total'},
+                {data: 'finance_cost'},
+                {data: 'finance_rate'},
+                {data: 'average_daily_income'},
+
+                {data: 'average_daily_cost'},
+                {data: 'monthly_income'},
+                {data: 'monthly_cost'},
+                {data: 'loanSubject'},
+                {data: 'repayAmount'},
+                {data: 'repayInterest'},
+                {data: 'repayFee'},
+                {data: 'repayTotal'},
+                {data: 'outstandingAmount'},
+                {data: 'outstandingInterest'},
+
+                {data: 'outstandingFee'},
+                {data: 'outstandingTotal'},
+                {data: 'status'},
+            ],
+            columnDefs: [{
+                targets:[0,1,2,3,4,5,12,19,24],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return data
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:7,
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(null != row.termType && row.termType == 'FIXED_DATE'){
+                            return  '至'+row.loan_term;
+                        }else {
+                            return row.loan_term == null ? '--' : row.loan_term + "" + enums.loanTermType[row.termType];
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[9,10,11],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--";
+                        }else{
+                            return moment(data).format('YYYY-MM-DD')
+                        }
+                    }else{
+                        return "--";
+                    }
+                }
+            },{
+                targets:[13],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return enums.loanRepayMethod[data]
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[6,14,15,16,17,18,20,21,22,23,25,26,27,28,29,30,31,32],
+                className:'right aligned single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return accounting.formatMoney(data,'',2,',','.')
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets: [8],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return (data).toFixed(2)+'%'
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            },{
+                targets:[33],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    if(data!=undefined && data!=null){
+                        if(data==="--" || data===""){
+                            return "--"
+                        }else{
+                            return enums.loan_status[data]
+                        }
+                    }else{
+                        return "--"
+                    }
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+            }
+        })
+    }
+    function changeTab(type) {
+        $("#table_a,#table_b,#table_c").hide();
+        $("#table_"+type).show();
+    }
+
+    $('.js-dropdown__role').dropdown({
+        forceSelection:false
+    });
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment teal">
+                <form class="ui fluid  form js-searchForm">
+                    <div class="four fields">
+                        <div class="field">
+                            <label>报表名称</label>
+                            <div class="ui search">
+                                <select class="ui fluid dropdown" name="reportName" id="reportName">
+                                    <% for(reportName in reportNameList){%>
+                                    <option value="${reportName.code}">${reportName.name}</option>
+                                    <%}%>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>报表时间</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" placeholder="报表时间" id="reportTime" name="reportTime">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>放款主体</label>
+                            <div class="ui search">
+                                <select class="ui fluid dropdown" name="loanSubject" id="loanSubject">
+                                    <option value="">请选择</option>
+                                    <% for(loanSubject in loanSubjectList){%>
+                                    <option value="${loanSubject.id}">${loanSubject.name}</option>
+                                    <%}%>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="field">
+                            <label>贷后状态</label>
+                            <select multiple="" class="ui fluid search dropdown js-dropdown__role" name="status">
+                                <option value="">请选择状态</option>
+                                <option value="LOANED">还款中</option>
+                                <option value="CLEARED">已还清</option>
+                                <option value="OVERDUE">已逾期</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ui teal mini submit button">查询</div>
+                    <div class="ui clear mini button">重置</div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!--列表-->
+    <div class="row" id="reportTable" style="display: none;">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">报表列表</a>
+
+                <div class="overflow">
+                    <div class="chevron right">
+                        <a class="ui teal small button export_btn" href="javascript:;">
+                            <i class="external share icon"></i>导出
+                        </a>
+                    </div>
+                </div>
+
+                <div id="table_a" style="overflow-x: auto;overflow-y: hidden;display: none;">
+                    <div style="width: 2500px !important;">
+                    <table id="reportTable_a" class="ui celled small table">
+                        <thead>
+                        <tr>
+                            <th>业务单号</th>
+                            <th>票据号码</th>
+                            <th>出票人</th>
+                            <th>贴现人</th>
+                            <th>票据类型</th>
+                            <th>业务员</th>
+                            <th>业务日期</th>
+                            <th>票据开票日期</th>
+                            <th>票据到期日期</th>
+                            <th>实际到期日</th>
+                            <th>票据收款日期</th>
+                            <th>距离到期天数</th>
+                            <th>调整天数</th>
+                            <th>总天数</th>
+                            <th>居间费（元）</th>
+                            <th>居间人</th>
+                            <th>票据面值（元）</th>
+                            <th>票据利息（元）</th>
+                            <th>应还费用（元）</th>
+                            <th>资金成本（元）</th>
+                            <th>资金利率</th>
+                            <th>日均收入（元）</th>
+                            <th>日均成本（元）</th>
+                            <th>放款主体</th>
+                            <th>已兑付金额（元）</th>
+                            <th>实还费用（元）</th>
+                            <th>实还总计（元）</th>
+
+                            <th>未兑付金额（元）</th>
+                            <th>未还费用（元）</th>
+                            <th>未还合计（元）</th>
+                            <th>贷后状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <div id="table_b" style="overflow-x: auto;overflow-y: hidden;display: none;">
+                    <div style="width: 2500px !important;">
+                    <table id="reportTable_b" class="ui celled small table">
+                        <thead>
+                        <tr>
+                            <th>业务单号</th>
+                            <th>来源</th>
+                            <th>产品类型</th>
+                            <th>业务员</th>
+                            <th>借款人</th>
+                            <th>身份证号</th>
+                            <th>放款金额（元）</th>
+                            <th>放款期限</th>
+                            <th>年利率</th>
+                            <th>业务日期</th>
+                            <th>合同到期日</th>
+
+                            <th>实际结清日</th>
+                            <th>总天数</th>
+                            <th>还款方式</th>
+
+                            <th>应还本金（元）</th>
+                            <th>实还本金（元）</th>
+                            <th>未还本金（元）</th>
+
+                            <th>应还利息（元）</th>
+                            <th>实还利息（元）</th>
+                            <th>未还利息（元）</th>
+
+                            <th>应还费用（元）</th>
+                            <th>资金成本（元）</th>
+                            <th>资金利率</th>
+                            <th>日均收入（元）</th>
+
+                            <th>日均成本（元）</th>
+                            <th>月收入（元）</th>
+                            <th>月成本（元）</th>
+                            <th>放款主体</th>
+
+                            <th>实还费用（元）</th>
+                            <th>未还费用（元）</th>
+
+                            <th>实还合计（元）</th>
+                            <th>未还合计（元）</th>
+                            <th>合计（元）</th>
+                            <th>贷后状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <div id="table_c" style="overflow-x: auto;overflow-y: hidden;display: none;">
+                    <div style="width: 2500px !important;">
+                    <table id="reportTable_c" class="ui celled small table">
+                        <thead>
+                        <tr>
+                            <th>业务单号</th>
+                            <th>来源</th>
+                            <th>产品类型</th>
+                            <th>业务员</th>
+                            <th>借款人</th>
+                            <th>身份证号</th>
+                            <th>放款金额（元）</th>
+                            <th>放款期限</th>
+                            <th>年利率</th>
+                            <th>业务日期</th>
+                            <th>合同到期日</th>
+
+                            <th>实际结清日</th>
+                            <th>总天数</th>
+                            <th>还款方式</th>
+                            <th>应还本金（元）</th>
+                            <th>应还利息（元）</th>
+
+                            <th>应还费用（元）</th>
+                            <th>合计（元）</th>
+                            <th>资金成本（元）</th>
+                            <th>资金利率</th>
+                            <th>日均收入（元）</th>
+                            <th>日均成本（元）</th>
+                            <th>月收入（元）</th>
+                            <th>月成本（元）</th>
+                            <th>放款主体</th>
+                            <th>实还本金（元）</th>
+                            <th>实还利息（元）</th>
+                            <th>实还费用（元）</th>
+                            <th>实还总计（元）</th>
+
+                            <th>未还本金（元）</th>
+                            <th>未还利息（元）</th>
+                            <th>未还费用（元）</th>
+                            <th>未还合计（元）</th>
+                            <th>贷后状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"财务报表"}){}%>

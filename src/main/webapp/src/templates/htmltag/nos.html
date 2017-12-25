@@ -1,0 +1,31 @@
+<tr>
+    <th colspan=${columns}>
+        <div class="ui right floated pagination menu">
+            <a class="icon item">
+                <i class="left chevron icon"></i>
+            </a>
+            <a class="item">${page_name}</a>
+            <a class="item">${pager.pageCount}</a>
+            <a class="item">3</a>
+            <a class="item">4</a>
+            <a class="icon item">
+                <i class="right chevron icon"></i>
+            </a>
+        </div>
+    </th>
+</tr>
+
+<script language="javascript">
+    function turnOverPage(no) {
+        var qForm = document.pagerForm;
+        if (no >${pager.pageCount}) {
+            no =${pager.pageCount};
+        }
+        if (no < 1) {
+            no = 1;
+        }
+        qForm.pageNo.value = no;
+        qForm.action = "${toURL}";
+        qForm.submit();
+    }
+</script>

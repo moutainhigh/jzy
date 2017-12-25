@@ -1,0 +1,279 @@
+<%var jsPart = {%>
+<!--tree-->
+<script type="text/mustach-template" id="treeTemplate">
+    {{#data}}
+    <div class="ui styled accordion js-accordion">
+        <div class="title"><i class="dropdown icon"></i>
+            {{#isAgency}}<i class="University  icon"></i>{{/isAgency}}
+            {{#isOrganizition}}<i class="Sitemap   icon"></i>{{/isOrganizition}}
+            {{#isPosition}}<i class="Paw   icon"></i>{{/isPosition}}
+            {{text}}
+        </div>
+        <div class="content" data-text="{{text}}" data-id="{{id}}" data-orgtype="{{orgType}}" data-path="{{path}}">
+            {{>partial}}
+        </div>
+    </div>
+    {{/data}}
+</script>
+
+<!--partTree-->
+<script type="text/mustach-template" id="partTreeTemplate">
+    <div class="accordion">
+        {{#children}}
+        <div class="title"><i
+                class="dropdown icon"></i>
+            {{#isAgency}}<i class="University  icon"></i>{{/isAgency}}
+            {{#isOrganizition}}<i class="Sitemap   icon"></i>{{/isOrganizition}}
+            {{#isPosition}}<i class="Paw   icon"></i>{{/isPosition}}
+            {{text}}
+        </div>
+        {{#hasNodes}}
+        <div class="content" data-text="{{text}}" data-id="{{id}}" data-orgtype="{{orgType}}" data-path="{{path}}">
+            {{>partial}}
+        </div>
+        {{/hasNodes}} {{^hasNodes}}
+        <div class="content" data-text="{{text}}" data-id="{{id}}" data-orgtype="{{orgType}}" data-path="{{path}}">
+            无下级节点
+        </div>
+        {{/hasNodes}} {{/children}}
+    </div>
+</script>
+
+
+<!--default details-->
+<script type="text/mustach-template" id="defaultDetailsTemplate">
+    <h2 class="ui dividing header js-currentOrgName">请选择组织</h2>
+    <div class="ui  segments ">
+        <h4 class="ui top attached block header">
+            上级组织名称
+        </h4>
+        <div class="ui attached segment js-parentOrgName">
+            无
+        </div>
+        <h4 class="ui  attached block header">
+            组织名称
+        </h4>
+        <div class="ui attached segment js-currentOrgName">
+            无
+        </div>
+    </div>
+</script>
+
+<!--agency details-->
+<script type="text/mustach-template" id="AgcDetailsTemplate">
+    <h2 class="ui dividing header js-currentOrgName">机构信息</h2>
+    {{>partial}}
+    <div class="ui  segments ">
+        <h4 class="ui top attached block header">
+            机构名称
+        </h4>
+        <div class="ui attached segment ">
+            {{agencyName}}
+        </div>
+        <h4 class="ui  attached block header">
+            机构代码
+        </h4>
+        <div class="ui attached segment ">
+            {{code}}
+        </div>
+
+        <h4 class="ui  attached block header">
+            机构地址
+        </h4>
+        <div class="ui attached segment ">
+            {{agencyAddress}}
+        </div>
+        <h4 class="ui  attached block header">
+            联系电话
+        </h4>
+        <div class="ui attached segment ">
+            {{agencyTel}}
+        </div>
+    </div>
+</script>
+
+<!--organizition details-->
+<script type="text/mustach-template" id="orgDetailsTemplate">
+    <h2 class="ui dividing header js-currentOrgName">组织信息</h2>
+    {{>partial}}
+    <div class="ui  segments ">
+        <h4 class="ui top attached block header">
+            组织名称
+        </h4>
+        <div class="ui attached segment">
+            {{name}}
+        </div>
+    </div>
+</script>
+
+<!--position details-->
+<script type="text/mustach-template" id="postDetailsTemplate">
+    <h2 class="ui dividing header js-currentOrgName">岗位信息</h2>
+    {{>partial}}
+    <div class="ui  segments ">
+        <h4 class="ui top attached block header">
+            岗位名称
+        </h4>
+        <div class="ui attached segment">
+            {{name}}
+        </div>
+    </div>
+</script>
+
+<!--organizition action-->
+<script type="text/mustach-template" id="orgActionTemplate">
+    <div class="ui icon top left pointing dropdown button" id="orgAction">
+        <i class="settings icon"></i>
+        <div class="menu">
+            <div class="item " data-value="addAgc"><i class="University icon"></i> 新增机构</div>
+            <div class="item " data-value="addOrgn"><i class="Sitemap icon"></i> 新增组织</div>
+            <div class="item " data-value="addPost"><i class="Paw icon"></i> 新增岗位</div>
+            <div class="item " data-value="editOrgn"><i class="edit icon"></i> 编辑</div>
+            <div class="item" data-value="delOrgn"><i class="delete  icon"></i> 删除</div>
+        </div>
+    </div>
+</script>
+
+<!--person roles-->
+<script type="text/mustach-template" id="personRolesTemplate">
+    <label>角色</label>
+    <select multiple="" class="ui dropdown js-dropdown__role" name="user.roles">
+        {{#data}}
+        <option value="{{id}}">{{name}}</option>
+        {{/data}}
+    </select>
+</script>
+
+<script src="/js/pages/business/agency/index.js"></script>
+
+<%};%>
+<style type="text/css">
+    body {
+        background-color: #DADADA;
+    }
+
+    body > .grid {
+        height: 100%;
+    }
+
+    .image {
+        margin-top: -100px;
+    }
+
+    #personList {
+        display: none;
+    }
+</style>
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="six wide column" id="mustContainer">
+    </div>
+    <div class="ten wide column">
+        <div class="introduction" id="orgDetailsContainer">
+
+        </div>
+
+        <div class="ui hidden divider"></div>
+        <div class="ui hidden divider"></div>
+
+        <!--人员列表-->
+        <div class="row" id="personList">
+            <div class="column">
+                <h2 class="ui dividing header">人员列表</h2>
+                <div class="ui one column grid">
+                    <div class="column">
+                        <button class="ui button  blue js-addPerson"><i class="plus  icon"></i>新增</button>
+                    </div>
+                    <div class="column">
+                        <table class="ui celled table" id="personTable">
+                            <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>岗位名称</th>
+                                <th>角色</th>
+                                <th>登录名</th>
+                                <th>手机号</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <%
+    include("/organize/organize_save.html"){}
+    include("/organize/agency_save.html"){}
+    include("/organize/position_save.html"){}
+    include("/organize/person_save.html"){}
+    %>
+
+
+</div>
+
+
+<style>
+    #tree_container {
+        display: none;
+    }
+
+    .chevron.right {
+        float: right;
+    }
+
+    .chevron.left {
+        float: left;
+    }
+
+    .ui.accordion .accordion {
+        margin: 0;
+    }
+
+    .treeitem.secondary {
+        background: lightgrey;
+    }
+
+    .treeul {
+        list-style: none;
+    }
+
+    .dropdownMenu {
+        position: absolute;
+        left: 25px;
+        top: 5px;
+        z-index: 1;
+        background: white;
+        box-shadow: 0 2px 3px 0 rgba(34, 36, 38, .15);
+        border: 1px solid rgba(34, 36, 38, .15);
+        cursor: default;
+        display: none;
+    }
+
+    .dropdownMenu .item {
+        padding: 5px;
+    }
+
+    .dropdownMenu .item:hover {
+        background: rgba(0, 0, 0, .05);
+    }
+
+    .treeitem {
+        position: relative;
+        padding: 6px;
+    }
+
+    .treeitem.onIt {
+        background: ghostwhite;
+    }
+</style>
+
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart}){}%>
+
+

@@ -1,0 +1,453 @@
+<script type="text/mustach-template" id="billApplyTemplate">
+    <div class="ui bottom teal   segment" id="loanApplyDetail">
+        <a class="ui teal left ribbon label">票据信息</a>
+        <h4 class="ui top attached block  small  header">贴现人信息</h4>
+        <div class="ui  padded attached small  segment ">
+            <div class="ui grid">
+                <div class="two column row">
+                    <div class="column">
+                        <b for="">
+                            贴现人：
+                        </b>
+                        <span>{{loanBorrower.name}}</span>
+                    </div>
+                    <div class="column">
+                        <b for="">
+                            营业执照：
+                        </b>
+                        <span>{{loanBorrower.certifNumber}}</span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="ui section divider"></div>
+            <div class="ui horizontal divider seniorItem">企业资料</div>
+            <div class="ui grid seniorItem">
+                <div class=" row">
+                    <div class="column">
+                        <table class="ui celled center aligned small table">
+                            <thead >
+                            <tr>
+                                <th>资料名称</th>
+                                <th>是否必填</th>
+                                <th>资料文件</th>
+                                <th>上传人</th>
+                                <th>上传时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#productMediaAttachList}}
+                            <tr>
+                                <td>{{itemName}}</td>
+                                <td>
+                                    {{#required}}
+                                    <span class="ui red label">必填</span>
+                                    {{/required}}
+                                    {{^required}}
+                                    <span class="ui label">选填</span>
+                                    {{/required}}
+                                </td>
+                                <td>
+                                    {{#productMediaAttachDetails}}
+                                    <div class="js-canBeDel right aligned">
+                                        <span class="js-temp button ui mini" data-name="{{attachName}}" href="{{url}}">{{attachName}}</span>
+                                    </div>
+                                    {{/productMediaAttachDetails}}
+                                </td>
+                                <td>{{#url}}{{updateBy}}{{/url}}</td>
+                                <td>{{#url}}{{updateTime}}{{/url}}</td>
+                            </tr>
+                            {{/productMediaAttachList}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--/资料清单-->
+
+        <!--票据信息-->
+        <h4 class="ui   attached block  small header">票据信息</h4>
+        <div class="ui  padded attached  small segment">
+            {{#billLoanRepayList}}
+            <div class="ui grid">
+                <div class="three column row">
+                    <div class="column">
+                        <b>票号：</b>
+                        <span>{{billNo}}</span>
+                    </div>
+                    <div class="column">
+                        <b>出票日期：</b>
+                        <span>{{draw_Time}}</span>
+                    </div>
+                    <div class="column">
+                        <b>出票金额（元）：</b>
+                        <span>{{loanRepay_amount}}</span>
+                    </div>
+                </div>
+                <div class="three column row">
+                    <div class="column">
+                        <b>到期日：</b>
+                        <span>{{loanRepay_dueDate}}</span>
+                    </div>
+                    <div class="column">
+                        <b>调整天数（自然日）：</b>
+                        <span>{{overdueDays}}</span>
+                    </div>
+                    <div class="column">
+                        <b>实际到期日：</b>
+                        <span>{{actual_DueDate}}</span>
+                    </div>
+                </div>
+                <div class="three column row">
+                    <div class="column">
+                        <b>贴现日期：</b>
+                        <span>{{dis_Date}}</span>
+                    </div>
+                    <div class="column">
+                        <b>打款利息（元）：</b>
+                        <span>{{loanRepay_interest}}</span>
+                    </div>
+                    <div class="column">
+                        <b>打款利率：</b>
+                        <span>{{depositRate}}</span>
+                    </div>
+                </div>
+                <div class="three column row">
+                    <div class="column">
+                        <b>出票人：</b>
+                        <span>{{payer}}</span>
+                    </div>
+                    <div class="column">
+                        <b>付款行全称：</b>
+                        <span>{{bankName}}&emsp;<span class="ui green header small">[{{risk_Rank}}]</span></span>
+                    </div>
+                    <div class="column">
+                        <b for="">付款人账号：</b>
+                        <span>{{payerAccount}}</span>
+                    </div>
+                </div>
+                <div class="three column row">
+                    <div class="column">
+                        <b>收款人：</b>
+                        <span>{{payee}}</span>
+                    </div>
+                    <div class="column">
+                        <b>收款人账号：</b>
+                        <span>{{payeeAccount}}</span>
+                    </div>
+                    <div class="column">
+                        <b>收款人开户行：</b>
+                        <span>{{payeeBankName}}</span>
+                    </div>
+                </div>
+                <div class="three column row">
+                    <div class="column">
+                        <b>实际贴现天数：</b>
+                        <span>{{disDays}}</span>
+                    </div>
+                    <div class="column">
+                        <b>成本报价（%）：</b>
+                        <span>{{costRate}}</span>
+                    </div>
+                    <div class="column">
+                        <b>居间费（元）：</b>
+                        <span>{{intermediary_Fee}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="ui section divider hidden"></div>
+            {{/billLoanRepayList}}
+        </div>
+
+        <h4 class="ui   attached block  small header">付款信息</h4>
+        <div class="ui  padded attached  small segment">
+            <div class="ui grid">
+                <div class="three column row">
+                    <div class="column">
+                        <b>票面总金额（元）:</b>
+                        <span>{{billLoan_totalAmount}}</span>
+                    </div>
+                    <div class="column">
+                        <b>贴现利息（元）:</b>
+                        <span>{{billLoan_interest}}</span>
+                    </div>
+                    <div class="column">
+                        <b>付款金额（元）:</b>
+                        <span>{{billLoan_loan_amount}}</span>
+                    </div>
+                </div>
+                <div class="three column row">
+                    <div class="column">
+                        <b>贴现日期:</b>
+                        <span>{{billLoan_discountTime}}</span>
+                    </div>
+                    <div class="column">
+                        <b>户名:</b>
+                        <span>{{billLoan.accountName}}</span>
+                    </div>
+                    <div class="column">
+                        <b>开户行:</b>
+                        <span>{{billLoan.accountBank}}</span>
+                    </div>
+                </div>
+                <div class="three column row">
+                    <div class="column">
+                        <b>账号:</b>
+                        <span>{{billLoan.accountNo}}</span>
+                    </div>
+                    <div class="column">
+                        <b>法定代表人:</b>
+                        <span>{{loanBorrower.legalRepresentative}}</span>
+                    </div>
+                    <div class="column">
+                        <b>法定代表人联系方式:</b>
+                        <span>{{loanBorrower.legalRepresentativePhone}}</span>
+                    </div>
+                </div>
+                <div class="three column row">
+                    <div class="column">
+                        <b>联系人:</b>
+                        <span>{{loanBorrower.linkman}}</span>
+                    </div>
+                    <div class="column">
+                        <b>联系人联系方式:</b>
+                        <span>{{loanBorrower.linkmanPhone}}</span>
+                    </div>
+                </div>
+                <div class="one column row">
+                    <div class="column">
+                        <b>地址：</b>
+                        <span>{{loanBorrower.residence}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui horizontal divider">居间人信息</div>
+
+            <div class="ui grid">
+                <div class="three column row">
+                    <div class="column">
+                        <b>居间人:</b>
+                        <span>{{intermediary_name}}</span>
+                    </div>
+                    <div class="column">
+                        <b>居间总费用（元）:</b>
+                        <span>{{billLoan_intermediaryTotalFee}}</span>
+                    </div>
+                    <div class="column">
+                        <b>身份证号:</b>
+                        <span>{{intermediary_idNumber}}</span>
+                    </div>
+                </div>
+                <div class="three column row">
+                    <div class="column">
+                        <b>手机号码:</b>
+                        <span>{{intermediary_phone}}</span>
+                    </div>
+                    <div class="column">
+                        <b>开户行:</b>
+                        <span>{{intermediary_bank}}</span>
+                    </div>
+                    <div class="column">
+                        <b>账号:</b>
+                        <span>{{intermediary_account}}</span>
+                    </div>
+                </div>
+                <div class=" column row">
+                    <div class="column">
+                        <b>地址:</b>
+                        <span>{{intermediary_address}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 关联业务单 -->
+        <div id="hongbenRelation" class="seniorItem">
+
+        </div>
+
+        <div class="ui bottom teal   segment seniorItem seniorItem" id="riskMedia">
+            <h4 class="ui   attached block  small header">风控资料</h4>
+            <div class="ui  padded attached  small segment">
+                <div class="ui grid">
+                    <div class=" row">
+                        <div class="column">
+                            <table class="ui celled center aligned small table">
+                                <thead >
+                                <tr>
+                                    <th>资料名称</th>
+                                    <th>是否必填</th>
+                                    <th>资料文件</th>
+                                    <th>上传人</th>
+                                    <th>上传时间</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#riskMediaAttachesList}}
+                                <tr>
+                                    <td>{{itemName}}</td>
+                                    <td>
+                                        {{#required}}
+                                        <span class="ui red label">必填</span>
+                                        {{/required}}
+                                        {{^required}}
+                                        <span class="ui label">选填</span>
+                                        {{/required}}
+                                    </td>
+                                    <td>
+                                        {{#productMediaAttachDetails}}
+                                        <div class="js-canBeDel right aligned">
+                                            <span class="js-temp button ui mini" data-name="{{attachName}}" href="{{url}}">{{attachName}}</span>
+                                        </div>
+                                        {{/productMediaAttachDetails}}
+                                    </td>
+                                    <td>{{#url}}{{updateBy}}{{/url}}</td>
+                                    <td>{{#url}}{{updateTime}}{{/url}}</td>
+                                </tr>
+                                {{/riskMediaAttachesList}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/mustach-template" id="detailRelationTemplateCode">
+    <div class="ui hidden divider"></div>
+    <% include("../businessApply/relation_business_detail.html"){} %>
+</script>
+
+<script>
+    $(function(){
+        window.renderApplyTpml=function(callBack){
+            $(document).api({
+                on: "now",
+                method: 'get',
+                action: "query bill",
+                data: {
+                    loanId:utils.getUrlParam("id")
+                },
+                onSuccess: function (data) {
+                    data.url = function(){
+                        if(this.productMediaAttachDetails && this.productMediaAttachDetails.length>0){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    };
+                    data.draw_Time = function(){
+                        if(this.drawTime){
+                            return moment(this.drawTime).format('YYYY-MM-DD');
+                        }else{
+                            return '';
+                        }
+                    };
+                    data.actual_DueDate = function(){
+                        if(this.actualDueDate){
+                            return moment(this.actualDueDate).format('YYYY-MM-DD');
+                        }else{
+                            return '';
+                        }
+                    }
+                    data.dis_Date = function () {
+                        if(this.disDate){
+                            return moment(this.disDate).format('YYYY-MM-DD');
+                        }else{
+                            return '';
+                        }
+                    };
+                    data.intermediary_Fee = function () {
+                        return accounting.formatNumber(this.intermediaryFee,6,",")
+                    }
+                    data.loanRepay_dueDate = function(){
+                        if(this.loanRepay.dueDate){
+                            return moment(this.loanRepay.dueDate).format('YYYY-MM-DD');
+                        }else{
+                            return '';
+                        }
+                    };
+                    data.billLoan_discountTime = function(){
+                        if(this.billLoan.discountTime){
+                            return moment(this.billLoan.discountTime).format('YYYY-MM-DD');
+                        } else{
+                            return '';
+                        }
+                    };
+                    data.billLoan_intermediaryTotalFee = function(){
+                        return accounting.formatNumber(this.billLoan.intermediaryTotalFee,6,",")
+                    };
+                    data.risk_Rank = function (){
+                        if(this.riskRank =='A'){
+                            return 'AAA';
+                        }else if(this.riskRank =='B'){
+                            return 'AA';
+                        }else if(this.riskRank =='C'){
+                            return 'A';
+                        }
+                    };
+                    data.loanRepay_amount =function(){
+                        return accounting.formatNumber(this.loanRepay.amount,2,",");
+                    };
+                    data.loanRepay_interest =function(){
+                        return accounting.formatNumber(this.loanRepay.interest,2,",") ;
+                    };
+                    data.billLoan_totalAmount = function (){
+                        return accounting.formatNumber(this.billLoan.totalAmount,2,",");
+                    };
+                    data.billLoan_interest = function (){
+                        return accounting.formatNumber(this.billLoan.interest,2,",");
+                    };
+                    data.billLoan_loan_amount = function(){
+                        return accounting.formatNumber(this.billLoan.loan.amount,2,",")
+                    };
+
+                    //居间人信息
+                    data.intermediary_name = function(){
+                        return data.intermediary ? this.intermediary.name :'';
+                    }
+                    data.intermediary_idNumber = function(){
+                        return data.intermediary ? this.intermediary.idNumber :'';
+                    }
+                    data.intermediary_phone = function(){
+                        return data.intermediary ? this.intermediary.phone :'';
+                    }
+                    data.intermediary_bank = function(){
+                        return data.intermediary ? this.intermediary.bank :'';
+                    }
+                    data.intermediary_account = function(){
+                        return data.intermediary ? this.intermediary.account  :'';
+                    }
+                    data.intermediary_address = function(){
+                        return data.intermediary ? this.intermediary.address  :'';
+                    }
+
+                    var $applyTemplate = utils.render("#billApplyTemplate", data);
+                    $("#businessApply").append($applyTemplate);
+
+                    if(utils.getUrlParam('process') !='true'){
+                        var $relationTemplate = utils.render("#detailRelationTemplateCode",'');
+                        $("#hongbenRelation").html($relationTemplate);
+                    }
+
+                    if(utils.getUrlParam("billView")==='true'){
+                        $("#riskMedia").show();
+                    }else {
+                        $("#riskMedia").hide();
+                    }
+
+                    if(typeof callBack =='function'){
+                        callBack();
+                    }
+                },
+                onFailure:function(data){
+                    $.uiAlert({type: "danger", textHead: '获取数据失败', text: data.msg, time: 4});
+                }
+            });
+        }
+    })
+</script>

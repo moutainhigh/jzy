@@ -1,0 +1,425 @@
+<!--业务审批详情 模板-->
+<script type="text/mustach-template" id="businessApplyTemplate">
+    <div class="ui bottom teal   segment" id="loanApplyDetail">
+        <a class="ui teal left ribbon label">贷款申请单</a>
+        <!--<h3 class="ui dividing center aligned header">贷款申请单</h3>-->
+        <!--借款人信息-->
+        <h4 class="ui top attached block  small  header">借款人信息</h4>
+        <div class="ui  padded attached small  segment ">
+            <div class="ui grid">
+                {{#borrower}}
+                <div class="three column row">
+                    <div class="column">
+                        <b for="">
+                            融资主体名称：
+                        </b>
+                        <span>{{name}}</span>
+                    </div>
+                    <div class="column">
+                        <b for="">
+                            营业执照编号：
+                        </b>
+                        <span>{{certifNumber}} </span>
+                    </div>
+                    <div class="column">
+                        <b for="">
+                            法人姓名：
+                        </b>
+                        <span>{{legalPerson}}</span>
+                    </div>
+                </div>
+
+                <div class=" column row">
+                    <div class="column">
+                        <b for="">
+                            法人身份证号：
+                        </b>
+                        <span>{{legalPersonCertifNumber}}</span>
+                    </div>
+
+                </div>
+                <div class=" column row">
+                    <div class="column">
+                        <b for="">
+                            公司基本情况：
+                        </b>
+                        <pre class="auto">{{companyProfiles}}</pre>
+                    </div>
+                </div>
+                <div class="ui section divider"></div>
+                {{/borrower}}
+
+
+                <div class="row">
+                    <div class="column">
+                        <b for="">
+                            收款账户：
+                        </b>
+                        <table class="ui celled  small table">
+                            <thead>
+                            <tr>
+                                <th>收款人</th>
+                                <th>开户行</th>
+                                <th>收款账号</th>
+                                <th class="right aligned">融资申请金额（元）</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#borrowerAccounts}}
+                            <tr>
+                                <td>{{name}}</td>
+                                <td>{{bank}}</td>
+                                <td>{{account}}</td>
+                                <td class="right aligned">{{fixedAmount}}</td>
+                            </tr>
+                            {{/borrowerAccounts}}
+                            {{^borrowerAccounts}}
+                            <tr>
+                                <td colspan="4">暂无数据</td>
+                            </tr>
+                            {{/borrowerAccounts}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <!--/借款人信息-->
+        <!--产品信息-->
+        <h4 class="ui   attached block  small header">产品信息</h4>
+        <div class="ui  padded attached  small segment">
+            <div class="ui grid">
+                <div class="three column row">
+                    <div class="column">
+                        <b for="">
+                            申请金额：
+                        </b>
+                        <span>{{fixedLoanAmount}}元 </span>
+                    </div>
+                    <div class="column">
+                        <b for="">
+                            借款期限：
+                        </b>
+                        {{#isFixDate}}
+                        <span>至{{loan.term}}{{loanTermType}}</span>
+                        {{/isFixDate}}
+                        {{^isFixDate}}
+                        <span>{{loan.term}}{{loanTermType}}</span>
+                        {{/isFixDate}}
+                        {{#isCalculateMethod}}
+                        <span class="ui header orange small">&ensp;[{{calculateMethod}}]</span>
+                        {{/isCalculateMethod}}
+                    </div>
+                    <div class="column">
+                        <b for="">
+                            还款方式：
+                        </b>
+                        <span>{{loanRepayMethod}}</span>
+                    </div>
+                </div>
+
+                <div class="three column row">
+                    <div class="column">
+                        <b for="">
+                            借款利息：
+                        </b>
+                        {{#loanIsFixAmount}}
+                        <span>{{loan.interestAmount}}元/{{loanMethod}}（金额计息）</span>
+                        {{/loanIsFixAmount}}
+                        {{#loanIsGang}}
+                        <span>--</span>
+                        {{/loanIsGang}}
+                        {{#loanIsFixRate}}
+                        <span>{{loanInterestRateFixed2}}%/{{loanMethod}}（比例计息）</span>
+                        {{/loanIsFixRate}}
+                    </div>
+                    {{#repayMethodIsByMonth}}
+                    <div class="column">
+                        <b for="">
+                            收息时间：
+                        </b>
+                        <span>{{repayDateTypeInCN}}</span>
+                    </div>
+                    {{/repayMethodIsByMonth}}
+                    <div class="column">
+                        <b for="">
+                            宽限期（天）：
+                        </b>
+                        <span>{{loan_grace}}</span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <b for="">
+                            费用说明：
+                        </b>
+                        <table class="ui celled small table">
+                            <thead>
+                            <tr>
+                                <th>费用名称</th>
+                                <th>收费频率</th>
+                                <th>收取方式</th>
+                                <th>收费节点</th>
+                                <th class="right aligned">金额(元)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#loanFeeTemps}}
+                            <tr>
+                                <td>{{feeTypeInCN}}</td>
+                                <td>{{feeCycleTypeInCN}}</td>
+                                <td>{{feeRuleCN}}</td>
+                                <td>{{chargeNodeInCN}}</td>
+                                <td class="right aligned">{{feeAmountDetail}}</td>
+                            </tr>
+                            {{/loanFeeTemps}}
+                            {{^loanFeeTemps}}
+                            <tr>
+                                <td colspan="5" class="center aligned">暂无数据</td>
+                            </tr>
+                            {{/loanFeeTemps}}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column">
+                        <b for="">
+                            还款计划：
+                        </b>
+                        <div class="ui warning mini  message">*该还款计划默认为本日放款，仅作金额参考，实际还款计划根据财务实际放款时间生成</div>
+                        <table class="ui celled  small table">
+                            <thead>
+                            <tr>
+                                <th>期数</th>
+                                <th>应还日期</th>
+                                <th class="right aligned">应还本金（元）</th>
+                                <th class="right aligned">应还利息（元）</th>
+                                <th class="right aligned">应还本息（元）</th>
+                                <th class="right aligned">剩余本金（元）</th>
+                            </tr>
+                            </thead>
+                            <tbody id="loanRepayPlan">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--/产品信息-->
+
+        <!--业务信息-->
+        <h4 class="ui   attached block small  header">业务信息</h4>
+        <div class="ui  padded attached  small segment">
+            <div id="applyInfoContainer">
+
+            </div>
+            <!--资料清单-->
+            <div class="ui horizontal divider seniorItem ">资料清单</div>
+            <div class="ui grid seniorItem">
+                <div class=" row">
+                    <div class="column">
+                        <table class="ui celled center aligned small table">
+                            <thead >
+                            <tr>
+                                <th>资料名称</th>
+                                <th>是否必填</th>
+                                <th>资料文件</th>
+                                <th>上传人</th>
+                                <th>上传时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#productMediaAttaches}}
+                            <tr>
+                                <td>{{itemName}}</td>
+                                <td>
+                                    {{#required}}
+                                    <span class="ui red label">必填</span>
+                                    {{/required}}
+                                    {{^required}}
+                                    <span class="ui label">选填</span>
+                                    {{/required}}
+                                </td>
+                                <td>
+                                    {{#productMediaAttachDetails}}
+                                    <div class="js-canBeDel right aligned">
+                                        <span class="js-temp mini ui button" target="_blank" data-name="{{attachName}}" href="{{url}}">{{attachName}}</span>&emsp;
+                                    </div>
+                                    {{/productMediaAttachDetails}}
+                                </td>
+                                <td>{{#url}}{{updateBy}}{{/url}}</td>
+                                <td>{{#url}}{{updateTime}}{{/url}}</td>
+                            </tr>
+                            {{/productMediaAttaches}}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!--/资料清单-->
+        </div>
+        <!--/产品信息-->
+    </div>
+</script>
+
+<script type="text/mustach-template" id="applyTemplate">
+    <div class="ui horizontal divider ">项目信息</div>
+    <div class="ui grid">
+        <div class="column">
+            <b for="">
+                项目信息说明：
+            </b>
+            <pre class="auto">{{item_content}}</pre>
+        </div>
+    </div>
+    <div class="ui horizontal divider ">保理信息</div>
+    <div class="ui grid">
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    交易买方名称：
+                </b>
+                <span>{{name}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    交易买方营业执照：
+                </b>
+                <span>{{license}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    交易买方法人代表：
+                </b>
+                <span>{{agent_name}}</span>
+            </div>
+        </div>
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    应收账款金额（元）：
+                </b>
+                <span>{{reAmount}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    应收账款合同编号：
+                </b>
+                <span>{{agree_number}}</span>
+            </div>
+            <div class="column">
+                <b>融资比例：</b>
+                <span>{{amountScale}}</span>
+            </div>
+        </div>
+        <div class="one column row">
+            <div class="column">
+                <b for="">
+                    买方企业简介：
+                </b>
+                <pre class="auto">{{qy_content}}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关联业务单 -->
+    <div id="hongbenRelation" class="seniorItem">
+
+    </div>
+
+</script>
+
+<script type="text/mustach-template" id="detailRelationTemplateCode">
+    <div class="ui hidden divider"></div>
+    <% include("../businessApply/relation_business_detail.html"){} %>
+</script>
+
+<script type="text/mustach-template" id="loanRepayPlanTemplate">
+    {{#loanRepayPlan}}
+    <tr>
+        <td>{{period}}</td>
+        <td>{{f_dueDate}}</td>
+        <td class="right aligned">{{f_amount}}</td>
+        <td class="right aligned">{{f_interest}}</td>
+        <td class="right aligned">{{f_total}}</td>
+        <td class="right aligned">{{f_outstanding}}</td>
+    </tr>
+    {{/loanRepayPlan}}
+    {{^loanRepayPlan}}
+    <tr>
+        <td colspan="6" class="center aligned">暂无数据</td>
+    </tr>
+    {{/loanRepayPlan}}
+</script>
+
+<script type="text/javascript">
+    function renderLoanRepay(){
+        var loanId = utils.getUrlParam("id");
+        $.get("/loan/calculate",{loanId:loanId},function(data){
+            if(data){
+                console.log(data);
+                var loanRepayList={loanRepayPlan:data.repayments};
+                loanRepayList.f_dueDate = function(){
+                    return moment(this.dueDate).format("YYYY-MM-DD");
+                }
+                loanRepayList.f_amount = function () {
+                    return accounting.formatNumber(this.principal,2,",");
+                };
+                loanRepayList.f_interest = function () {
+                    return accounting.formatNumber(this.interest,2,",");
+                };
+                loanRepayList.f_total = function () {
+                    return accounting.formatNumber(this.interest+this.principal,2,",");
+                };
+                loanRepayList.f_outstanding = function () {
+                    return accounting.formatNumber(this.outstanding,2,",");
+                };
+                $("#loanRepayPlan").html(utils.render("#loanRepayPlanTemplate",loanRepayList));
+            }
+        })
+    }
+</script>
+
+<script>
+    $(function(){
+        window.renderApplyTpml=function(callBack){
+            $(document).api({
+                on: "now",
+                method: 'get',
+                action: "get businessInfo",
+                data: {
+                    id:utils.getUrlParam("id")
+                },
+                onSuccess: function (data) {
+                    var _data = data.data;
+                    _data.reAmount = function () {
+                        return accounting.formatNumber(this.re_amount,2,",");
+                    };
+                    _data.amountScale = function(){
+                        if(this.amount_scale){
+                            return accounting.formatNumber(mul(this.amount_scale,100),2,",") +'%';
+                        }
+                    };
+                    var $applyTemplate = utils.render("#applyTemplate", _data);
+                    $("#applyInfoContainer").append($applyTemplate);
+
+                    if(utils.getUrlParam('process') !='true'){
+                        var $relationTemplate = utils.render("#detailRelationTemplateCode",'');
+                        $("#hongbenRelation").html($relationTemplate);
+                    }
+
+                    if(typeof callBack =='function'){
+                        callBack();
+                    }
+                }
+            });
+        }
+    })
+</script>

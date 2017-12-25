@@ -1,0 +1,60 @@
+<%var jsPart = {%>
+<script type="text/javascript" src="/js/pages/product/list.js"></script>
+
+<%};%>
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>产品大类</label>
+                <select name="typeId" id="s_type" class="ui dropdown">
+                    <option value="" data_name="">全部</option>
+                    <% for(productType in productTypeList){%>
+                    <option value="${productType.id}" data_name="${productType.name}">${productType.name}</option>
+                    <%}%>
+                </select>
+            </div>
+            <div class="field">
+                <label>产品名称</label>
+                <input type="text" id="s_name">
+            </div>
+            <div class="field">
+                <label>创建时间</label>
+                <input type="text" id="s_create_time">
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <div class="ui tiny submit button teal" id="searchBnt">查询</div>
+                <div class="ui tiny button clear" id="resetBnt" type="reset">重置</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+
+<div class="row" id="">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">产品列表</a>
+            <table class="ui  celled table compact  small" id="productList">
+                <thead>
+                <tr>
+                    <th>产品编号</th>
+                    <th>产品大类</th>
+                    <th>产品名称</th>
+                    <th>品牌名</th>
+                    <th>创建时间</th>
+                    <th>是否生效</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"产品维护"}){}%>

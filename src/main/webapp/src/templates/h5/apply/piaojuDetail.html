@@ -1,0 +1,228 @@
+<%var jsPart = {%>
+<%
+include("/h5"+obj.productInfoTmpl.viewUrl){}
+%>
+
+<!---->
+
+<!--详情模板-总-->
+<script type="text/mustach-template" id="detailsTemplate">
+    <input type="text" id="productInfoTmpl" value="${obj.productInfoTmpl.viewUrl}">
+    <div class="page  js_show">
+        <div class="page__hd clearfix">
+            <h1 class="page__title left">业务详情</h1>
+            <div class="right">
+                <a href="javaScript:window.location.href='/m/apply_query_list';" class="weui-btn_mini weui-btn_plain-primary">返回</a>
+            </div>
+        </div>
+        <div class="page__bd" style="height: 100%;" id="detailsdetailContainer">
+            <!--基本信息-->
+            <h3 class="weui-cells__title f-black">基本信息</h3>
+            <div class="weui-form-preview">
+                <div class="weui-form-preview__bd" id="basicContainer">
+                    <!--todo:to be filled -->
+                </div>
+            </div>
+
+            <!--利润信息-->
+            <div id="profit">
+
+            </div>
+            <!--/利润信息-->
+
+            <!--/贴现人信息-->
+            <div id="borrowerInfo">
+            </div>
+
+            <!--风控审批信息-->
+            <div id="riskMediaContainer">
+            </div>
+            <!--/风控审批信息-->
+
+
+            <!--详细信息-->
+            <!--todo:to be filled -->
+        </div>
+    </div>
+</script>
+
+<!--详情模板-基本信息-->
+<script type="text/mustach-template" id="detailsBasicTemplate">
+    {{#data}}
+    <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label f-black">业务单号</label>
+        <span class="weui-form-preview__value">{{code}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label f-black">业务来源</label>
+        <span class="weui-form-preview__value">{{businessLineCN}}-{{saleCode}}-{{saleName}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label f-black">产品大类</label>
+        <span class="weui-form-preview__value">{{productTypeName}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label f-black">产品子类</label>
+        <span class="weui-form-preview__value">{{productName}}</span>
+    </div>
+    <!--<div class="weui-form-preview__item">-->
+        <!--<label class="weui-form-preview__label f-black">渠道11</label>-->
+        <!--<span class="weui-form-preview__value">{{channelName}}</span>-->
+    <!--</div>-->
+    <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label f-black">填单人</label>
+        <span class="weui-form-preview__value">{{applyName}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label f-black">放款主体</label>
+        <span class="weui-form-preview__value">{{loanSubjectName}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label f-black">提交时间</label>
+        <span class="weui-form-preview__value">{{submitTime}}</span>
+    </div>
+    <div class="weui-form-preview__item">
+        <label class="weui-form-preview__label f-black">审批流程</label>
+        <a class="weui-form-preview__value" href=/m/flow/approve_result_list?loanId={{id}}>查看</a>
+    </div>
+    {{/data}}
+</script>
+
+<!--利润模块-->
+<script type="text/mustach-template" id="profitTemplate">
+    {{#is_loanProfit}}
+    <h3 class="weui-cells__title f-black">利润信息</h3>
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            {{#loanProfit}}
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">净利润</label>
+                <span class="weui-form-preview__value">{{p_profit}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">利息收入（含税）</label>
+                <span class="weui-form-preview__value">{{p_interestRevenue}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">资金成本（含税）</label>
+                <span class="weui-form-preview__value">{{p_capitalCost}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">增值税元</label>
+                <span class="weui-form-preview__value">{{p_valueAddedTax}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">营业税金及附加</label>
+                <span class="weui-form-preview__value">{{p_surtax}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">人工费用</label>
+                <span class="weui-form-preview__value">{{p_laborCost}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">行政费用</label>
+                <span class="weui-form-preview__value">{{p_administrativeExpenses}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">资产坏账拨备</label>
+                <span class="weui-form-preview__value">{{p_badAssetsReserve}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">金服运营成本</label>
+                <span class="weui-form-preview__value">{{p_operatingCost}}元</span>
+            </div>
+            {{#isBill}}
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">居间费及税金</label>
+                <span class="weui-form-preview__value">{{p_brokerageFee}}元</span>
+            </div>
+            {{/isBill}}
+            {{/loanProfit}}
+            {{^loanProfit}}
+            <div class="weui-form-preview__item">
+                <p class="weui-form-preview__btn weui-form-preview__btn_default">没有对应产品利润参数配置</p>
+            </div>
+            {{/loanProfit}}
+        </div>
+    </div>
+    {{/is_loanProfit}}
+</script>
+
+<!--贴现人信息-->
+<script type="text/mustach-template" id="detailsDetailTemplate">
+    <h3 class="weui-cells__title f-black">贴现人信息</h3>
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+        {{#loanBorrower}}
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">贴现人</label>
+                <span class="weui-form-preview__value">{{name}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">营业执照</label>
+                <span class="weui-form-preview__value">{{certifNumber}}</span>
+            </div>
+        {{/loanBorrower}}
+        </div>
+        {{^loanBorrower}}
+        <div class="weui-form-preview__ft">
+            <p  class="weui-form-preview__btn weui-form-preview__btn_default" >无</p>
+        </div>
+        {{/loanBorrower}}
+    </div>
+</script>
+
+<script type="text/mustach-template" id="riskMediaTemplate">
+    <!--企业资料清单-->
+    <h3 class="weui-cells__title f-black">企业资料清单</h3>
+    {{#billMediaAttaches}}
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    资料名称
+                </label>
+                <span class="weui-form-preview__value">{{itemName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">是否必填</label>
+                <span class="weui-form-preview__value">
+                        {{#required}}
+                        必填
+                        {{/required}}
+                        {{^required}}
+                        选填
+                        {{/required}}
+                    </span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">上传人</label>
+                <span class="weui-form-preview__value">{{#hasFiles}}{{updateBy}}{{/hasFiles}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">上传时间</label>
+                <span class="weui-form-preview__value">{{#hasFiles}}{{updateTime}}{{/hasFiles}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">资料文件</label>
+                {{#hasFiles}}
+                <a class="weui-form-preview__value" href=/m/view_attach?id={{id}}>详情</a>
+                {{/hasFiles}}
+            </div>
+        </div>
+    </div>
+    {{/billMediaAttaches}}
+    {{^billMediaAttaches}}
+    <div class="weui-form-preview__ft">
+        <p  class="weui-form-preview__btn weui-form-preview__btn_default" >无</p>
+    </div>
+    {{/billMediaAttaches}}
+</script>
+<!--/风控审批信息模板-->
+
+
+<script src="/h5/js/apply/piaojuDetails.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<%}; include("/h5/common.html",{jsSection:jsPart,htmlSection:htmlPart,title:"业务详情"}){}%>

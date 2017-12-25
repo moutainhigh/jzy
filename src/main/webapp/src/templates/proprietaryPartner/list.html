@@ -1,0 +1,76 @@
+<%var jsPart = {%>
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/pages/partner/partner_upload_file.js"></script>
+<script src="/js/pages/partner/partner_list.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment teal">
+                <form class="ui fluid  form js-searchForm">
+                    <div class="fields">
+                        <div class="five wide field">
+                            <label>合作方名称</label>
+                            <input id="name"  type="text" placeholder="">
+                        </div>
+                        <div class="five wide field">
+                            <label>业务员</label>
+                            <div class="ui search js-saleSearch">
+                                <div class="ui icon input">
+                                    <input type="hidden" name="managerId" id="managerId">
+                                    <input class="prompt js-input" type="text" placeholder="输入业务员名称">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                        <div class="five wide field">
+                            <label>&emsp;</label>
+                            <div class="ui teal button" id="search">查询</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">自营合作方</a>
+                <div class="dataTables_wrapper dt-semanticUI no-footer">
+                    <div class="ui grid">
+                        <div class="row">
+                            <div class="eight wide column"></div>
+                            <div class="right aligned eight wide column">
+                                <a class="ui teal small button" href="/channel/partnerAdd">
+                                    <i class="add icon"></i>新增
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row dt-table">
+                            <div class="sixteen wide column">
+                                <table class="ui celled small table dataTable no-footer" id="partnerList">
+                                    <thead>
+                                    <tr>
+                                        <th>合作方名称</th>
+                                        <th>合作方简称</th>
+                                        <th>业务员姓名</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%};include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"自营合作方"}){}%>

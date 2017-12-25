@@ -1,0 +1,262 @@
+<script type="text/mustach-template" id="pushesTemplate">
+    <div class="ui bottom teal segment">
+        <a class="ui teal left ribbon label">推单信息</a>
+
+        <div class="ui  padded attached segment ">
+            <div class="ui grid">
+                <div class="three column row">
+                    <div class="aligned center" id="push_action">
+                        <div class="ui tiny button teal" id="pushed" onclick="finishPushLoan()">推单完成</div>
+                        <div class="ui tiny button teal" id="push">推单</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column">
+                        <b for="">
+                            推单记录：
+                        </b>
+                        <table class="ui celled table" id="pushList">
+                            <thead>
+                            <tr>
+                                <th>推送目标</th>
+                                <th>产品大类</th>
+                                <th class="right aligned">项目金额</th>
+                                <th>项目期限</th>
+                                <th>还款方式</th>
+                                <th class="right aligned">年化利率（%）</th>
+                                <th>推单时间</th>
+                                <th>到期时间</th>
+                                <th>标的状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#loanPushedList}}
+                            <tr>
+                                <td>{{push_pushTarget}}</td>
+                                <td>{{productType.name}}</td>
+                                <td class="right aligned">{{push_amount}}</td>
+                                <td>{{push_term}}{{push_termType}}</td>
+                                <td>{{push_repayMethod}}</td>
+                                <td class="right aligned">{{push_interestRate}}</td>
+                                <td>{{push_pushTime}}</td>
+                                <td>{{push_lastDueDate}}</td>
+                                <td>{{push_status}}</td>
+                                <td class="single line"><a class="ui button mini basic" href="javascript:void(0);"
+                                       onclick="viewLoanPushInfo('{{id}}')"><i class="info circle icon"></i>查看</a></td>
+                            </tr>
+                            {{/loanPushedList}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="ui modal" id="push_modal">
+        <i class="close icon"></i>
+        <div class="header">
+            推单信息
+        </div>
+        <div class=" content  ">
+            <form class="ui form" id="push_form">
+                <div class="ui segment">
+                    <div class="two fields">
+                        <div class="field">
+                        <label>推送至：</label>
+                        <div class="field js-pushTarget">
+                            <div class="ui selection dropdown js-pushTargetDropdown">
+                                <div class="default text">选择推送对象</div>
+                                <i class="dropdown icon"></i>
+                                <input type="hidden" name="loanPush.pushTarget" id="pushTarget">
+                                <div class="menu">
+                                    <div class="item" data-value="">选择推送对象</div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="field">
+                            <input type="hidden" name="loanPush.productTypeId">
+                            <label>产品大类：</label>
+                            <input type="text" id="productTypeName" disabled>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>借款人：</label>
+                            <input type="hidden" name="loanPush.masterBorrowerId">
+                            <input type="hidden" name="loanPush.loanId">
+                            <input type="text" id="borrserName" disabled>
+                        </div>
+
+                        <div class="field">
+                            <label>手机号：</label>
+                            <input type="text" id="telephone" disabled>
+                        </div>
+                    </div>
+
+                    <div class="fields">
+                        <div class="ten  wide field">
+                            <label>项目金额(元)：</label>
+                            <input type="number" name="loanPush.amount" id="amount">
+                        </div>
+
+                        <div class="ten  wide field js-termType">
+                            <label>项目期限：</label>
+                            <div class="fields">
+                            <div class="ui selection   dropdown js-termTypeDropdown">
+                                <div class="default text">选择项目期限</div>
+                                <i class="dropdown icon"></i>
+                                <input type="hidden" name="loanPush.termType" id="termType">
+                                <div class="menu">
+                                    <div class="item" data-value="">选择项目期限</div>
+                                </div>
+                            </div>
+
+                        <div class="ten  wide field">
+                            <input type="text" name="loanPush.term" id="term">
+                            <!--<input type="date" name="loanPush.sec_term" id="sec_term">-->
+                        </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field js-repayMethod">
+                            <label>还款方式：</label>
+                            <div class="ui selection dropdown js-repayMethodDropdown">
+                                <div class="default text">选择还款方式</div>
+                                <i class="dropdown icon"></i>
+                                <input type="hidden" name="loanPush.repayMethod" id="repayMethod">
+                                <div class="menu">
+                                    <div class="item" data-value="">选择还款方式</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>年化利率(%)：</label>
+                            <input type="text" name="loanPush.interestRate" id="interestRate" placeholder="输入整数或者小数，支持10位小数">
+                        </div>
+
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>借款服务费(%)：</label>
+                            <input type="text" name="loanPush.serviceFee" id="serviceFee" placeholder="输入整数或者小数，支持10位小数">
+                        </div>
+                        <div class="field">
+                            <label>借款担保费(%)：</label>
+                            <input type="text" name="loanPush.guaranteeFee" id="guaranteeFee" placeholder="输入整数或者小数，支持10位小数">
+                        </div>
+
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>资金管理费(%)：</label>
+                            <input type="text" name="loanPush.manageFee" id="manageFee" placeholder="输入整数或者小数，支持10位小数">
+                        </div>
+
+                        <div class="field">
+                            <label>推单日期：</label>
+                            <input type="date" name="loanPush.pushTime" id="pushTime" >
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+        <div class="actions" align="center">
+            <div class="ui black button" id="cancelBnt" onclick="closeModal()">取消</div>
+            <div class="ui teal button " id="addBnt">保存</div>
+        </div>
+    </div>
+
+    <div class="ui small modal" id="view_modal">
+        <i class="close icon"></i>
+        <div class="header">
+            推单详情
+        </div>
+        <div class=" content" id="loanPushInfo">
+
+        </div>
+    </div>
+
+</script>
+
+
+<script type="text/mustach-template" id="pushTargetTemplate">
+    {{#data}}
+    <div class="item" data-value="{{value}}">{{text}}</div>
+    {{/data}}
+</script>
+<script type="text/mustach-template" id="termTypeTemplate">
+    {{#data}}
+    <div class="item" data-value="{{value}}">{{text}}</div>
+    {{/data}}
+</script>
+<script type="text/mustach-template" id="repayMethodTemplate">
+    {{#data}}
+    <div class="item" data-value="{{value}}">{{text}}</div>
+    {{/data}}
+</script>
+
+
+<script type="text/mustach-template" id="pushDetailTemplate">
+    <table class="ui definition small table">
+        <tbody>
+        <tr>
+            <td class="four wide">推送至</td>
+            <td class="twelve wide">{{pushTargetInfo}}</td>
+        </tr>
+        <tr>
+            <td class="four wide">产品大类</td>
+            <td class="twelve wide">{{productType.name}}</td>
+        </tr>
+        <tr>
+            <td class="four wide">借款人</td>
+            <td class="twelve wide">{{masterBorrower.name}}</td>
+        </tr>
+        <tr>
+            <td class="four wide">手机号</td>
+            <td class="twelve wide">{{masterBorrower.phone}}</td>
+        </tr>
+        <tr>
+            <td class="four wide">项目金额</td>
+            <td class="twelve wide">{{s_amount}}元</td>
+        </tr>
+        <tr>
+            <td class="four wide">项目期限</td>
+            <td class="twelve wide">{{term}} {{termTypeInfo}}</td>
+        </tr>
+        <tr>
+            <td class="four wide">还款方式</td>
+            <td class="twelve wide">{{repayMethodInfo}}</td>
+        </tr>
+        <tr>
+            <td class="four wide">年化利率</td>
+            <td class="twelve wide">{{s_interestRate}}%</td>
+        </tr>
+        <tr>
+            <td class="four wide">借款服务费</td>
+            <td class="twelve wide">{{s_serviceFee}}%</td>
+        </tr>
+        <tr>
+            <td class="four wide">借款担保费</td>
+            <td class="twelve wide">{{s_guaranteeFee}}%</td>
+        </tr>
+        <tr>
+            <td class="four wide">资金管理费</td>
+            <td class="twelve wide">{{s_manageFee}}%</td>
+        </tr>
+        <tr>
+            <td class="four wide">推单日期</td>
+            <td class="twelve wide">{{s_pushTime}}</td>
+        </tr>
+
+        </tbody>
+    </table>
+</script>

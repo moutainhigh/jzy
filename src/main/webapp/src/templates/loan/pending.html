@@ -1,0 +1,136 @@
+<%var jsPart = {%>
+<script>
+    //列表初始化
+    function initLoanList() {
+        dtTable = $("#approveEndTable").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query loan list'],
+                "data": function (d) {
+                    var _d = $.extend({}, {searchKeys:{'loanStatus':'APPROVEEND'}},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                    //d.loanStatus='APPROVEEND';
+                },
+                "type": "post",
+            },
+            columns: [
+                {data: 'code'},
+                {data: 'productTypeName'},
+//                {data: 'agencyName'},
+//                {data: 'organizeName'},
+                {data: 'saleName'},
+                {data: 'borrserName'},
+//                {data: 'submitTime'},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null}
+            ],
+            columnDefs: [{
+                targets:4,
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    return accounting.formatMoney(data.amount,'',2,',','.');
+                }
+            },{
+                targets:5,
+                render: function (data, type, row, meta) {
+                    if("FIXED_DATE"==data.termType){
+                        return "至"+data.term;
+                    }else{
+                        if(data.termType!=undefined && enums.loanTermType[data.termType] != undefined){
+                            return data.term + enums.loanTermType[data.termType];
+                        }else{
+                            return "--";
+                        }
+                    }
+                }
+            },{
+                targets:6,
+                render: function (data, type, row, meta) {
+                    return data.approveStatus+"--"+enums.loan_status[data.loanStatus];
+                }
+            },{
+                targets:7,
+                className:'single line',
+                render : function (data, type, row, meta) {
+                    var elementStatus = data.elementStatus;
+                    var status = enums.element[elementStatus];
+                    if(elementStatus=='--'){
+                        return elementStatus;
+                    }
+                    if(data.elementStatus == 'CONTROL'){
+                        return  '<div class="ui custom button teal js-control">'+status+'</div>'+
+                                '<div class="ui custom popup top left transition hidden">确认人：'+data.elementConfirmName+'<br>确认时间：'+data.elementConfirmTime+'</div>';
+                    }
+                    return  '<div class="ui custom button red">'+status+'</div>';
+                }
+            }, {
+                //   指定第最后一列
+                className:"single line",
+                targets: 8,
+                render: function (data, type, row, meta) {
+                    return '<a class="ui mini basic button " data-id="' + row.id + '" href="/business_apply/detail?id=' + row.id + '&tab=financial&menu=pending&comeFrom='+window.location.pathname+'">放款</a>';
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            fnDrawCallback:function(){
+                $('.js-control').popup({
+                    popup : $(this).parent().siblings('.custom.popup'),
+                    on  : 'hover',
+                    position : 'left center',
+                });
+            },
+            fnInitComplete: function () {
+            }
+        })
+    }
+    initLoanList();
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+
+<div class="ui grid">
+
+    <!--列表-->
+    <div class="row" id="">
+        <div class="column">
+            <div class=" ui segment teal">
+                <a class="ui teal left ribbon label">待放款列表</a>
+                <table class="ui  celled table compact  small" id="approveEndTable">
+                    <thead>
+                    <tr>
+                        <th>业务单号</th>
+                        <th>产品大类</th>
+                        <!--<th>机构</th>-->
+                        <!--<th>组织</th>-->
+                        <th>业务来源</th>
+                        <th>借款人</th>
+                        <!--<th>提交时间</th>-->
+                        <th>申请金额（元）</th>
+                        <th>期限</th>
+                        <th>状态</th>
+                        <th>要件控制</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"待放款"}){}%>

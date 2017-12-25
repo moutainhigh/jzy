@@ -1,0 +1,240 @@
+
+<!--详情模板-详细信息（业务补充部分）-->
+<script type="text/mustach-template" id="applyTemplate">
+    <!--房产信息-->
+    <h3 class="weui-cells__title f-black">房产信息</h3>
+    <div class="weui-form-preview">
+        {{#houseList}}
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    房产证号
+                </label>
+                <span class="weui-form-preview__value">{{code}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">权属人</label>
+                <span class="weui-form-preview__value">{{ower}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">房产面积（m²）</label>
+                <span class="weui-form-preview__value">{{area}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">房产地址</label>
+                <span class="weui-form-preview__value">{{address}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">房产估值（万元）</label>
+                <span class="weui-form-preview__value">{{price}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">估值渠道</label>
+                <span class="weui-form-preview__value">{{channel}}</span>
+            </div>
+        </div>
+        {{/houseList}}
+        {{^houseList}}
+        {{^isOldHouse}}
+        <div class="weui-form-preview__ft">
+            <p  class="weui-form-preview__btn weui-form-preview__btn_default" >无</p>
+        </div>
+        {{/isOldHouse}}
+        {{#isOldHouse}}
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    房产证号
+                </label>
+                <span class="weui-form-preview__value">{{house_code}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">权属人</label>
+                <span class="weui-form-preview__value">{{user}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">房产面积（m²）</label>
+                <span class="weui-form-preview__value">{{area}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">房产地址</label>
+                <span class="weui-form-preview__value">{{address}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">房产估值（万元）</label>
+                <span class="weui-form-preview__value">{{price}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">估值渠道</label>
+                <span class="weui-form-preview__value">{{channel}}</span>
+            </div>
+        </div>
+        {{/isOldHouse}}
+        {{/houseList}}
+    </div>
+    <!--/房产信息-->
+    <!--审批银行信息-->
+    <h3 class="weui-cells__title f-black">审批银行信息</h3>
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    审批银行
+                </label>
+                <span class="weui-form-preview__value">{{approval_bank}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">审批时间</label>
+                <span class="weui-form-preview__value">{{approval_time}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">审批金额（万元）</label>
+                <span class="weui-form-preview__value">{{approval_Amount}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">审批银行联系人</label>
+                <span class="weui-form-preview__value">{{approval_contact}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">审批银行地址</label>
+                <span class="weui-form-preview__value">{{approval_address}}</span>
+            </div>
+        </div>
+    </div>
+    <!--/审批银行信息-->
+    <!--赎楼银行信息-->
+    <h3 class="weui-cells__title f-black">赎楼银行信息</h3>
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    赎楼银行
+                </label>
+                <span class="weui-form-preview__value">{{ransom_bank}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">赎楼银行联系人</label>
+                <span class="weui-form-preview__value">{{ransom_contact}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">赎楼银行地址</label>
+                <span class="weui-form-preview__value">{{ransom_bank_address}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">赎楼账户户名</label>
+                <span class="weui-form-preview__value">{{ransom_user}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">赎楼账户账号</label>
+                {{#ransomAccountHasValue}}
+                <span class="weui-form-preview__value">{{ransom_account}}</span>
+                {{/ransomAccountHasValue}}
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">约定赎楼时间</label>
+                <span class="weui-form-preview__value">
+                    {{^isAnyTime}}
+                    {{ransom_time}}
+                    {{/isAnyTime}}
+                    {{#isAnyTime}}
+                     随时
+                    {{/isAnyTime}}
+                </span>
+            </div>
+        </div>
+    </div>
+    <!--/赎楼银行信息-->
+    <!--回款银行信息-->
+    <h3 class="weui-cells__title f-black">回款银行信息</h3>
+    <div class="weui-form-preview">
+        {{#bakAccountList}}
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    回款账户开户行
+                </label>
+                <span class="weui-form-preview__value">{{bank}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">回款账户户名</label>
+                <span class="weui-form-preview__value">{{name}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black"> 回款账户账号</label>
+                <span class="weui-form-preview__value">{{account}}
+                </span>
+            </div>
+        </div>
+        {{/bakAccountList}}
+        {{^bakAccountList}}
+        <div class="weui-form-preview__ft">
+            <p  class="weui-form-preview__btn weui-form-preview__btn_default" >无</p>
+        </div>
+        {{/bakAccountList}}
+    </div>
+    <!--/回款银行信息-->
+</script>
+
+
+<script>
+    $(function(){
+        window.renderApplyTpml=function(){
+            $.ajax({
+                type: "get",
+                url: "/m/business_apply/query_business_info",
+                data: {
+                    id: id
+                },
+                async: true,
+                success: function (response) {
+                    var _data = response.data;
+                    _data.Price = function (){
+                        if(this.price){
+                            var num = 0;
+                            if(this.price.indexOf(".") !=-1){
+                                num = this.price.split(".")[1].length;
+                            }else {
+                                num = 0
+                            }
+                            return accounting.formatNumber(this.price,num,"");
+                        }
+                    };
+                    _data.approval_Amount = function (){
+                        if(this.approval_amount){
+                            var num = 0;
+                            if(this.approval_amount.indexOf(".") !=-1){
+                                num = this.approval_amount.split(".")[1].length;
+                            }else {
+                                num = 0
+                            }
+                            return accounting.formatNumber(this.approval_amount,num,"");
+                        }
+                    };
+                    _data.bakAccountIsControl = function(){
+                        return this.bak_account_control ==="true";
+                    }
+                    _data.ransomAccountIsControl = function(){
+                        return this.ransom_account_control ==="true";
+                    }
+                    _data.isAnyTime = function(){
+                        return this.ransom_anytime=="true"
+                    }
+                    _data.isOldHouse = function(){
+                        return this.hasOldHouse == true;
+                    }
+                    _data.ransomAccountHasValue = function () {
+                        var account = this.ransom_account;
+                        if (account !== null && account !== undefined && account !== ''){
+                            return true;
+                        }
+                        return false;
+                    }
+                    var $applyTemplate = utils.render("#applyTemplate", _data);
+                    $("#applyInfoContainer").prepend($applyTemplate);
+                }
+            });
+
+        }
+    })
+
+</script>

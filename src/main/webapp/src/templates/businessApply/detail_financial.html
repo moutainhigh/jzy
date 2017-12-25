@@ -1,0 +1,307 @@
+<script type="text/javascript">
+    function view2(repayId){
+        $("#repayId").val(repayId);
+        $.get("/loan/query_repay_record",{
+            loanId:utils.getUrlParam("id"),
+            repayId:repayId
+        },function(data){
+            $("#repayId").val(repayId);
+            data.isBill = ProductTempType.isBill();
+            data.f_repayDate=function(){
+                return moment(this.repayDate).format("YYYY-MM-DD");
+            }
+            data.f_repayAmount=function(){
+                return accounting.toFixed(this.repayAmount,2);
+            }
+            data.f_repayInterest=function(){
+                return accounting.toFixed(this.repayInterest,2);
+            }
+            data.f_repayTotalAmount=function(){
+                return accounting.toFixed(this.repayTotalAmount,2);
+            }
+            data.f_feeType=function(){
+                return enums.feeType[this.feeType];
+            }
+            $("#repayViewTable2").html(utils.render("#repayViewTable-template-forQuery",data));
+            if(data.loanRepay && data.loanRepay.remark) {
+                $("#gatherRecordViewModal2 #remark2").text(data.loanRepay.remark);
+            }
+        });
+        $("#gatherRecordViewModal2").modal({
+            observeChanges: true,
+            blurring: true
+        }).modal('show')
+    }
+
+    function closeViewWindow() {
+        $("#gatherRecordViewModal2 #remark2").text("");
+    }
+</script>
+<script type="text/mustach-template" id="repayViewTable-template-forQuery">
+    {{#isBill}}
+    <thead>
+    <tr>
+        <th>序号</th>
+        <th>还款日期</th>
+        <th class="right aligned">实还金额（元）</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#loanRepayRecordList}}
+    <tr>
+        <td>1</td>
+        <td>{{f_repayDate}}</td>
+        <td class="right aligned">{{f_repayAmount}}</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    {{^loanRepayRecordList}}
+        <td colspan="3" class="center aligned">暂无数据</td>
+    {{/loanRepayRecordList}}
+    </tbody>
+    {{/isBill}}
+    {{^isBill}}
+    <thead>
+        <tr>
+            <th>序号</th>
+            <th>还款日期</th>
+            <th class="right aligned">实还本金（元）</th>
+            <th class="right aligned">实还利息（元）</th>
+            {{#loanFeeList}}
+            <th class="right aligned">{{f_feeType}}（元）</th>
+            {{/loanFeeList}}
+            <th class="right aligned">总计（元）</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#loanRepayRecordList}}
+    <tr>
+        <td>{{period}}</td>
+        <td>{{f_repayDate}}</td>
+        <td class="right aligned">{{f_repayAmount}}</td>
+        <td class="right aligned">{{f_repayInterest}}</td>
+        {{#feeList}}
+        <td class="right aligned">{{repayFeeAmount}}</td>
+        {{/feeList}}
+        <td class="right aligned">{{f_repayTotalAmount}}</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    {{^loanRepayRecordList}}
+    <td colspan="8" class="center aligned">暂无数据</td>
+    {{/loanRepayRecordList}}
+    </tbody>
+    {{/isBill}}
+</script>
+
+<script type="text/mustach-template" id="financeLoanRecordTemplate">
+    <a class="ui teal left ribbon label">放款信息</a>
+
+    <div class="ui  padded  segment ">
+        <div class="ui grid">
+            <div class="row">
+                <div class="column">
+                    <b for="">
+                        放款记录：
+                    </b>
+                    <table class="ui celled table teal">
+                        <thead>
+                            <tr>
+                                <th>放款编码</th>
+                                <th>金额类型</th>
+                                <th>放款主体</th>
+                                <th>放款账户</th>
+                                <th class="right aligned">放款金额（元）</th>
+                                <th>放款日期</th>
+                                <th>收款人</th>
+                                <th>收款账户</th>
+                                <th>放款状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {{#loanRecordList}}
+                            <tr>
+                                <td>{{loanCode}}</td>
+                                <td>{{amount_type}}</td>
+                                <td>{{loanSubject}}</td>
+                                <td>{{payAcount}}</td>
+                                <td class="right aligned">{{loan_amount}}</td>
+                                <td>{{loan_date}}</td>
+                                <td>{{payee}}</td>
+                                <td>{{payeeAcount}}</td>
+                                <td>{{loan_status}}</td>
+                            </tr>
+                        {{/loanRecordList}}
+                        {{^loanRecordList}}
+                            <tr>
+                                <td colspan="9">暂无记录</td>
+                            </tr>
+                        {{/loanRecordList}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui diver hidden"></div>
+</script>
+
+<script type="text/mustach-template" id="financeTemplate">
+    <div class="ui bottom teal segment">
+        <div id="loanRecordInfo">
+
+        </div>
+
+
+        <a class="ui teal left ribbon label">收款信息</a>
+        <!--<h3 class="ui dividing center aligned header">风控审批信息</h3>-->
+        <div class="ui  padded  segment ">
+            <div class="ui grid">
+                <div class="row">
+                    <div class="column">
+                        <b for="">
+                            还款计划：
+                        </b>
+                        <table class="ui celled table teal" id="">
+                            {{#isBill}}
+                                <thead>
+                                <tr>
+                                    <th>期数</th>
+                                    <th>票号</th>
+                                    <th>到期日</th>
+                                    <th>调整天数（天）</th>
+                                    <th class="right aligned">应还金额（元）</th>
+                                    <th>还款状态</th>
+                                    <th>还款记录</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#loanRepayList}}
+                                <tr>
+                                    <td>{{loanRepay.period}}</td>
+                                    <td>{{billNo}}</td>
+                                    <td>{{f_dueDate}}</td>
+                                    <td>{{overdueDays}}</td>
+                                    <td class="right aligned">{{f_amount}}</td>
+                                    <td>{{f_status}}</td>
+                                    <td><a href="javascript:;" onclick="view2('{{id}}')">查看</a></td>
+                                </tr>
+                                {{/loanRepayList}}
+                                {{^loanRepayList}}
+                                <tr>
+                                    <td colspan="7" class="center aligned">暂无数据</td>
+                                </tr>
+                                {{/loanRepayList}}
+                                </tbody>
+                            {{/isBill}}
+                            {{^isBill}}
+                                <thead>
+                                <tr>
+                                    <th>期数</th>
+                                    <th>应还日期</th>
+                                    <th class="right aligned">应还本金（元）</th>
+                                    <th class="right aligned">应还利息（元）</th>
+                                    <th class="right aligned">应还本息（元）</th>
+                                    <th class="right aligned">剩余本金（元）</th>
+                                    <th>还款状态</th>
+                                    <th>还款记录</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#loanRepayList}}
+                                <tr>
+                                    <td>{{period}}</td>
+                                    <td >{{f_dueDate}}</td>
+                                    <td class="right aligned">{{f_amount}}</td>
+                                    <td class="right aligned">{{f_interest}}</td>
+                                    <td class="right aligned">{{f_total}}</td>
+                                    <td class="right aligned">{{f_outstanding}}</td>
+                                    <td>{{f_status}}</td>
+                                    <td><a href="javascript:;" onclick="view2('{{id}}')">查看</a></td>
+                                </tr>
+                                {{/loanRepayList}}
+                                {{^loanRepayList}}
+                                <tr>
+                                    <td colspan="7" class="center aligned">暂无数据</td>
+                                </tr>
+                                {{/loanRepayList}}
+                                </tbody>
+                            {{/isBill}}
+                        </table>
+
+                        <div class="ui segment teal">
+                            <h4>应收费用</h4>
+                            <div class="ui equal width form loanFee">
+                                {{#loanFeeList}}
+                                <div class="inline fields">
+                                    <div class="field">
+                                        <label>{{f_name}}:</label>
+                                        <label>{{f_feeAmount}}</label>元
+                                    </div>
+                                    <div class="field">
+                                        <label>实收金额:</label>
+                                        <label>{{f_repayFeeAmount}}</label>元
+                                    </div>
+                                    <div class="field">
+                                        <label>收款日期:</label>
+                                        <label>{{f_repayDate}}</label>
+                                    </div>
+                                </div>
+                                {{/loanFeeList}}
+                                {{^loanFeeList}}
+                                无
+                                {{/loanFeeList}}
+                            </div>
+                            <h4>放款信息</h4>
+                            <div class="ui equal width form">
+                                <div class="inline fields">
+                                    <div class="field">
+                                        <label>放款主体:</label>
+                                        <label>{{f_subjectType}}</label>
+                                        <label>|</label>
+                                        <label>{{loanSubject.name}}</label>
+                                    </div>
+                                    <div class="field">
+                                        <label>放款账户:</label>
+                                        <label>{{f_subjectAccount}}</label>
+                                    </div>
+                                </div>
+
+                                <div class="inline fields">
+                                    <div class="field">
+                                        <label>放款金额:</label>
+                                        <label>{{f_actualAmount}}</label>元
+                                    </div>
+                                    <div class="field">
+                                        <label>放款日期:</label>
+                                        <label>{{f_loanTime}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <div class="ui modal" id="gatherRecordViewModal2">
+        <i class="close icon" onclick="closeViewWindow()"></i>
+        <div class="header">
+            还款记录
+        </div>
+        <div class="content">
+            <form class="ui form">
+                <div class="fields inline">
+                    <label>备注：</label>
+                    <div class="field fourteen wide" style="word-break: break-word">
+                        <pre class="auto" id="remark2"></pre>
+                    </div>
+                </div>
+                <div class="ui segment">
+                    <table class="ui teal celled table" id="repayViewTable2">
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</script>

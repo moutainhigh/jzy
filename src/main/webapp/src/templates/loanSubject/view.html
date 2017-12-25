@@ -1,0 +1,58 @@
+<div class="ui modal" id="viewSubjectModal">
+    <i class="close icon"></i>
+    <div class="header">
+        查看放款主体
+    </div>
+    <div class="content">
+        <form class="ui form">
+            <input id="id" type="hidden" name="loanSubject.id"/>
+            <input id="accontInfo" type="hidden" name="accountInfo"/>
+            <h4>基础信息</h4>
+            <div class="ui segment">
+                <div class="inline fields">
+                    <div class="field">
+                        <label>类型</label>
+                        <labe id="type"></labe>
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class=" field">
+                        <label>主体名称</label>
+                        <input type="text" id="name" placeholder="主体名称">
+                    </div>
+                    <div class=" field">
+                        <label id="idNumberView">营业执照</label>
+                        <input type="text" id="idNumber" placeholder="营业执照">
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class=" field">
+                        <label class="three wide">联系电话</label>
+                        <input id="phoneNumber" type="text"  placeholder="联系电话"/>
+                    </div>
+                    <div class=" field">
+                        <label>住址</label>
+                        <input type="text" id="address"placeholder="住址">
+                    </div>
+                </div>
+            </div>
+            <h4>帐号信息</h4>
+            <div class="ui segment">
+                <table class="ui celled table" id="viewSubjectTable">
+                    <thead>
+                    <th>别名</th>
+                    <th>账户名</th>
+                    <th>开户行</th>
+                    <th>账户</th>
+                    </thead>
+                    <tbody id="view-tb"></tbody>
+                </table>
+            </div>
+            <div class=" grouped fields">
+                <label class="four wide">有效性：</label>
+                <label id="status"></label>
+            </div>
+        </form>
+    </div>
+
+</div>

@@ -1,0 +1,77 @@
+<%var jsPart = {%>
+<script src="/js/pages/channel/list.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment teal">
+                <form class="ui fluid  form js-searchForm">
+                    <div class="fields">
+                        <div class="five wide field">
+                            <label>渠道名称</label>
+                            <input id="channelName"  type="text" placeholder="按照渠道名称查找">
+                        </div>
+                        <div class="five wide field">
+                            <label>渠道经理</label>
+                            <div class="ui search js-saleSearch">
+                                <div class="ui icon input">
+                                    <input type="hidden" name="channelID" id="channelID">
+                                    <input class="prompt js-input" type="text" placeholder="输入业务员代码/姓名查询">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                        <div class="five wide field">
+                            <label>&emsp;</label>
+                            <div class="ui teal button" id="search">查询</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">渠道授信</a>
+                <div class="dataTables_wrapper dt-semanticUI no-footer">
+                    <div class="ui grid">
+                        <div class="row">
+                            <div class="eight wide column"></div>
+                            <div class="right aligned eight wide column" >
+                                <a class="ui teal small button" href="/channel/add">
+                                    <i class="add icon"></i>新增渠道
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row dt-table">
+                            <div class="column">
+                                <table class="ui celled small table dataTable no-footer" id="channelList">
+                                    <thead>
+                                    <tr>
+                                        <th>渠道号</th>
+                                        <th>渠道简称</th>
+                                        <th>渠道经理</th>
+                                        <th>授信金额（元）</th>
+                                        <th>保证金杠杆额度（元）</th>
+                                        <th>已用额度（元）</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%};include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"渠道管理"}){}%>

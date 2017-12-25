@@ -1,0 +1,201 @@
+<%var jsPart = {%>
+<script src="/js/pages/specialApply/noMortgage/list_apply.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui grid">
+
+    <div class="row ">
+        <div class="column">
+            <div class="ui segment teal">
+                <div class="ui equal width form">
+                    <div class="four fields">
+                        <div class="field">
+                            <label>房产解押编号</label>
+                            <input type="text" id="applyCode">
+                        </div>
+                        <div class="field">
+                            <label>权利人</label>
+                            <input type="text" id="borrower">
+                        </div>
+                        <div class="field">
+                            <label>房产抵押地</label>
+                            <select id="addressType">
+                                <option value="">请选择</option>
+                                <% for(status in addressTypeList){%>
+                                <option value="${status}">${status.description}</option>
+                                <%}%>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>状态</label>
+                            <select id="loanStatus">
+                                <option value="">请选择</option>
+                                <% for(status in approvalStatusTypeList){%>
+                                <option value="${status}">${status.description}</option>
+                                <%}%>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="aligned center">
+                            <div class="ui tiny button teal" onclick="init.search()">查询</div>
+                            <div class="ui tiny button clear" onclick="init.reset()">重置</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment teal">
+                <a class="ui teal left ribbon label">房产解押申请列表</a>
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="eight wide column"></div>
+                        <div class="right aligned eight wide column" >
+                            <a class="ui teal small button" onclick="init.add_noMortgage()">
+                                <i class="add icon"></i>新增房产解押申请
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <table class="ui celled table compact  small" id="listTable">
+                    <thead>
+                        <tr>
+                            <th>房产解押编号</th>
+                            <th>房产抵押地</th>
+                            <th>业务来源</th>
+                            <th>权利人</th>
+                            <th>状态</th>
+                            <th>审批状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="ui large modal" id="add_noMortgage">
+    <i class="close icon"></i>
+    <div class="header" id="titleName">
+        新增解押
+    </div>
+
+    <div class="content">
+        <form class="ui form" id="add_form">
+            <!--to be fill-->
+            <div class="fields inline">
+                <div class="field">
+                    <label>房产抵押地：</label>
+                    <select name="addressType">
+                        <% for(status in addressTypeList){%>
+                        <option value="${status}">${status.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+            </div>
+            <div class="two fields inline">
+                <div class="field">
+                    <label>房产解押业务单号：</label>
+                    <input type="text" id="businessCode" maxlength="50">
+                    <div class="ui button small teal" onclick="init.apply_code()">申请</div>
+                </div>
+                <div class="field">
+                    <label>抵押日期：</label>
+                    <input type="date" id="mortgageDate" name="mortgageDate">
+                </div>
+            </div>
+
+            <div id="templateInfoBox">
+
+            </div>
+
+        </form>
+    </div>
+    <div class="actions">
+        <button class="ui button" onclick="init.save('add')">保存</button>
+        <button class="ui teal button" onclick="init.save('submit')">保存并提交</button>
+    </div>
+</div>
+
+
+<script type="text/mustach-template" id="templateInfo">
+    <div class="ui horizontal divider margin20t">房产信息</div>
+    <input type="hidden" name="applyId" value="{{houseNoMortgageApply.id}}">
+    <input type="hidden" name="loanId" value="{{loanId}}">
+    {{#houseInfoList}}
+    <div class="js_house">
+        <input type="hidden" value="{{id}}" class="js_id">
+        <div class="ui grid">
+            <div class="three column row">
+                <div class="column">
+                    <b>房产证号：</b>
+                    <span>{{code}}</span>
+                </div>
+                <div class="column">
+                    <b>房产地址：</b>
+                    <span>{{address}}</span>
+                </div>
+                <div class="column">
+                    <b>房产面积(㎡)：</b>
+                    <span>{{area}}</span>
+                </div>
+            </div>
+            {{#userList}}
+            <div class="three column row">
+                <div class="column">
+                    <b>权利人：</b>
+                    <span>{{name}}</span>
+                </div>
+                <div class="column">
+                    <b>{{type}}：</b>
+                    <span>{{idNumber}}</span>
+                </div>
+            </div>
+            {{/userList}}
+
+            <div class="two column row">
+                <div class="column">
+                    <div class="inline fields">
+                        <div class="field">
+                            <label class="js_numName">他项权证号：</label>
+                            <input type="text" class="js_warrantNumber" maxlength="50" required value="{{warrantNumber}}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui diver hidden"></div>
+        </div>
+    </div>
+    {{/houseInfoList}}
+    {{^houseInfoList}}
+        暂无数据
+    {{/houseInfoList}}
+
+
+    <div class="ui inverted divider"></div>
+    <div class="ui grid">
+        <div class="two column row">
+            <div class="column">
+                <b>借款金额（元）:</b>
+                <span>{{loan_amount}}</span>
+            </div>
+            <div class="column">
+                <b>结清日期:</b>
+                <span>{{clear_date}}</span>
+            </div>
+        </div>
+    </div>
+</script>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"房产解押申请列表"}){}%>
+

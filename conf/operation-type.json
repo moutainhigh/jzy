@@ -1,0 +1,55 @@
+{
+  "LoanController": {
+    "generateLoanRepay": "LOAN_REPAY_INSERT",
+    "confirm": "LOAN_CONFIRM",
+    "insertRepayRecord": "LOAN_REPAY_RECORD_INSERT",
+    "deleteRepayRecordById": "LOAN_REPAY_RECORD_DELETE",
+    "clearLoanRepay": "LOAN_REPAY_CLEAR"
+  },
+  "LoanSubjectController": {
+    "save": "LOAN_SUBJECT_INSERT",
+    "delete": "LOAN_SUBJECT_DELETE",
+    "update": "LOAN_SUBJECT_UPDATE"
+  },
+  "BusinessUserController": {
+    "saveUser": "BUSINESS_USER_INSERT",
+    "updateUser": "BUSINESS_USER_UPDATE"
+  },
+  "BusinessOrganizeController": {
+    "saveOrganize": "BUSINESS_ORGANIZE_INSERT",
+    "updateOrganize": "BUSINESS_ORGANIZE_UPDATE"
+  },
+  "BusinessAgencyController": {
+    "saveAgency": "BUSINESS_AGENCY_INSERT",
+    "updateAgency": "BUSINESS_AGENCY_UPDATE"
+  },
+  "MediaTemplateController": {
+    "saveMediaTemp": "MEDIA_TEMP_INSERT",
+    "updateMediaTemp": "MEDIA_TEMP_UPDATE"
+  },
+  "MenuController": {
+    "saveMenu": "MENU_INSERT",
+    "updateMenu": "MENU_UPDATE",
+    "delete": "MENU_DELETE"
+  },
+  "RoleController": {
+    "add": "ROLE_INSERT",
+    "update": "ROLE_UPDATE",
+    "updateUser": "ROLE_UPDATE_USER",
+    "deleteRoleMenu": "ROLE_DELETE_MENU",
+    "delete": "ROLE_DELETE"
+  },
+  "UsersController": {
+    "findPassword": "USER_FIND_PW",
+    "resetPassword": "USER_RESET_PW",
+    "saveUser": "USER_INSERT",
+    "operationType": "USER_UPDATE"
+  },
+  "LoanPushController": {
+    "add": "LOAN_PUSH_ADD",
+    "update": "LOAN_PUSH_END"
+  },
+  "SealController": {
+    "update": "SEAL_USED"
+  }
+}

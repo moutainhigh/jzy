@@ -1,0 +1,121 @@
+<%var jsPart = {%>
+<script src="/js/plugins/mustache.min.js"></script>
+<script src="/js/common/utils.js"></script>
+<script src="/js/pages/discountCompany/index.js"></script>
+<%};%>
+
+
+<%var htmlPart = {%>
+<style>
+    textarea{height: 100px;}
+</style>
+<!--贴现企业-->
+<div class="row ">
+    <div class="column">
+        <div class=" ui segment small teal">
+            <form class="ui fluid  form js-searchForm">
+                <div class="two fields">
+                    <div class="field">
+                        <label>企业名称</label>
+                        <input type="text" id="name" name="name">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui teal submit button mini">查询</div>
+                    <div  class="ui clear button mini">重置</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--<form class="ui segment teal js-searchForm">
+    <div class="ui equal width form small">
+        <div class="two fields">
+            <div class="field">
+                <label>贴现企业</label>
+                <input type="text" id="name" name="name">
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="aligned center">
+            <div class="ui teal submit button mini">查询</div>
+            <div  class="ui clear button mini">重置</div>
+        </div>
+    </div>
+</form>-->
+
+
+<div class="ui hidden divider"></div>
+
+<div class="row" >
+    <div class="column">
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label">贴现企业列表</a>
+            <table class="ui aligned celled table compact  small" id="enterpriseTable">
+                <thead >
+                <tr>
+                    <th>企业名称</th>
+                    <th>营业执照</th>
+                    <th>状态</th>
+                    <th class="center aligned">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="ui modal" id="add_enterprise_modal">
+    <i class="close icon"></i>
+    <div class="header">新增贴现企业</div>
+    <div class=" content  ">
+        <form class="ui form" id="add_enterprise_form">
+            <div class="two fields">
+                <div class="field required">
+                    <label>公司名称</label>
+                    <input type="text" name="name">
+                </div>
+                <div class="field required">
+                    <label>成立时间</label>
+                    <input type="date" name="establishDate" id="establishDate">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui mini black button" id="addCancelBnt">取消</div>
+        <div class="ui mini teal button " id="addBnt" onclick="add()">保存</div>
+    </div>
+</div>
+
+<div class="ui modal" id="edit_enterprise_modal">
+    <i class="close icon"></i>
+    <div class="header">编辑</div>
+    <div class=" content">
+        <form class="ui form" id="edit_enterprise_form">
+            <input class="item" type="hidden" name="id" id="id">
+            <div class="two fields">
+                <div class="field required">
+                    <label>公司名称</label>
+                    <input class="item" type="text" name="name">
+                </div>
+                <div class="field required">
+                    <label>成立时间</label>
+                    <input class="item" type="date" name="establishDate" id="establishDate">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui black button" id="editCancelBnt">取消</div>
+        <div class="ui  teal button" id="editBnt">保存</div>
+    </div>
+</div>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"贴现企业维护"}){}%>
+

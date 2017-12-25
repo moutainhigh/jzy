@@ -1,0 +1,428 @@
+<%var jsPart = {%>
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/common/one_fileUpload.js"></script>
+<script src="/js/pages/assetManage/houseList.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment teal">
+                <form class="ui fluid  form" id="houseForm">
+                    <div class="four fields">
+                        <div class="field">
+                            <label>借款人</label>
+                            <input type="text" name="borrower" class="js_item">
+                        </div>
+                        <div class="field">
+                            <label>放款时间</label>
+                            <input type="text" name="loanDate" class="js_item js_dateRange">
+                        </div>
+                        <div class=" field">
+                            <label>业务单号</label>
+                            <input type="text" name="code" class="js_item">
+                        </div>
+                        <div class=" field">
+                            <label>抵押时间</label>
+                            <input type="text" name="mortgageDate" class="js_item js_dateRange">
+                        </div>
+
+                    </div>
+                    <div class="four fields">
+                        <div class="field">
+                            <label>解押时间</label>
+                            <input type="text" name="noMortgageDate" class="js_item js_dateRange">
+                        </div>
+                        <div class="field">
+                            <label>存放状态</label>
+                            <select name="storageStatus" class="js_item">
+                                <option value="">请选择</option>
+                                <option value="IN">入库</option>
+                                <option value="OUT">出库</option>
+                            </select>
+                        </div>
+                        <div class=" field">
+                            <label>产权状态</label>
+                            <select name="propertyRightStatus" class="js_item">
+                                <option value="">全部</option>
+                                <option value="WAITSECURED">待抵押</option>
+                                <option value="SECURED">已抵押</option>
+                                <option value="SOLVED">已解押</option>
+                            </select>
+                        </div>
+
+                        <div class=" field">
+                            <label>类型</label>
+                            <select name="channelType" class="js_item">
+                                <option value="">请选择</option>
+                                <option value="0">自营</option>
+                                <option value="1">渠道</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="four fields">
+                        <div class="field">
+                            <label>业务员</label>
+                            <div class="ui search js-saleSearch">
+                                <div class="ui icon input">
+                                    <input type="hidden" name="saleName" class="js_item">
+                                    <input class="prompt js-input" type="text" placeholder="输入业务员名称">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+
+                        <div class=" field">
+                            <label>业务来源</label>
+                            <div id="managerChannelSearch" class="ui search">
+                                <div class="ui icon input">
+                                    <input type="hidden" class="js_item" name="channelId" id="channelId">
+                                    <input value="" class="prompt js-input" type="text" placeholder="输入渠道名/渠道简称"
+                                           name="channelSearchName" >
+                                    <i class="js_search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="ui teal mini button" onclick="search.reSearch();">查询</div>
+                    <div class="ui clear mini button" onclick="search.reset();">重置</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--列表-->
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">房产管理列表</a>
+                <div class="overflow">
+                    <div class="chevron right">
+                        <div class="ui teal small button" onclick="search.exports('houseForm')">
+                            <i class="external share icon"></i>导出
+                        </div>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;overflow-y: hidden;">
+                    <table class="ui celled small table" id="cdTable">
+                        <thead>
+                            <tr>
+                                <th>业务单号</th>
+                                <th>产品名</th>
+                                <th>放款主体</th>
+                                <th>借款人</th>
+                                <th>业务来源</th>
+                                <th>借款金额（元）</th>
+                                <th>借款期限</th>
+
+                                <th>房产估值（万元）</th>
+                                <th>房产面积（㎡）</th>
+                                <th>房产地址</th>
+
+                                <th>权属人</th>
+                                <th>房产证号</th>
+                                <th>抵押类型</th>
+                                <th>担保债权（元）</th>
+                                <th>抵押日期</th>
+                                <th>解押日期</th>
+                                <th>产权状态</th>
+                                <th>存放状态</th>
+                                <th>入库时间</th>
+                                <th>出库时间</th>
+                                <th>放款时间</th>
+                                <th>到期日</th>
+                                <th>展期到期日</th>
+
+                                <th>产权操作</th>
+                                <th>存放操作</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="ui modal small" id="WAITSECURED_modal">
+    <i class="close icon"></i>
+    <div class="header">
+        产权-抵押
+    </div>
+    <div class="content">
+        <form class="ui form">
+            <input type="hidden" name="id">
+            <div class="two wide fields">
+                <div class="field">
+                    <label>房产证号</label>
+                    <input type="text" name="code" disabled>
+                </div>
+                <div class="field required">
+                    <label>抵押类型</label>
+                    <select name="mortgageType">
+                    </select>
+                </div>
+            </div>
+            <div class="two wide fields">
+                <div class="field required">
+                    <label>担保债权（元）</label>
+                    <input type="text" name="guaranteeResponsibility">
+                </div>
+                <div class="field required">
+                    <label>抵押时间</label>
+                    <input type="date" name="mortgageDate">
+                </div>
+            </div>
+
+            <div class=" field">
+                <label> 抵押文件</label>
+                <span class="js-uploadBtn button ui mini" data-file="more" data-catalog="houseManage"><i class="upload icon"></i>选择上传文件</span>
+                <div class="js_fileBox">
+                </div>
+                <input type="hidden" name="contractFileName" disabled>
+                <input type="hidden" name="contractFileUrl" disabled>
+                <input type="hidden" name="fileUrls">
+            </div>
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui black button mini" onclick="handle.hide('WAITSECURED')">取消</div>
+        <div class="ui teal button mini js_submit" data-id="WAITSECURED">保存</div>
+    </div>
+</div>
+
+<div class="ui modal small" id="SECURED_modal">
+    <i class="close icon"></i>
+    <div class="header">
+        产权-解押
+    </div>
+
+    <div class="content">
+        <form class="ui form">
+            <input type="hidden" name="id">
+            <div class="two wide fields">
+                <div class="field">
+                    <label>房产证号</label>
+                    <input type="text" name="code" disabled>
+                </div>
+                <div class="field required">
+                    <label>抵押类型</label>
+                    <input type="text" name="mortgageType" disabled>
+                </div>
+            </div>
+            <div class="two wide fields">
+                <div class="field required">
+                    <label>担保债权（元）</label>
+                    <input type="text" name="guaranteeResponsibility" disabled>
+                </div>
+                <div class="field required">
+                    <label>解押时间</label>
+                    <input type="date" name="noMortgageDate">
+                </div>
+            </div>
+            <div class="one wide fields">
+                <div class=" field">
+                    <label>抵押文件：</label>
+                    <input type="hidden" name="fileUrls" class="js_info">
+                    <div class="js_fileBox">
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui  black button mini" onclick="handle.hide('SECURED')">取消</div>
+        <div class="ui teal button mini js_submit" data-id="SECURED">保存</div>
+    </div>
+</div>
+
+<div class="ui modal small" id="IN_modal">
+    <i class="close icon"></i>
+    <div class="header">
+        存放-入库
+    </div>
+    <div class="content">
+        <form class="ui form">
+            <input type="hidden" name="id">
+            <div class="two wide fields">
+                <div class="field">
+                    <label>房产证号</label>
+                    <input type="text" name="code" disabled>
+                </div>
+
+                <div class="field required">
+                    <label>入库时间</label>
+                    <input type="date" name="inDate">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui  black button mini" onclick="handle.hide('IN')">取消</div>
+        <div class="ui teal button mini js_submit" data-id="IN">保存</div>
+    </div>
+</div>
+
+<div class="ui modal small" id="OUT_modal">
+    <i class="close icon"></i>
+    <div class="header">
+        存放-出库
+    </div>
+    <div class="content">
+        <form class="ui form">
+            <input type="hidden" name="id">
+            <div class="two wide fields">
+                <div class="field">
+                    <label>房产证号</label>
+                    <input type="text" name="code" disabled>
+                </div>
+
+                <div class="field required">
+                    <label>出库时间</label>
+                    <input type="date" name="outDate">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui  black button mini" onclick="handle.hide('OUT')">取消</div>
+        <div class="ui teal button mini js_submit" data-id="OUT">保存</div>
+    </div>
+</div>
+
+
+<div class="ui modal" id="DETAIL_modal">
+    <i class="close icon"></i>
+    <div class="header">
+        房产详情
+    </div>
+
+    <div class="content">
+        <form class="ui form">
+            <div class="ui grid">
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>业务单号：</b>
+                        <span class="js_info" data-name="businessCode"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>产品名：</b>
+                        <span class="js_info" data-name="productName"></span>
+                    </div>
+                </div>
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>放款主体：</b>
+                        <span class="js_info" data-name="loanSubject"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>借款人：</b>
+                        <span class="js_info" data-name="borrower"></span>
+                    </div>
+                </div>
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>业务来源：</b>
+                        <span class="js_info" data-name="saleName"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>借款金额（元）：</b>
+                        <span class="js_info" data-name="loanPrincipal"></span>
+                    </div>
+                </div>
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>借款期限：</b>
+                        <span class="js_info" data-name="loanTerm"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>房产估值（万元）：</b>
+                        <span class="js_info" data-name="price"></span>
+                    </div>
+                </div>
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>房产面积（㎡）：</b>
+                        <span class="js_info" data-name="area"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>房产地址：</b>
+                        <span class="js_info" data-name="address"></span>
+                    </div>
+                </div>
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>权属人：</b>
+                        <span class="js_info" data-name="ower"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>房产证号：</b>
+                        <span class="js_info" data-name="code"></span>
+                    </div>
+                </div>
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>抵押类型：</b>
+                        <span class="js_info" data-name="mortgageType"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>担保债权（元）：</b>
+                        <span class="js_info" data-name="guaranteeResponsibility"></span>
+                    </div>
+                </div>
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>产权状态：</b>
+                        <span class="js_info" data-name="propertyRightStatus"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>存放状态：</b>
+                        <span class="js_info" data-name="storageStatus"></span>
+                    </div>
+                </div>
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>抵押时间：</b>
+                        <span class="js_info" data-name="mortgageDate"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>解押时间：</b>
+                        <span class="js_info" data-name="noMortgageDate"></span>
+                    </div>
+                </div>
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>出库时间：</b>
+                        <span class="js_info" data-name="outDate"></span>
+                    </div>
+                    <div class="column ten side">
+                        <b>入库时间：</b>
+                        <span class="js_info" data-name="inDate"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <b>解压文件：</b>
+                        <span class="js_fileBox break-all js_info"></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"房产管理"}){}%>

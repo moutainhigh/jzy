@@ -1,0 +1,411 @@
+<%var jsPart = {%>
+<script>
+    //var timeVal = moment().subtract(1, "months").format('YYYY-MM-DD') +'~'+ moment(new Date()).format('YYYY-MM-DD')
+    var search = {
+        timeRange:function(){
+            $('#expireDate').dateRangePicker({
+                separator : '~',
+            });
+            $('#submitDate').dateRangePicker({
+                separator : '~',
+            });
+            $('#actualLoanDate').dateRangePicker({
+                separator : '~',
+            });
+            $('#clearedDate').dateRangePicker({
+                separator : '~',
+            });
+            //$('#actualLoanDate').val(timeVal);
+        },
+
+        /*
+         * 查询重置
+         * */
+        reset:function(){
+            $("#billType").val("");
+            $("#submitter").val("");
+            $("#submitDate").val("");
+            $("#clearedDate").val("");
+            $('#status').val("");
+            //$('#channelId').val("");
+            $('#expireDate').val("");
+            $('#actualLoanDate').val("");
+            $('#saleName').val("");
+            $('#loanStatus').val("");
+            $('.js-input').val("");
+        },
+
+        /*
+         * 查询导出
+         * */
+        export:function(){
+            //todo
+            var str = '';
+            var d =['billType','submitter','submitDate',
+                    'status','expireDate',
+                    'actualLoanDate','saleName','clearedDate','loanStatus'];
+            var d_val = [];
+            for(i in d){
+                d_val.push($('#'+d[i]).val())
+            }
+            for(var i =0;i<d.length;i++){
+                if(i!=d.length-1){
+                    str += d[i]+'='+d_val[i]+'&';
+                }else{
+                    str += d[i]+'='+d_val[i];
+                }
+            }
+            window.open('/business_report/business_bill_export?'+str,'_blank');
+        },
+    };
+
+    //列表初始化
+    function initLoanList() {
+        dtTable = $("#cdTable").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query b_pj report'],
+                "data": function (d) {
+                    var data ={};
+                    data.billType =$('#billType').val();
+                    data.submitter = $('#submitter').val();
+                    data.submitDate =$('#submitDate').val();
+                    data.status = $('#status').val();
+                    data.expireDate = $('#expireDate').val();
+                    data.saleName =$('#saleName').val();
+                    data.actualLoanDate = $('#actualLoanDate').val();
+                    data.clearedDate = $('#clearedDate').val();
+                    data.loanStatus = $('#loanStatus').val();
+                    var _d = $.extend(data,{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST",
+            },
+            columns: [
+                {data: 'businessOrderNo'},
+                {data: 'billType'},
+                {data: 'billCode'},
+                {data: 'submitter'},
+                {data: 'submitDate'},
+                {data: 'billAmount'},
+                {data: 'billingDate'},
+                {data: 'expireDate'},
+                {data: 'loanSubject'},
+                {data: 'actualLoanDate'},
+
+                {data: 'businessSource'},
+                {data: 'payAmount'},
+                {data: 'discountPerson'},
+                {data: 'cost'},
+                {data: 'discountDays'},
+                {data: 'billInterest'},
+                {data: 'intermediaryTotalFee'},
+                {data: 'intermediaryName'},
+                {data: 'saleName'},
+                {data: 'status'},
+
+                {data: 'clearedDate'},
+                {data: 'loanStatus'},
+                {data: null}
+
+            ],
+            columnDefs: [{
+                targets:[0,1,2,3,8,10,12,14,17,18],
+                className:"single line",
+                render: function (data, type, row, meta) {
+                    return (data=='' | !data) ?'--' : data;
+                }
+            },{
+                targets:[4,6,7,9,20],
+                className:"single line",
+                render: function (data, type, row, meta) {
+                    return  (data == '' | !data) ? '--' : moment(data).format('YYYY-MM-DD');
+                }
+            },{
+                targets:[5,11,15,16],
+                className:'right aligned single line',
+                render: function (data, type, row, meta) {
+                    return  (data == '' | !data) ? '0.00' : accounting.formatMoney(data,'',2,',','.');
+                }
+            },{
+                targets:[13],
+                className:'right aligned single line',
+                render: function (data, type, row, meta) {
+                    return  (data == '' | !data) ? '--' : data;
+                }
+            },{
+                targets:[19],
+                className:"single line",
+                render: function (data, type, row, meta) {
+                    return (data=='' | !data) ? '--' : enums.Loan_repay_status[data];
+                }
+            },{
+                targets:[21],
+                className:"single line",
+                render: function (data, type, row, meta) {
+                    return (data=='' | !data) ? '--' : enums.loan_status[data];
+                }
+            },{
+                targets:[22],
+                className:"single line",
+
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            fnDrawCallback:function(oSettings){
+                var json = jQuery.parseJSON(oSettings.jqXHR.responseText);
+                var data = json.data;
+                var billCode =[],
+                    profit=[],
+                    bill_value=[],//重复的列的数量
+                    bill_key = [],//重复的key
+                    z=0;
+                for(i in data){
+                    billCode.push(data[i].businessOrderNo);
+                }
+
+                for(var i =0 ;i< billCode.length;){
+                    var count = 0;
+                    for (var j = i; j < billCode.length; j++) {
+                        if (billCode[i] == billCode[j]) {
+                            count++;
+                        }
+                    }
+                    bill_value.push(count);
+                    profit.push(data[i].profit);
+                    bill_key.push(billCode[i]);
+                    i += count;
+                }
+
+                $('#cdTable tbody tr').each(function(i,ele){
+                    var len = $(this).children('td').length - 1
+                    $(this).children('td:eq('+len+')').remove();
+                });
+
+                for(var l=0;l<bill_value.length;l++){
+                    if(l==0){
+                        z = 0;
+                    }else{
+                        z += bill_value[l-1]
+                    }
+                    var profits = profit[l]==undefined||'' ? '--': accounting.formatMoney(profit[l],'',2,',','.');
+                    $('#cdTable tbody tr:eq('+z+')').append('<td rowspan='+bill_value[l]+'>'+profits+'</td>')
+                }
+            }
+        })
+    }
+
+    function initAll(){
+        search.timeRange();
+        initLoanList();
+    }
+    initAll();
+
+
+    var times = function(){
+        var timesRange = $('#actualLoanDate').val(),
+                time_1 = timesRange.split('~')[0],
+                time_2 = timesRange.split('~')[1],
+                timeSub = moment(time_2).subtract(1, "years");
+        var timeReg = /\d{4}(\-|\/|.)\d{1,2}\1\d{1,2}/;
+
+        if(timesRange.indexOf('~') < 0 || !timeReg.test(time_1) || !timeReg.test(time_2)){
+            $.uiAlert({type: "danger", textHead: '', text: '请选择正确的日期格式', time: 4});
+            return false;
+        }else{
+            return  time_one = time_1,
+                    time_Sub = timeSub;
+        }
+    };
+
+    $("#search").click(function () {
+        if($('#actualLoanDate').val() == ''){
+            dtTable.ajax.reload();//查询
+        }else{
+            if(times() == false){
+                return false;
+            }else if(moment(time_one) < moment(time_Sub)){
+                $.uiAlert({type: "danger", textHead: '提示', text: '时间最大区间为1年', time: 3});
+                return false;
+            }else{
+                dtTable.ajax.reload();//查询
+            }
+        }
+    });
+
+    $("#reset").click(function(){
+        search.reset();//重置
+    });
+
+    $('#export_btn').click(function(){
+        if($('#actualLoanDate').val() == ''){
+            search.export();//导出
+        }else{
+            if(times() == false){
+                return false;
+            }else if(moment(time_one) < moment(time_Sub)){
+                $.uiAlert({type: "danger", textHead: '提示', text: '时间最大区间为1年', time: 3});
+                return false;
+            }else{
+                search.export();//导出
+            }
+        }
+    });
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment teal">
+                <form class="ui fluid  form">
+                    <div class="four fields">
+                        <div class="field">
+                            <label>票据类型</label>
+                            <select name="billType" id="billType">
+                                <option value="">请选择</option>
+                                <% for(bill in billType) { %>
+                                <option value="${bill.name}">${bill.name}</option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class=" field">
+                            <label>提单人</label>
+                            <div class="ui input">
+                                <input class="prompt" type="text" id="submitter" name="submitter">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>提单日期</label>
+                            <div class="ui input">
+                                <input class="prompt" type="text" id="submitDate" name="submitDate">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>票据状态</label>
+                            <select name="status" id="status" class="ui dropdown">
+                                <option value="">全部</option>
+                                <% for(status in statusList){%>
+                                <option value="${status}">${status.description}</option>
+                                <%}%>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="four fields">
+                        <!--<div class="field">-->
+                            <!--<label>业务来源</label>-->
+                            <!--<div class="ui search js-businessSearch">-->
+                                <!--<div class="ui icon input">-->
+                                    <!--<input type="hidden" id="channelId" name="channelId">-->
+                                    <!--<input value="" class="prompt  js-input" type="text" placeholder="输入渠道名/渠道简称">-->
+                                    <!--<i class="js_search icon"></i>-->
+                                <!--</div>-->
+                                <!--<div class="results"></div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <div class=" field">
+                            <label>票据到期日期</label>
+                            <div class="ui input">
+                                <input class="prompt" type="text" id="expireDate" name="expireDate">
+                            </div>
+                        </div>
+                        <div class=" field">
+                            <label>实际放款日期</label>
+                            <div class="ui input">
+                                <input class="prompt" type="text" id="actualLoanDate" name="actualLoanDate">
+                            </div>
+                        </div>
+                        <div class=" field">
+                            <label>业务员</label>
+                            <div class="ui input">
+                                <input class="prompt" type="text" id="saleName" name="saleName">
+                            </div>
+                        </div>
+                        <div class=" field">
+                            <label>结清日期</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" id="clearedDate" name="clearedDate">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="four fields">
+                        <div class="field">
+                            <label>业务单状态</label>
+                            <select name="loanStatus" id="loanStatus" class="ui dropdown">
+                                <option value="">全部</option>
+                                <% for(loanStatus in LoanStatusList){%>
+                                <option value="${loanStatus}">${loanStatus.description}</option>
+                                <%}%>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="search" class="ui teal mini button">查询</div>
+                    <div id="reset" class="ui clear mini button">重置</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--列表-->
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">票据报表</a>
+                <div class="overflow">
+                    <div class="chevron right">
+                        <a class="ui teal small button" id="export_btn" href="javascript:;">
+                            <i class="external share icon"></i>导出
+                        </a>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;overflow-y: hidden;">
+                    <table class="ui celled small table" id="cdTable">
+                        <thead>
+                        <tr>
+                            <th>业务单号</th>
+                            <th>票据类型</th>
+                            <th>票号</th>
+                            <th>提单人</th>
+                            <th>提单日期</th>
+                            <th>票面金额</th>
+                            <th>票据开票日期</th>
+                            <th>实际到期日</th>
+                            <th>放款主体</th>
+                            <th>实际放款日期</th>
+
+                            <th>业务来源</th>
+                            <th>付款金额（元）</th>
+                            <th>贴现人</th>
+                            <th>成本报价(%)</th>
+                            <th>实际贴现天数</th>
+                            <th>贴现利息（元）</th>
+                            <th>实付居间费（元）</th>
+                            <th>居间人</th>
+                            <th>业务员</th>
+                            <th>票据状态</th>
+
+                            <th>实际结清日期</th>
+                            <th>业务单状态</th>
+                            <th>净利润（元）</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"票据报表"}){}%>

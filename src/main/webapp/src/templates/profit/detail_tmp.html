@@ -1,0 +1,426 @@
+<div class="ui modal" id="detail_modal_else">
+    <i class="close icon" onclick="detail.hide('detail_modal_else')"></i>
+    <div class="header">
+        利润参数配置
+    </div>
+
+    <div class="content" id="form_else">
+        <form class="ui form">
+            <table class="ui celled table compact small">
+                <input type="hidden" name="productProfit.productTypeId">
+                <thead>
+                    <tr>
+                        <th>项目</th>
+                        <th>计算公式</th>
+                        <th>参数值</th>
+                        <th>参数值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class=" single line">利息收入（含税）</td>
+                        <td>应还利息合计</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class=" single line">资金成本（含税）</td>
+                        <td>申请金额*借款期限/12*资金成本率%或申请金额*借款期限/365*资金成本率%</td>
+                        <td>
+                            <div class="field">
+                                <label>资产成本率（按日计息,单位：%）</label>
+                                <input type="text" name="productProfit.capitalCostDay">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="field">
+                                <label>资产成本率（按月计息,单位：%）</label>
+                                <input type="text" name="productProfit.capitalCostMonth">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class=" single line">增值税</td>
+                        <td>应还利息合计/价税合计系数*增值税税率</td>
+                        <td>
+                            <div class="field">
+                                <label>价税合计系数</label>
+                                <input type="text" name="productProfit.totalTax">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="field">
+                                <label>增值税税率（%）</label>
+                                <input type="text" name="productProfit.valueAddedTax">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class=" single line">营业税金及附加</td>
+                        <td>增值税*税金及附加税率</td>
+                        <td>
+                            <div class="field">
+                                <label>税金及附加税率（%）</label>
+                                <input type="text" name="productProfit.surtax">
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class=" single line">人工费用</td>
+                        <td>每单固定成本</td>
+                        <td>
+                            <div class="field">
+                                <label>成本（自营，单位：元）</label>
+                                <input type="text" name="productProfit.laborCostSelf">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="field">
+                                <label>成本（渠道，单位：元）</label>
+                                <input type="text" name="productProfit.laborCostChannel">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class=" single line">行政费用</td>
+                        <td>每单固定成本</td>
+                        <td>
+                            <div class="field">
+                                <label>成本（元）</label>
+                                <input type="text" name="productProfit.administrativeExpenses">
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class=" single line">资产坏账拨备</td>
+                        <td>申请金额*坏账拨备率</td>
+                        <td>
+                            <div class="field">
+                                <label>坏账拨备率（%）</label>
+                                <input type="text" name="productProfit.badAssetsReserve">
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class=" single line">金服运营成本</td>
+                        <td>申请金额*借款期限/12*平台服务费率（按月）或申请金额*借款期限/365*平台服务费率（按日）</td>
+                        <td>
+                            <div class="field">
+                                <label>平台服务费率（按日计息，单位：%）</label>
+                                <input type="text" name="productProfit.operatingCostDay">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="field">
+                                <label>平台服务费率（按月计息，单位：%）</label>
+                                <input type="text" name="productProfit.operatingCostMonth">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="ui grid">
+                <div class="column row">
+                    <div class="column">
+                        <div class="ui teal button js_save">保存</div>
+                        <div class="ui button" onclick="detail.hide('detail_modal_else')">取消</div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="ui modal" id="detail_modal_bill">
+    <i class="close icon" onclick="detail.hide('detail_modal_bill')"></i>
+    <div class="header">
+        利润参数配置
+    </div>
+
+    <div class="content">
+        <form class="ui form" id="form_bill">
+            <input type="hidden" name="productProfit.productTypeId">
+            <table class="ui celled table compact small">
+                <thead>
+                <tr>
+                    <th>项目</th>
+                    <th>计算公式</th>
+                    <th>参数值</th>
+                    <th>参数值</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>利息收入（含税）</td>
+                    <td>贴现利息</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class=" single line">资金成本（含税）</td>
+                    <td>出票金额/[1+(实际贴现天数*资金成本率)/365]*实际贴现天数/365*资金成本率</td>
+                    <td>
+                        <div class="field">
+                            <label >资金成本率（%）</label>
+                            <input type="text" name="productProfit.capitalCostDay">
+                        </div>
+
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class=" single line">增值税</td>
+                    <td>贴现利息/价税合计系数*增值税税率</td>
+                    <td>
+                        <div class="field">
+                            <label>价税合计系数</label>
+                            <input type="text" name="productProfit.totalTax">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="field">
+                            <label>增值税税率（%）</label>
+                            <input type="text" name="productProfit.valueAddedTax">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class=" single line">营业税金及附加</td>
+                    <td>增值税*税金及附加税率</td>
+                    <td>
+                        <div class="field">
+                            <label>税金及附加税率（%）</label>
+                            <input type="text" name="productProfit.surtax">
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class=" single line">人工费用</td>
+                    <td>每单固定成本</td>
+                    <td>
+                        <div class="field">
+                            <label>成本（自营，单位：元）</label>
+                            <input type="text" name="productProfit.laborCostSelf">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="field">
+                            <label>成本（渠道，单位：元）</label>
+                            <input type="text" name="productProfit.laborCostChannel">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class=" single line">行政费用</td>
+                    <td>每单固定成本</td>
+                    <td>
+                        <div class="field">
+                            <label>成本（元）</label>
+                            <input type="text" name="productProfit.administrativeExpenses">
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class=" single line">居间费及税金</td>
+                    <td>居间总费用*居间费价税合计系数</td>
+                    <td>
+                        <div class="field">
+                            <label>居间费价税合计系数</label>
+                            <input type="text" name="productProfit.brokerageFee">
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class=" single line">资产坏账拨备</td>
+                    <td>付款金额*坏账拨备率</td>
+                    <td>
+                        <div class="field">
+                            <label>坏账拨备率（%）</label>
+                            <input type="text" name="productProfit.badAssetsReserve">
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class=" single line">金服运营成本</td>
+                    <td>出票金额/[1+（实际贴现天数*资金成本率）/365]*实际贴现天数/365*平台服务费率</td>
+                    <td>
+                        <div class="field">
+                            <label>平台服务费率（%）</label>
+                            <input type="text" name="productProfit.operatingCostDay">
+                        </div>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="ui grid">
+                <div class="column row">
+                    <div class="column">
+                        <div class="ui teal button js_save">保存</div>
+                        <div class="ui button" onclick="detail.hide('detail_modal_bill')">取消</div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="ui modal" id="detail_modal_personal">
+    <i class="close icon" onclick="detail.hide('detail_modal_personal')"></i>
+    <div class="header">
+        利润参数配置
+    </div>
+
+    <div class="content">
+        <form class="ui form" id="form_personal">
+            <input type="hidden" name="productProfit.productTypeId">
+            <table class="ui celled table compact small">
+                <thead>
+                <tr>
+                    <th>项目</th>
+                    <th>计算公式（除等额本息）</th>
+                    <th>计算公式（等额本息）</th>
+                    <th>参数值</th>
+                    <th>参数值</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>利息收入（含税）</td>
+                    <td>应还利息合计</td>
+                    <td>应还利息合计</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class=" single line">资金成本（含税）</td>
+                    <td>申请金额*借款期限/12*资金成本率（按月）或申请金额*借款期限/365*资金成本率（按日）</td>
+                    <td>申请金额*3/12*资金成本率%+第三期对应剩余本金*3/12*资金成本率%+第六期对应剩余本金*3/12*资金成本率%
+                        +...+第（3*N）期对应剩余本金*3/12*资金成本率%</td>
+                    <td class="single line">
+                        <div class="field">
+                            <label >资产成本率（按日计息，单位：%）</label>
+                            <input type="text" name="productProfit.capitalCostDay">
+                        </div>
+                    </td>
+                    <td class="single line">
+                        <div class="field">
+                            <label >资产成本率（按月计息，单位：%）</label>
+                            <input type="text" name="productProfit.capitalCostMonth">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class=" single line">增值税</td>
+                    <td>应还利息合计/价税合计系数*增值税税率</td>
+                    <td>应还利息合计/价税合计系数*增值税税率</td>
+                    <td class="single line">
+                        <div class="field">
+                            <label>价税合计系数</label>
+                            <input type="text" name="productProfit.totalTax">
+                        </div>
+                    </td>
+                    <td class="single line">
+                        <div class="field">
+                            <label>增值税税率（%）</label>
+                            <input type="text" name="productProfit.valueAddedTax">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class=" single line">营业税金及附加</td>
+                    <td>增值税*税金及附加税率</td>
+                    <td class="single line">增值税*税金及附加税率</td>
+                    <td class="single line">
+                        <div class="field">
+                            <label>税金及附加税率（%）</label>
+                            <input type="text" name="productProfit.surtax">
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class=" single line">人工费用</td>
+                    <td>每单固定成本</td>
+                    <td>每单固定成本</td>
+                    <td class="single line">
+                        <div class="field">
+                            <label>成本（自营，单位：元）</label>
+                            <input type="text" name="productProfit.laborCostSelf">
+                        </div>
+                    </td>
+                    <td class="single line">
+                        <div class="field">
+                            <label>成本（渠道，单位：元）</label>
+                            <input type="text" name="productProfit.laborCostChannel">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class=" single line">行政费用</td>
+                    <td>每单固定成本</td>
+                    <td>每单固定成本</td>
+                    <td class="single line">
+                        <div class="field">
+                            <label>成本（元）</label>
+                            <input type="text" name="productProfit.administrativeExpenses">
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class=" single line">资产坏账拨备</td>
+                    <td>申请金额*坏账拨备率</td>
+                    <td>申请金额*3/12*坏账拨备率+第三期对应剩余本金*3/12*坏账拨备率+第六期对应剩余本金*3/12*坏账拨备率
+                        +...+第（3*N）期对应剩余本金*3/12*坏账拨备率</td>
+                    <td class="single line">
+                        <div class="field">
+                            <label>坏账拨备率（%）</label>
+                            <input type="text" name="productProfit.badAssetsReserve">
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class=" single line">金服运营成本</td>
+                    <td>申请金额*借款期限/12*平台服务费率（按月）或申请金额*借款期限/365*平台服务费率（按日）</td>
+                    <td>申请金额*3/12*平台服务费率（按月）+第三期对应剩余本金*3/12*平台服务费率（按月）+第六期对应剩余本金*3/12*平台服务费率（按月）
+                        +...+第（3*N）期对应剩余本金*3/12*平台服务费率（按月）</td>
+                    <td class="single line">
+                        <div class="field">
+                            <label>平台服务费率（按日计息，单位：%）</label>
+                            <input type="text" name="productProfit.operatingCostDay">
+                        </div>
+                    </td>
+                    <td class="single line">
+                        <div class="field">
+                            <label>平台服务费率（按月计息，单位：%）</label>
+                            <input type="text" name="productProfit.operatingCostMonth">
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="ui grid">
+                <div class="column row">
+                    <div class="column">
+                        <div class="ui teal button js_save">保存</div>
+                        <div class="ui button" onclick="detail.hide('detail_modal_personal')">取消</div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

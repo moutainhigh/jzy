@@ -1,0 +1,79 @@
+<%var jsPart = {%>
+
+<script>
+    weui.form.checkIfBlur('#findForm');
+
+    function validateForm(){
+        weui.form.validate('#findForm', function (error) {
+            if (!error) {
+                var loading = weui.loading('提交中...');
+                $.ajax({
+                    type: "post",
+                    url: "/user/findPassword",
+                    data: {
+                        login:$("#login").val(),
+                        imageCaptcha:$("#imgCode").val()
+                    },
+                    async: true,
+                    success: function (response) {
+                        loading.hide();
+                        if (response.ok == true) {
+                            $("#loginForm").submit();
+                            weui.alert(response.message, {title: '找回成功'});
+                        } else {
+                            weui.alert(response.message, {title: '找回失败'});
+                        }
+
+                    }
+                });
+            }
+            // return true; // 当return true时，不会显示错误
+        });
+    }
+
+    $("#js_SubmitBtn").on("click",function(){
+        validateForm()
+    })
+
+    $(document).on("keyup","#loginForm",function(e){
+        if(event.keyCode ==13){
+            validateForm()
+        }
+    })
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="login">
+    <div class="weui-article"><img src="/image/logo-black.png" alt=""></div>
+    <form id="findForm" action="/m/login" method="get">
+        <div class="weui-cells__title">找回密码</div>
+        <div class="weui-cells weui-cells_form">
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">用户名</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text"  placeholder="请输入用户名或手机号" emptyTips="请输入用户名或手机号" name="user.login" required id="login">
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">图形验证码</label></div>
+                <div class="weui-cell__bd">
+                    <input type="text" class="weui-input" required="" placeholder="输入验证码" emptyTips="请输入验证码" name="imageCaptcha" required id="imgCode">
+
+                </div>
+                <div class="weui-cell__ft">
+                    <img alt="" class="weui-vcode-img" id="imageCaptcha" src="../captcha">
+                </div>
+            </div>
+        </div>
+        <div class="weui-btn-area">
+            <button class="weui-btn weui-btn_primary" type="button" id="js_SubmitBtn">确认找回</button>
+        </div>
+        <div class="weui-footer ">
+            <p class="weui-footer__links">
+                <a href="/user/toLogin" class="weui-footer__link">返回登录</a>
+            </p>
+        </div>
+    </form>
+</div>
+<%}; include("/h5/common.html",{jsSection:jsPart,htmlSection:htmlPart,title:"找回密码"}){}%>

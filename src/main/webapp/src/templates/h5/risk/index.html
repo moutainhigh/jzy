@@ -1,0 +1,102 @@
+<%var jsPart = {%>
+<!--待审批模板-->
+<script type="text/mustach-template" id="listTemplate">
+    {{#data}}
+    <div class="weui-form-preview">
+        <!--<div class="weui-form-preview__hd">-->
+        <!--<div class="weui-form-preview__item">-->
+        <!--<label class="weui-form-preview__label">业务单号</label>-->
+        <!--<em class="weui-form-preview__value">{{code}}</em>-->
+        <!--</div>-->
+        <!--</div>-->
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">业务单号</label>
+                <span class="weui-form-preview__value">{{code}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">产品类型</label>
+                <span class="weui-form-preview__value">{{productTypeName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">产品子类</label>
+                <span class="weui-form-preview__value">{{productName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">借款人</label>
+                <span class="weui-form-preview__value">{{borrserName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">金额（元）</label>
+                <span class="weui-form-preview__value f-black">{{amount}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">期限</label>
+                <span class="weui-form-preview__value">{{termtypeInCN}}</span>
+            </div>
+        </div>
+        <div class="weui-form-preview__ft">
+            <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="detail?id={{id}}&from=F">审批</a>
+        </div>
+    </div>
+    <br>
+    {{/data}}
+    {{^data}}
+    <div class="weui-loadmore weui-loadmore_line">
+        <span class="weui-loadmore__tips">暂无数据</span>
+    </div>
+    {{/data}}
+</script>
+
+
+<script>
+    $.ajax({
+        type: "get",
+        url: "/m/business_apply/query_approval_list",
+        data:{
+            type:"F"
+        },
+        async: true,
+        success: function (response) {
+            var _data = response;
+            _data.termtypeInCN = function(){
+                if("FIXED_DATE"==this.termType){
+                    return "至"+this.term;
+                }else{
+                    if(this.termType!=undefined && enums.loanTermType[this.termType] != undefined){
+                        return this.term + enums.loanTermType[this.termType];
+                    }else{
+                        return "--";
+                    }
+                }
+            }
+            _data.data = $.each(_data.data, function(index, item){
+                item.amount = accounting.formatNumber(item.amount,2,",");
+            });
+            var $listTemplate = utils.render("#listTemplate", _data);
+            $("#listContainer").prepend($listTemplate);
+        }
+    });
+</script>
+
+<%};%>
+<style type="text/css">
+</style>
+<%var htmlPart = {%>
+<!--待审批列表-->
+<div class="page tabbar js_show js-list">
+    <div class="page__hd clearfix">
+        <h1 class="page__title left">风控待审批列表</h1>
+        <!--<p class="page__desc">表单预览</p>-->
+        <%
+        include("../backHome.html"){}
+        %>
+    </div>
+    <div class="page__bd"  id="listContainer">
+
+    </div>
+</div>
+<!--/待审批列表-->
+
+
+<%}; include("/h5/common.html",{jsSection:jsPart,htmlSection:htmlPart,title:"风控待审批"}){}%>

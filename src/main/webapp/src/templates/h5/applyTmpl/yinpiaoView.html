@@ -1,0 +1,198 @@
+<script type="text/mustach-template" id="applyTemplate">
+    <h3 class="weui-cells__title f-black">银票信息</h3>
+    <div class="weui-form-preview">
+        {{#billLoanRepayList}}
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    票号
+                </label>
+                <span class="weui-form-preview__value">{{billNo}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">出票日期</label>
+                <span class="weui-form-preview__value">{{draw_Time}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">出票人</label>
+                <span class="weui-form-preview__value">{{payer}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">收款人</label>
+                <span class="weui-form-preview__value">{{payee}}</span>
+            </div>
+
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">出票金额</label>
+                <span class="weui-form-preview__value">{{loanRepay_amount}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">打款利息</label>
+                <span class="weui-form-preview__value">{{loanRepay_interest}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">打款利率</label>
+                <span class="weui-form-preview__value">{{depositRate}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">到期日</label>
+                <span class="weui-form-preview__value">{{loanRepay_dueDate}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">贴现日期</label>
+                <span class="weui-form-preview__value">{{dis_Date}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">付款行全称</label>
+                <span class="weui-form-preview__value">{{bankName}}</span>
+            </div>
+
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">付款人账号</label>
+                <span class="weui-form-preview__value">{{payerAccount}}</span>
+            </div>
+
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">收款人开户行</label>
+                <span class="weui-form-preview__value">{{payeeBankName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">收款人账号</label>
+                <span class="weui-form-preview__value">{{payeeAccount}}</span>
+            </div>
+
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">调整天数（自然日）</label>
+                <span class="weui-form-preview__value">{{overdueDays}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">实际贴现天数</label>
+                <span class="weui-form-preview__value">{{disDays}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">实际到期日</label>
+                <span class="weui-form-preview__value">{{actual_DueDate}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">成本报价</label>
+                <span class="weui-form-preview__value">{{cost_Rate}}%</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">居间费</label>
+                <span class="weui-form-preview__value">{{intermediary_Fee}}元</span>
+            </div>
+        </div>
+        {{/billLoanRepayList}}
+        {{^billLoanRepayList}}
+        <div class="weui-form-preview__ft">
+            <p  class="weui-form-preview__btn weui-form-preview__btn_default" >无</p>
+        </div>
+        {{/billLoanRepayList}}
+    </div>
+
+    <!--借款人工作信息-->
+    <h3 class="weui-cells__title f-black">付款信息</h3>
+    {{#billLoan}}
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">
+                    票面总金额
+                </label>
+                <span class="weui-form-preview__value">{{total_Amount}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">贴现利息</label>
+                <span class="weui-form-preview__value">{{inTerest}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">付款金额</label>
+                <span class="weui-form-preview__value">{{loan_amount}}元</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">贴现日期</label>
+                <span class="weui-form-preview__value">{{discount_Time}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">户名</label>
+                <span class="weui-form-preview__value">{{accountName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">开户行</label>
+                <span class="weui-form-preview__value">{{accountBank}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">账号</label>
+                <span class="weui-form-preview__value">{{accountNo}}</span>
+            </div>
+
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">法定代表人</label>
+                <span class="weui-form-preview__value">{{loanBorrower.legalRepresentative}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">法定代表人联系方式</label>
+                <span class="weui-form-preview__value">{{loanBorrower.legalRepresentativePhone}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">联系人</label>
+                <span class="weui-form-preview__value">{{loanBorrower.linkman}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">联系人联系方式</label>
+                <span class="weui-form-preview__value">{{loanBorrower.linkmanPhone}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">地址</label>
+                <span class="weui-form-preview__value">{{loanBorrower.residence}}</span>
+            </div>
+        </div>
+    </div>
+    {{/billLoan}}
+    {{^billLoan}}
+    <div class="weui-form-preview__ft">
+        <p  class="weui-form-preview__btn weui-form-preview__btn_default" >无</p>
+    </div>
+    {{/billLoan}}
+
+    <!--借款人工作信息-->
+    <h3 class="weui-cells__title f-black">居间人信息</h3>
+
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">居间人</label>
+                <span class="weui-form-preview__value">{{intermediary.name}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">居间总费用</label>
+                {{#billLoan}}
+                <span class="weui-form-preview__value">{{billLoan_intermediaryTotalFee}}元</span>
+                {{/billLoan}}
+                {{^billLoan}}
+                <span class="weui-form-preview__value">0.00元</span>
+                {{/billLoan}}
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">身份证号</label>
+                <span class="weui-form-preview__value">{{intermediary.idNumber}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">手机号码</label>
+                <span class="weui-form-preview__value">{{intermediary.phone}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">开户行</label>
+                <span class="weui-form-preview__value">{{intermediary.bank}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">账号</label>
+                <span class="weui-form-preview__value">{{intermediary.account}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">地址</label>
+                <span class="weui-form-preview__value">{{intermediary.address}}</span>
+            </div>
+        </div>
+    </div>
+</script>

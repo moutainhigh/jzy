@@ -1,0 +1,106 @@
+<div class="column sixteen wide">
+    <div id="step4Form" class="ui form">
+        <table class="ui celled striped table small">
+            <thead>
+            <tr><th class="padding13l" colspan="6"><a class="ui teal left ribbon label">资料清单</a></th></tr>
+            <tr><th>资料名称</th><th>是否必填</th><th>资料文件</th><th>上传人</th><th>上传时间</th><th>操作</th></tr>
+            </thead>
+            <tbody>
+            <% for(attache in productMediaAttaches) { %>
+            <tr class="mediaItem">
+                <input type="hidden" name="itemName" value="${attache.itemName}">
+                <input type="hidden" name="attachName" value="${attache.attachName}">
+                <input type="hidden" name="url" value="${attache.url}">
+                <input type="hidden" name="required" value="${attache.required}">
+                <input type="hidden" name="productMediaAttachId" value="${attache.id}">
+                <input type="hidden" name="mediaItemType" value="BUSINESS">
+                <input type="hidden" name="mediaDetail" value="">
+
+                <td class="itemName">${attache.itemName}</td>
+                <td>
+                    <% if(attache.required) { %>
+                    <span class="ui red label">必填</span>
+                    <% }else{ %>
+                    <span class="ui label">选填</span>
+                    <% } %>
+                </td>
+                <td class="js-medias right aligned">
+                    <% for(attacheDetail in attache.productMediaAttachDetails) { %>
+                    <div class="js-canBeDel">
+                        <span class="js-temp mini ui button" data-name="${attacheDetail.attachName}" href="${attacheDetail.url}" target="_blank">${attacheDetail.attachName}</span>&emsp;
+                        <a href="javascript:;" class="js-remove ui basic red left label">删除</a>
+                    </div>
+                    <% } %>
+                </td>
+                <td><%if(attache.productMediaAttachDetails !='' && attache.productMediaAttachDetails.~size > 0){%>${attache.createBy}<%}%></td>
+                <td><%if(attache.productMediaAttachDetails !='' && attache.productMediaAttachDetails.~size > 0){%>${attache.updateTime, dateFormat="yyyy-MM-dd HH:mm:ss"}<%}%></td>
+                <td class="single line">
+                    <div class="ui button mini basic js-uploadBtn" data-dir="${loan.code}/BUSINESS">上传</div>
+                </td>
+            </tr>
+            <% } %>
+            </tbody>
+        </table>
+
+        <!-- 关联业务单-->
+        <% include("./relation_business_order.html"){} %>
+        <!-- /关联业务单-->
+
+        <div class="ui error message"><ul class="list"></ul></div>
+        <%if(loan.loanStatus == "SAVE" || loan.loanStatus == "CHANNELSAVE"){%>
+        <div class="actions">
+            <div id="btn-submit-step4" class="ui button">
+                保存
+            </div>
+            <div id="btn-submit-step4-commit" class="ui teal button">
+                保存并提交
+            </div>
+        </div>
+        <%}%>
+    </div>
+</div>
+<div class="ui modal" id="checkFile">
+
+</div>
+
+<script type="text/mustach-template" id="applyFileTmp">
+    <i class="close icon"></i>
+    <div class="center" style="text-align:center;padding: 40px;">
+        <div class="ui shape" id="fileSide">
+            <div class="ui ignored icon direction buttons">
+                <div class="ui button" id="prev"><i class="left long arrow icon"></i></div>
+                <div class="ui icon button" id="next"><i class="right long arrow icon"></i></div>
+            </div>
+            <div class="ui ignored divider"></div>
+            <div class="sides">
+                {{#data_List}}
+                <div class="side js-side">
+                    <div class="ui shape image">
+                        <div class="image">
+                            {{#is_Image}}
+                            <img src="{{href}}">
+                            {{/is_Image}}
+                            {{^is_Image}}
+                            <i class="file icon"></i>{{fileType}}文件
+                            {{/is_Image}}
+                        </div>
+                        <div class="content">
+                            <div class="ui hidden diver"></div>
+                            <h3 class="header">{{name}}</h3>
+                        </div>
+                        <div class="extra content">
+                            <div class="ui ignored divider"></div>
+                            {{^is_Image}}
+                            <a target="_blank" href="{{href}}"><i class="download icon"></i>下载</a>
+                            {{/is_Image}}
+                            {{#is_Image}}
+                            <a class="ui button" target="_blank" id="source_file" href="{{href}}"><i class="linkify icon"></i>查看原文件</a>
+                            {{/is_Image}}
+                        </div>
+                    </div>
+                </div>
+                {{/data_List}}
+            </div>
+        </div>
+    </div>
+</script>

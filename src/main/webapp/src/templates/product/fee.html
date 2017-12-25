@@ -1,0 +1,189 @@
+<!--产品新增费用 start-->
+<div class="ui modal" id="addFeeModal">
+    <i class="close icon"></i>
+    <div class="header">新增产品费用</div>
+    <div class="content">
+        <form class="ui form" id="addFeeForm">
+            <input type="hidden"  id="feeProductId" name="fee.productId">
+            <input type="hidden"  id="feeCode" name="fee.code">
+            <div class="two fields">
+                <div class=" required field">
+                    <label>费用类型</label>
+                    <select name="fee.feeType" class="ui dropdown" id="addFeeType">
+                        <% for(obj in feeType){ %>
+                        <option value="${obj}">${obj.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+
+                <div class="required field">
+                    <label>收费频率</label>
+                    <select name="fee.feeCycle" class="ui dropdown">
+                        <% for(feeCycle in feeCycleType){ %>
+                        <option value="${feeCycle}">${feeCycle.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+            </div>
+
+            <div class="three fields">
+                <div class=" required field four wide">
+                    <label>收取方式</label>
+                    <select name="fee.chargeType" class="ui dropdown" id="addChargeType">
+                        <% for(feeCharge in feeChargeType){ %>
+                        <option value="${feeCharge}">${feeCharge.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+                
+                <div class="field required four wide">
+                    <label>业务来源</label>
+                    <select name="fee.channelType" class="ui dropdown" id="addChannelType">
+                        <% for(type in channelType){ %>
+                        <option value="${type.code}">${type.description}</option>
+                        <%};%>
+                    </select>
+                </div>
+                
+                <div class="required field eight wide">
+                    <label>金额（元）或比例（%）</label>
+                    <input type="text" name="fee.chargeBase"/>
+                </div>
+            </div>
+
+            <div class="two fields">
+                <div class=" required field">
+                    <label>收费节点</label>
+                    <select name="fee.chargeNode" class="ui dropdown">
+                        <% for(chargeNode in feeChargeNode){ %>
+                        <option value="${chargeNode}">${chargeNode.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+                <div class=" required field">
+                    <label>还款方式</label>
+                    <select name="fee.repayMethod" id="addRepayMethod" class="ui dropdown">
+                    </select>
+                </div>
+            </div>
+
+            <div class="two fields">
+                <div class=" required field">
+                    <label>最低费用（元）</label>
+                    <input type="text" name="fee.minFeeAmount" placeholder="请输入最低费用" id="addMinFeeAmount" value="0" readonly>
+                </div>
+
+                <div class=" required field">
+                    <label>最高费用（元）</label>
+                    <input type="text" name="fee.maxFeeAmount" placeholder="请输入最高费用" id="addMaxFeeAmount" value="99999999" readonly>
+                </div>
+            </div>
+
+
+        </form>
+
+    </div>
+    <div class="actions" align="center">
+
+        <div class="ui  black button mini" id="cancelAddFeeBtn">取消</div>
+        <div class="ui teal button mini" id="addFeeBtn">保存</div>
+    </div>
+</div>
+<!--产品新增费用 end-->
+
+
+<!--产品借款费用修改 start-->
+
+<div class="ui modal" id="updateFeeModal">
+    <i class="close icon"></i>
+    <div class="header">修改产品费用</div>
+    <div class="content">
+        <form class="ui form" id="updateFeeForm">
+            <input type="hidden"  id="updateFeeProductId" name="fee.productId">
+            <input type="hidden" id="feeId" name="fee.id"/>
+            <div class="two fields">
+                <div class=" required field">
+                    <label>费用类型</label>
+                    <select name="fee.feeType" id="feeType" class="ui dropdown">
+                        <% for(obj in feeType){ %>
+                        <option value="${obj}">${obj.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+
+                <div class="required field">
+                    <label>收费频率</label>
+                    <select name="fee.feeCycle" id="feeCycle" class="ui dropdown">
+                        <% for(feeCycle in feeCycleType){ %>
+                        <option value="${feeCycle}">${feeCycle.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+            </div>
+
+            <div class="two fields">
+                <div class=" required field four wide">
+                    <label>收取方式</label>
+                    <select name="fee.chargeType" id="chargeType" class="ui dropdown">
+                        <% for(feeCharge in feeChargeType){ %>
+                        <option value="${feeCharge}">${feeCharge.description}</option>
+                        <%}%>
+                    </select>
+
+                </div>
+
+                <div class="field required four wide">
+                    <label>业务来源</label>
+                    <select name="fee.channelType" class="ui dropdown" id="channelType">
+                        <% for(type in channelType){ %>
+                        <option value="${type.code}">${type.description}</option>
+                        <%};%>
+                    </select>
+                </div>
+
+                <div class="required field eight wide">
+                    <label>金额（元）或比例（%）</label>
+                    <input type="text" name="fee.chargeBase" id="chargeBase"/>
+                </div>
+            </div>
+
+            <div class="two fields">
+                <div class=" required field">
+                    <label>收费节点</label>
+                    <select name="fee.chargeNode" id="chargeNode" class="ui dropdown">
+                        <% for(chargeNode in feeChargeNode){ %>
+                        <option value="${chargeNode}">${chargeNode.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+                <div class=" required field">
+                    <label>还款方式</label>
+                    <select name="fee.repayMethod" id="updateRepayMethod" class="ui dropdown">
+                    </select>
+                </div>
+            </div>
+
+            <div class="two fields">
+                <div class=" required field">
+                    <label>最低费用（元）</label>
+                    <input type="text" name="fee.minFeeAmount" placeholder="请输入最低费用" id="minFeeAmount">
+                </div>
+
+                <div class=" required field">
+                    <label>最高费用（元）</label>
+                    <input type="text" name="fee.maxFeeAmount" placeholder="请输入最高费用" id="maxFeeAmount">
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui  black button mini" id="cancelUpdateFeeBtn">取消</div>
+        <div class="ui teal button mini" id="updateFeeBtn">保存</div>
+
+    </div>
+</div>
+<script src="/js/pages/product/fee.js"></script>
+<!--产品借款费用修改 end-->

@@ -1,0 +1,322 @@
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>业务员</label>
+                <input type="text" id="apply" placeholder="请填写业务员姓名或代码查询">
+            </div>
+            <div class="field">
+                <label>借款人</label>
+                <input type="text" id="borrower" placeholder="请填写借款人">
+            </div>
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>放款状态</label>
+                <select type="text" id="loanRepayType">
+                    <option value="APPROVEEND,SUBMIT">未放款</option>
+                    <option value="LOANED">已放款</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>渠道</label>
+                <div id="managerChannelSearch" class="ui search">
+                    <div class="ui icon input">
+                        <input value="" class="prompt" type="text" placeholder="输入渠道名/渠道简称"
+                               name="channelSearchName">
+                        <i class="js_search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+                <input type="hidden" id="channelId" name="channelId">
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <button class="ui tiny submit button teal" id="search">查询</button>
+                <button class="ui tiny button clear" onclick="queryFormReset();" type="reset">重置</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+<!--流程列表-->
+<!--列表-->
+<div class="row" id="">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">赎楼业务单列表</a>
+            <table class="ui  celled table compact  small" id="slBusinessList">
+                <thead>
+                <tr>
+                    <th>业务单号</th>
+                    <th>产品大类</th>
+                    <th>业务来源</th>
+                    <th>借款人</th>
+                    <th>提交时间</th>
+                    <th>申请金额（元）</th>
+                    <th>期限</th>
+                    <th>状态</th>
+                    <th>要件控制</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="ui modal" id="modal-changeControl">
+    <i class="close icon"></i>
+    <div class="header">
+        账户控制
+    </div>
+    <div class="content">
+        <form id="form-addBorrower" class="ui form padding80">
+            <input type="hidden" name="id" value="">
+            <input type="hidden" name="status" value="">
+            <div class="fields">
+                <div class="field">
+                    <div class="ui radio checkbox js-itemControl">
+                        <input type="radio" name="elementStatus" tabindex="0" class="hidden" value="CONTROL">
+                        <label>已控制</label>
+                    </div>
+                </div>
+                <div class="hidden diver"></div>
+                <div class="field">
+                    <div class="ui radio checkbox js-itemControl">
+                        <input type="radio" name="elementStatus" tabindex="0" class="hidden" value="NOT_CONTROL">
+                        <label>未控制</label>
+                    </div>
+                </div>
+            </div>
+            <div class="field required">
+                <div id="btn-changeControl" class="ui submit button default teal">保存</div>
+                <div id="btn-cancel" class="ui submit button">取消</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%}; %>
+<%var jsPart = {%>
+<script type="text/javascript" src="/js/plugins/moment.min.js"></script>
+<script type="text/javascript" src="/js/plugins/jquery.daterangepicker.js"></script>
+<script>
+    /**
+     * 重置表单
+     */
+    function queryFormReset() {
+        $("#apply").val("");
+        $("#borrower").val("");
+        $("#loanRepayType option[value='APPROVEEND,SUBMIT']").prop("selected", 'selected');
+        $(".js_search.close").each(function(){
+            $(this).click();
+        });
+    }
+
+    $("#search").click(function () {
+        dtTable.ajax.reload();
+    });
+
+
+    /**
+     * 查询列表
+     */
+    //列表初始化
+    function initLoanList() {
+        dtTable = $("#slBusinessList").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query loan element list'],
+                "data": function (d) {
+                    var data = {};
+                    data.loanStatus=$('#loanRepayType').val();
+                    data.borrower = $('#borrower').val();
+                    data.saleName = $('#apply').val();
+                    data.channelId = $('#channelId').val();
+                    var _d = $.extend({},{searchKeys:data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "post",
+            },
+            columns: [
+                {data: 'code'},
+                {data: 'productTypeName'},
+                {data: 'saleName'},
+                {data: 'borrserName'},
+                {data: 'submitTime'},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null}
+            ],
+            columnDefs: [{
+                targets:5,
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    return accounting.formatMoney(data.amount,'',2,',','.');
+                }
+            },{
+                targets:6,
+                render: function (data, type, row, meta) {
+                    if("FIXED_DATE"==data.termType){
+                        return "至"+data.term;
+                    }else{
+                        if(data.termType!=undefined && enums.loanTermType[data.termType] != undefined){
+                            return data.term + enums.loanTermType[data.termType];
+                        }else{
+                            return "--";
+                        }
+                    }
+                }
+            },{
+                targets:7,
+                render: function (data, type, row, meta) {
+                    if(data.approveStatus=='--'){
+                        return enums.loan_status[data.loanStatus];
+                    }else {
+                        return data.approveStatus+"--"+enums.loan_status[data.loanStatus];
+                    }
+                }
+            },{
+                //   指定第最后一列
+                className:"single line",
+                targets: 8,
+                render: function (data, type, row, meta) {
+                    var status=enums.element[data.elementStatus];
+                    var loanRepayType = $('#loanRepayType').val();
+                    if(loanRepayType == 'LOANED'){
+                        if(data.elementStatus == 'CONTROL'){
+                            return  '<a class="ui mini basic button teal js-showControl" data-id="'+data.id+'" data-elementstatus="'+data.elementStatus+'">'+status+'</a>'+
+                                    '<div class="ui custom popup top left transition hidden">确认人：'+data.elementConfirmName+'<br>确认时间：'+data.elementConfirmTime+'</div>';
+                        }else if(data.elementStatus == 'NOT_CONTROL'){
+                            return  '<a class="ui mini basic button red" data-id="'+data.id+'" data-elementstatus="'+data.elementStatus+'">'+status+'</a>';
+                        }else{
+                            return '--';
+                        }
+                    }else{
+                        if(data.elementStatus == 'CONTROL'){
+                            return  '<a class="ui mini basic button teal js-control js-showControl" data-id="'+data.id+'" data-elementstatus="'+data.elementStatus+'">'+status+'</a>'+
+                                    '<div class="ui custom popup top left transition hidden">确认人：'+data.elementConfirmName+'<br>确认时间：'+data.elementConfirmTime+'</div>';
+                        }else if(data.elementStatus == 'NOT_CONTROL'){
+                            return  '<a class="ui mini basic button red js-control" data-id="'+data.id+'" data-elementstatus="'+data.elementStatus+'">'+status+'</a>';
+                        }else{
+                            return '--';
+                        }
+                    }
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            fnDrawCallback:function(){
+                $('.js-showControl').popup({
+                    popup : $(this).parent().siblings('.custom.popup'),
+                    on  : 'hover',
+                    position : 'left center',
+                });
+            },
+        })
+    }
+    initLoanList();
+
+
+    //账户控制
+    $(document).on('click','.js-control',function(){
+        var id = $(this).data('id');
+        var $form = $('#modal-changeControl .form');
+        var e_status = $(this).data('elementstatus');
+        $("#modal-changeControl").find('input[name="id"]').val(id);
+        $("#modal-changeControl").find('input[name="status"]').val(e_status);
+        $("#modal-changeControl").modal({blurring: true}).modal('show');
+        $('.ui.radio.checkbox').checkbox();
+
+        if(e_status == 'CONTROL'){
+            $form.form('set values',{
+                'elementStatus':'CONTROL'
+            });
+        }else{
+            $form.form('set values',{
+                'elementStatus':'NOT_CONTROL'
+            });
+        }
+
+        $('.js-itemControl').click(function(){
+            var select_status = $(this).find('input[name="elementStatus"]').val();
+            $("#modal-changeControl").find('input[name="status"]').val(select_status);
+        })
+    });
+
+    $("#btn-cancel,.close ").click(function(){
+        $('#modal-changeControl').modal('hide');
+    });
+
+    //修改账户控制
+    $('#btn-changeControl').on('click',function(){
+       $.ajax({
+           url:'/loan/update_loan_element_status',
+           type:'post',
+           dataType:'JSON',
+           data:{
+               id:$('#modal-changeControl').find('input[name="id"]').val(),
+                elementStatus:$('#modal-changeControl').find('input[name="status"]').val()
+           },
+           success:function(res){
+               $('#modal-changeControl').modal('hide');
+               dtTable.ajax.reload();
+               $.uiAlert({
+                   type: "success",
+                   textHead: '修改成功',
+                   text: '',
+                   time: 1,
+                   onClosed:function(){
+                       dtTable.ajax.reload();
+                   }
+               });
+           },
+           error:function(res){
+               $.uiAlert({type: "danger", textHead: '修改失败', text: res.msg, time: 4});
+           }
+       })
+    });
+    function getManager(obj){
+        $('#'+obj).search({
+                              apiSettings: {
+                                  method: "post",
+                                  url: '/channel/list_channel_name' + '?channelName={query}&channelType=1'
+                              },
+                              fields: {
+                                  results: 'data',
+                                  title: 'name',
+                                  description: 'code'
+                              },
+                              onSelect: function (data) {
+                                  var $this = $('#'+obj);
+                                  $this.find('input').attr('readonly',true);
+                                  $this.find('.js_search').addClass('close');
+                                  $this.find('.js_search').css('pointer-events','auto');
+                                  $("#channelId").val(data.id);
+                              },onResults: function(data) {}
+                          });
+    }
+    getManager('managerChannelSearch');
+    $(document).on('click','.js_search.close',function(){
+        $(this).css('pointer-events','none');
+        $(this).siblings('input').attr('readonly',false);
+        $(this).siblings('input').val("");
+        $(this).removeClass('close');
+        $("#channelId").val("");
+    });
+</script>
+<%};%>
+
+
+<% include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"赎楼要件控制"}){}%>

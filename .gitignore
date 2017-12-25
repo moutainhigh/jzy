@@ -1,0 +1,16 @@
+.idea
+target
+core.iml
+src/main/webapp/node_modules
+src/main/webapp/semantic/gulpfile.js
+src/main/webapp/semantic/semantic.json
+conf/custom
+conf/rebel.xml
+src/test/output/test.xls
+kams.iml
+*.iml
+src/main/webapp/WEB-INF/templates
+src/main/webapp/dist
+conf/quartz.properties
+conf/dev
+resources/

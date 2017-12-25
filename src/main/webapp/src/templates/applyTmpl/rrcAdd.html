@@ -1,0 +1,171 @@
+<div class="column sixteen wide">
+    <form id="step3Form" class="ui form">
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label">业务信息</a>
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">借款用途</span>
+            </h5>
+            <div class="fields">
+                <div class="field required inline">
+                    <label>借款用途：</label>
+                    <select name="use_of_loan" class="item">
+                        <option value="">请选择</option>
+                        <option value="DAY_COST">日常消费</option>
+                        <option value="CASH_COST">资金周转</option>
+                    </select>
+                </div>
+            </div>
+
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">车辆信息</span>
+            </h5>
+            <div class="three fields">
+                <div class="field">
+                    <label>车牌号码</label>
+                    <input class="item" name="car_number" type="text" value="${productInfoItemData.car_number}">
+                </div>
+                <div class="field required">
+                    <label>车辆品牌</label>
+                    <input class="item" name="car_type" type="text" value="${productInfoItemData.car_type}">
+                </div>
+                <div class="field required">
+                    <label>车辆估值（元）</label>
+                    <input class="item" name="car_value" type="text" value="${productInfoItemData.car_value}">
+                </div>
+            </div>
+            <div class="fields">
+                <div class="field sixteen wide">
+                    <label>备注</label>
+                    <textarea class="item" name="car_content">${productInfoItemData.car_content}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui error message"></div>
+        <%if(loan.loanStatus == "SAVE" || loan.loanStatus == "CHANNELSAVE"){%>
+        <div class="actions">
+            <div id="btn-submit-step3" class="ui button teal">确定</div>
+        </div>
+        <%}%>
+    </form>
+</div>
+
+<script>
+    $('select[name="use_of_loan"]').val('${productInfoItemData.use_of_loan}');
+    var step3FormOption = {
+        inline:true,
+        fields:{
+            'use_of_loan':{
+                identifier: 'use_of_loan',
+                rules: [{
+                    type:'empty',
+                    prompt:'请选择借款用途'
+                }]
+            },
+            'car_number':{
+                identifier: 'car_number',
+                rules:[{
+                    type:'maxLength[10]',
+                    prompt:'车牌号码最多10位字符'
+                }]
+            },
+            'car_type':{
+                identifier:'car_type',
+                rules:[{
+                    type:'empty',
+                    prompt:'车辆品牌不为空'
+                },{
+                    type:'maxLength[20]',
+                    prompt:'车辆品牌最多20位字符'
+                }]
+            },
+            'car_value':{
+                identifier:'car_value',
+                rules:[{
+                    type:'empty',
+                    prompt:'车辆估值不为空'
+                },{
+                    type:'validateNumFloat',
+                    prompt:'估值范围在0.01-99999999.99'
+                }]
+            },
+            'car_content':{
+                identifier:'car_content',
+                rules:[{
+                    type:'maxLength[200]',
+                    prompt:'备注最多位200个字符'
+                }]
+            }
+        }
+    };
+
+    $('#btn-submit-step3').click(function(){
+        $("#step3Form").form(step3FormOption).api({
+            action: "update loan business",
+            method: 'POST',
+            beforeSend: function(settings) {
+                var _step = "";
+                if($("#linkStep1").hasClass("completed")) {
+                    _step += "1"
+                }else {
+                    _step += "0"
+                }
+                if($("#linkStep2").hasClass("completed")) {
+                    _step += "1"
+                }else {
+                    _step += "0"
+                }
+                _step += "1"
+                if($("#linkStep4").hasClass("completed")) {
+                    _step += "1"
+                }else {
+                    _step += "0"
+                }
+                settings.data["step"] = _step;
+
+                var loanId = $("#stepData").data("loan_id")
+                var tmplId = $("#stepData").data("product_info_tmpl_id")
+                settings.data["id"] = loanId;
+                var items = [];
+                $("#step3Form .item").each(function(i) {
+                    var isDate = $(this).hasClass("laydate");
+                    if(isDate) {
+                        var type = 'date';
+                    } else {
+                        var type = $(this).attr('type');
+                    }
+
+                    if(type == 'checkbox') {
+                        var checked = $(this).prop("checked");
+                        if(checked) {
+                            var dataValue = "true";
+                        } else {
+                            var dataValue = "false";
+                        }
+                    } else {
+                        var dataValue = $(this).val();
+                    }
+
+                    items.push({
+                        'loanId': loanId,
+                        'tmplId': tmplId,
+                        'keyName': $(this).attr('name'),
+                        'dataValue': dataValue,
+                        'type': type
+                    })
+                });
+
+                settings.data["items"] = JSON.stringify(items);
+                return settings;
+            },
+            onSuccess: function (response) {
+                $("#linkStep3").addClass("completed");
+                goStep("Step4");
+            },
+            onFailure: function(response) {
+                $.uiAlert({type: "danger", textHead: '保存失败', text: response.msg, time: 3});
+            }
+        });
+        $("#step3Form").submit();
+    });
+</script>

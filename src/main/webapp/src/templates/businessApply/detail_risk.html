@@ -1,0 +1,66 @@
+<script type="text/mustach-template" id="riskTemplate">
+    <div class="ui bottom teal segment">
+        <a class="ui teal left ribbon label">风控审批信息</a>
+        <!--<h3 class="ui dividing center aligned header">风控审批信息</h3>-->
+        <div class="ui  padded small segment ">
+            <div class="ui grid">
+                <div class=" row">
+                    <div class="column">
+                        <b for="">
+                            授信方案：
+                        </b>
+                        <pre class="auto">{{loanRiskInfo.content}}</pre>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="column">
+                        <b for="">
+                            资料清单：
+                        </b>
+                        <table class="ui celled  center aligned small table" id="">
+                            <thead>
+                            <tr>
+                                <th>资料名称</th>
+                                <th>是否必填</th>
+                                <th>资料文件</th>
+                                <th>上传人</th>
+                                <th>上传时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#productMediaAttachs}}
+                            <tr>
+                                <td>{{itemName}}</td>
+                                <td>
+                                    {{#required}}
+                                    <span class="ui red label">必填</span>
+                                    {{/required}}
+                                    {{^required}}
+                                    <span class="ui label">选填</span>
+                                    {{/required}}
+                                </td>
+                                <td>
+                                    {{#productMediaAttachDetails}}
+                                    <div class="js-canBeDel right aligned">
+                                        <span class="js-temp button mini ui" data-name="{{attachName}}" href="{{url}}">{{attachName}}</span>
+                                    </div>
+                                    {{/productMediaAttachDetails}}
+                                </td>
+                                <td>{{#url}}{{updateBy}}{{/url}}</td>
+                                <td>{{#url}}{{updateTime}}{{/url}}</td>
+                            </tr>
+                            {{/productMediaAttachs}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="detail_bill_info" class="row">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</script>

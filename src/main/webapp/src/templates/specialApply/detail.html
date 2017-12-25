@@ -1,0 +1,100 @@
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+            <div id="detailTemplate" class="ui bottom teal  segment">
+
+            </div>
+            <div id="riskMediaTmp">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui modal" id="checkFile">
+
+</div>
+<%};%>
+
+
+
+
+<%var jsPart = {%>
+<script src="/js/pages/specialApply/detail.js"></script>
+<!--展期-->
+<%
+include("./common_template/extension_info.html"){}
+%>
+
+<!--居间费-->
+<%
+include("./common_template/intermediary_info.html"){}
+%>
+
+<!--解压-->
+<%
+include("./common_template/noMortgage_info.html"){}
+%>
+
+<!--抵押-->
+<%
+include("./common_template/mortgage_info.html"){}
+%>
+
+<%
+include("./common_template/extension_risk_media.html"){}
+%>
+
+<!-- 费用减免详情 -->
+<%
+include("./common_template/costExemption_info.html"){}
+%>
+
+<script src="/js/common/checkfile.js"></script>
+
+<!--查看图片模板-->
+<script type="text/mustach-template" id="applyFileTmp">
+    <i class="close icon"></i>
+    <div class="center" style="text-align:center;padding: 40px;">
+        <div class="ui shape" id="fileSide">
+            <div class="ui ignored icon direction buttons">
+                <div class="ui button" id="prev"><i class="left long arrow icon"></i></div>
+                <div class="ui icon button" id="next"><i class="right long arrow icon"></i></div>
+            </div>
+            <div class="ui ignored divider"></div>
+            <div class="sides">
+                {{#data_List}}
+                <div class="side js-side">
+                    <div class="ui shape image">
+                        <div class="image">
+                            {{#is_Image}}
+                            <img src="{{href}}">
+                            {{/is_Image}}
+                            {{^is_Image}}
+                            <i class="file icon"></i>{{fileType}}文件
+                            {{/is_Image}}
+                        </div>
+                        <div class="content">
+                            <div class="ui hidden diver"></div>
+                            <h3 class="header">{{name}}</h3>
+                        </div>
+                        <div class="extra content">
+                            <div class="ui ignored divider"></div>
+                            {{^is_Image}}
+                            <a target="_blank" href="{{href}}"><i class="download icon"></i>下载</a>
+                            {{/is_Image}}
+                            {{#is_Image}}
+                            <a class="ui button" target="_blank" id="source_file" href="{{href}}"><i class="linkify icon"></i>查看原文件</a>
+                            {{/is_Image}}
+                        </div>
+                    </div>
+                </div>
+                {{/data_List}}
+            </div>
+        </div>
+    </div>
+</script>
+
+<%};%>
+<% include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"详情"}){}%>

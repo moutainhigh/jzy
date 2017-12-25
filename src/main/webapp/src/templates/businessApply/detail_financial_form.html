@@ -1,0 +1,422 @@
+<link rel="stylesheet" href="/js/plugins/laydate-1.1/need/laydate.css" />
+<script src="/js/plugins/laydate-1.1/laydate.js"></script>
+<script src="/js/common/print.js"></script>
+<script type="text/mustach-template" id="planTemplate">
+    {{#isBill}}
+    {{#loanRepayPlan}}
+    <tr>
+        <td>{{loanRepay.period}}</td>
+        <td>{{billNo}}</td>
+        <td>{{f_dueDate}}</td>
+        <td>{{overdueDays}}</td>
+        <td class="right aligned">{{f_amount}}</td>
+    </tr>
+    {{/loanRepayPlan}}
+    {{/isBill}}
+    {{^isBill}}
+    {{#loanRepayPlan}}
+    <tr>
+        <td>{{period}}</td>
+        <td>{{f_dueDate}}</td>
+        <td class="right aligned">{{f_amount}}</td>
+        <td class="right aligned">{{f_interest}}</td>
+        <td class="right aligned">{{f_total}}</td>
+        <td class="right aligned">{{f_outstanding}}</td>
+    </tr>
+    {{/loanRepayPlan}}
+    {{/isBill}}
+</script>
+
+<script type="text/mustach-template" id="feeTemplate">
+    {{#data}}
+    <div class="inline fields">
+        <div class="field">
+            <label>{{f_name}}:</label>
+            <label id="feeAmount">{{f_feeAmount}}</label>元
+            <input type="hidden" name="feeAmount" value="{{feeAmount}}"/>
+            <input type="hidden" name="feeType" value="{{feeType}}"/>
+        </div>
+        <div class="field">
+            <label>实收金额:</label>
+            <input type="text" name="repayFeeAmount" value="{{feeAmount}}"/>元
+        </div>
+        <div class="field">
+            <label>收款日期:</label>
+            <input type="text" name="repayDate" onclick="laydate()"/>
+        </div>
+    </div>
+    {{/data}}
+    {{^data}}
+        无
+    {{/data}}
+</script>
+<script type="text/javascript">
+    function cancel(){
+        $.uiDialog("确定要取消放款吗？", {
+            onApprove: function () {
+                $.post("/loan/cancel",{
+                    loanId:utils.getUrlParam("id")
+                },function(data){
+                    if(data.ok==true){
+                        $.uiAlert({
+                            type: "success",
+                            textHead:  '成功',
+                            text: '成功' ,
+                            time: 1,
+                            onClosed: function () {
+                                window.location.href="/loan/pending";
+                            }
+                        });
+                    }else{
+                        $.uiAlert({
+                            type: "danger",
+                            textHead:  '失败',
+                            text: data.msg,
+                            time: 3,
+                        });
+                    }
+                })
+            },
+            onDeny: function () {
+            }
+        })
+    }
+    
+    function showModal() {
+        var subjectAccountId = $("#loanSubjectAccount").val();
+        if(subjectAccountId==null || subjectAccountId==''){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '失败',
+                text: '放款账户不能为空',
+                time: 3,
+            });
+            return false;
+        }
+        var loanTime = $("#loanTime").val();
+        $.post("/loan/init_loan_record",{
+            loanId:utils.getUrlParam("id"),
+            loanTime:loanTime,
+            subjectId:$("#loanSubjectName").val(),
+            subjectAccountId:subjectAccountId,
+        },function(data){
+            data.loan_subject = $('#loanSubjectName  option:selected').html();
+            data.loanSubject_account = $('#loanSubjectAccount option:selected').html();
+            data.loan_amount = $('#loanAmount').html();
+            data.loan_time = $('#loanTime').val();
+
+            $("#lonInfoTemplateModal").html(utils.render("#lonInfoTemplate",data));
+
+            $('#confirmInfo').modal('show');
+        })
+    }
+    
+    function confirm(){
+        var loanTime = $("#loanTime").val();
+        var arrs = new Array();
+        $(".loanFee .fields").each(function(){
+            arrs.push({
+                feeAmount:$(this).find("input[name='feeAmount']").val(),
+                feeType:$(this).find("input[name='feeType']").val(),
+                repayFeeAmount:$(this).find("input[name='repayFeeAmount']").val(),
+                repayDate:$(this).find("input[name='repayDate']").val()
+            });
+        });
+        if(loanTime==""){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '失败',
+                text: '请输入放款日期',
+                time: 3,
+            });
+            return false;
+        }
+        var msg="";
+        for(i in arrs){
+            var feeType = enums.feeType[arrs[i].feeType];
+            if(arrs[i].repayFeeAmount=="" || isNaN(arrs[i].repayFeeAmount)){
+                msg=feeType+":请输入正确的实收金额";
+                $.uiAlert({
+                    type: "danger",
+                    textHead:  '失败',
+                    text: msg,
+                    time: 3,
+                });
+                return false;
+            }
+            if(arrs[i].repayDate==""){
+                msg=feeType+":收款日期不能为空";
+                $.uiAlert({
+                    type: "danger",
+                    textHead:  '失败',
+                    text: msg,
+                    time: 3,
+                });
+                return false;
+            }
+            if(arrs[i].repayFeeAmount!=arrs[i].feeAmount){
+                msg+=feeType+":应收金额和实收金额不相等  ";
+            }
+        }
+        var subjectAccountId = $("#loanSubjectAccount").val();
+        if(subjectAccountId==null || subjectAccountId==''){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '失败',
+                text: '放款账户不能为空',
+                time: 3,
+            });
+            return false;
+        }
+        $.uiDialog(msg+"  确定要放款吗？", {
+            onApprove: function () {
+                $.post("/loan/confirm",{
+                    loanId:utils.getUrlParam("id"),
+                    loanTime:loanTime,
+                    subjectId:$("#loanSubjectName").val(),
+                    subjectAccountId:subjectAccountId,
+                    loanFeeInfo:JSON.stringify(arrs)
+                },function(data){
+                    if(data.ok==true){
+                        $.uiAlert({
+                            type: "success",
+                            textHead:  '成功',
+                            text: '成功' ,
+                            time: 1,
+                            onClosed: function () {
+                                location.reload();
+                            }
+                        });
+                    }else{
+                        $.uiAlert({
+                            type: "danger",
+                            textHead:  '失败',
+                            text: data.msg,
+                            time: 3,
+                        });
+                    }
+                })
+            },
+            onDeny: function () {
+            }
+        })
+    }
+
+    function fillSubjectByType(type){
+        $("#loanSubjectName").empty();
+        $("#loanSubjectAccount").empty();
+        $.ajax({
+            url:"/loan_subject/query_by_type",
+            type:"get",
+            async:false,
+            dataType: "json",
+            data: {type:type},
+            success:function(data){
+                for(i in data){
+                    $("#loanSubjectName").append("<option value='"+data[i].id+"'>"+data[i].name+"</option>");
+                }
+                var subjectId=$("#loanSubjectName").val();
+                if(subjectId){
+                    fillSubjectAccountById(subjectId);
+                }
+            }
+        });
+    }
+    function fillSubjectAccountById(id){
+        $("#loanSubjectAccount").empty();
+        $.ajax({
+            url:"/loan_subject/query_accounts_by_id",
+            type:"get",
+            async:false,
+            dataType:"json",
+            data:{id:id},
+            success:function(data){
+                for(i in data){
+                    $("#loanSubjectAccount").append("<option value='"+data[i].id+"'>"+data[i].alias+"</option>");
+                }
+            }
+        });
+    }
+    function genRepayPlan(loanTime){
+        if(loanTime){
+            $.get("/loan/generate_loan_repay",{
+                loanId:utils.getUrlParam("id"),
+                loanTime:loanTime
+            },function(res){
+                if (res) {
+                    var loanRepayPlan= {loanRepayPlan:res.loanRepayList};
+                    loanRepayPlan.isBill = ProductTempType.isBill();
+                    if(loanRepayPlan.isBill){
+                        loanRepayPlan.f_dueDate = function(){
+                            return moment(this.loanRepay.dueDate).format("YYYY-MM-DD");
+                        }
+                        loanRepayPlan.f_amount = function () {
+                            return accounting.formatNumber(this.loanRepay.amount,2,",");
+                        };
+                    }else{
+                        loanRepayPlan.f_dueDate = function(){
+                            return moment(this.dueDate).format("YYYY-MM-DD");
+                        }
+                        loanRepayPlan.f_amount = function () {
+                            return accounting.formatNumber(this.amount,2,",");
+                        };
+                        loanRepayPlan.f_interest = function () {
+                            return accounting.formatNumber(this.interest,2,",");
+                        };
+                        loanRepayPlan.f_total = function () {
+                            return accounting.formatNumber(this.interest+this.amount,2,",");
+                        };
+                        loanRepayPlan.f_outstanding = function () {
+                            return accounting.formatNumber(this.outstanding,2,",");
+                        };
+                    }
+                    var plans = utils.render("#planTemplate", loanRepayPlan);
+                    $("#plans").html(plans);
+                }
+            })
+        }
+    }
+
+    function printLoan() {
+        location.href = "/product_type_excel_tmpl/down_load_excel_tmpl?loadId="+utils.getUrlParam("id");//location.href实现客户端页面的跳转
+    }
+</script>
+<script type="text/mustach-template" id="financeFormTemplate">
+    <input type="hidden" name="amount"/>
+    <div class="ui bottom teal segment">
+        <a class="ui teal left ribbon label">财务查看信息</a>
+        <!--<h3 class="ui dividing center aligned header">风控审批信息</h3>-->
+        <div class="ui  padded  segment ">
+            <div class="ui grid">
+                <div class="row">
+                    <div class="column">
+                        <!--<button onclick="genRepayPlan();" class="ui teal button">生成还款计划</button>-->
+                        <table class="ui structured celled table compact teal small">
+                            <thead>
+                            <tr>
+                                {{#isBill}}
+                                    <th>期数</th>
+                                    <th>票号</th>
+                                    <th>到期日</th>
+                                    <th>宽限期（天）</th>
+                                    <th class="right aligned">应还金额（元）</th>
+                                {{/isBill}}
+                                {{^isBill}}
+                                    <th>期数</th>
+                                    <th>应还日期</th>
+                                    <th class="right aligned">应还本金（元）</th>
+                                    <th class="right aligned">应还利息（元）</th>
+                                    <th class="right aligned">应还本息（元）</th>
+                                    <th class="right aligned">剩余本金（元）</th>
+                                {{/isBill}}
+                            </tr>
+                            </thead>
+                            <tbody id="plans"></tbody>
+                        </table>
+                        <div class="ui segment teal">
+                            <h4>应收费用</h4>
+                            <div class="ui equal width form loanFee">
+                            </div>
+                            <h4>放款信息</h4>
+                            <div class="ui equal width form">
+                                <div class="inline fields">
+                                    <div class="field">
+                                        <label>放款主体:</label>
+                                        <input type="radio" name="loanSubjectType" value="ENTERPRISE" checked onchange="fillSubjectByType($(this).val())"/>企业
+                                        <input type="radio" name="loanSubjectType" value="PERSONAL" onchange="fillSubjectByType($(this).val())"/>个人
+                                        <select id="loanSubjectName" onchange="fillSubjectAccountById($(this).val())">
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label>放款账户：</label>
+                                        <select id="loanSubjectAccount"></select>
+                                    </div>
+                                </div>
+
+                                <div class="inline fields">
+                                    <div class="field">
+                                        <label>放款金额:</label>
+                                        <label id="loanAmount"></label>元
+                                    </div>
+                                    <div class="field">
+                                        <label>放款日期:</label>
+                                        <input type="text" name="loanTime" id="loanTime" onclick="laydate({choose:function(data){
+                                            genRepayPlan(data);
+                                        }})"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <a class="ui teal button" onclick="printLoan()">打印贷款审批单</a>
+                            <button onclick="showModal()" class="ui teal button confirm">确认放款</button>
+                            <a onclick="cancel()" class="ui red button" style="float:right ">取消放款</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="lonInfoTemplateModal">
+        <!--填充lonInfoTemplate模板-->
+    </div>
+</script>
+
+<script type="text/mustach-template" id="lonInfoTemplate">
+    <div class="ui modal" id="confirmInfo">
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="ui grid">
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>放款主体：</b>
+                        <span>{{loan_subject}}</span>
+                    </div>
+                    <div class="column six wide">
+                        <b>放款账户：</b>
+                        <span>{{loanSubject_account}}</span>
+                    </div>
+                </div>
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>放款金额(元)：</b>
+                        <span>{{loan_amount}}</span>
+                    </div>
+                    <div class="column six wide">
+                        <b>放款日期：</b>
+                        <span>{{loan_time}}</span>
+                    </div>
+                </div>
+                <div class="ui divider"></div>
+                {{#borrowerAccountList}}
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>收款人：</b>
+                        <span>{{name}}</span>
+                    </div>
+                    <div class="column six wide">
+                        <b>收款账户：</b>
+                        <span>{{account}}</span>
+                    </div>
+                </div>
+                {{/borrowerAccountList}}
+                {{#borrower}}
+                <div class="two column row">
+                    <div class="column six wide">
+                        <b>收款人：</b>
+                        <span>{{name}}</span>
+                    </div>
+                    <div class="column six wide">
+                        <b>收款账户：</b>
+                        <span>{{account}}</span>
+                    </div>
+                </div>
+                {{/borrower}}
+            </div>
+            <br>
+            <div class="ui teal button" onclick="confirm()">确认</div>
+        </div>
+    </div>
+</script>
+<div id="loanDetail"></div>
+<!--<iframe src="/flow/to_approval_list?id=${id}&comeFrom=${parameter.comeFrom}" class="ks-hidden" name="loanFlowDetailFrame" id="loanFlowDetailFrame"></iframe>-->

@@ -1,0 +1,74 @@
+<script type="text/mustach-template" id="profitTemplate">
+
+{{#is_loanProfit}}
+<div class="ui bottom teal  segment">
+    <a class="ui teal left ribbon label">利润</a>
+    <h4 class="ui top attached block  small  header">利润信息</h4>
+    <div class="ui  padded attached small  segment ">
+        <div class="ui grid">
+            <div class="one column row">
+                <div class="column">
+                    {{#loanProfit}}
+                    <b>净利润：</b>
+                    <span>{{p_profit}}元</span>
+                    <span class="ui button teal" onclick="profitShow()">详情</span>
+                    {{/loanProfit}}
+                    {{^loanProfit}}
+                    <span>没有对应产品利润参数配置</span>
+                    {{/loanProfit}}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {{#loanProfit}}
+    <div class="ui modal small" id="profit_detail">
+        <i class="close icon"></i>
+        <div class="content">
+            <table class="ui celled table compact">
+                <tr>
+                    <td>利息收入（含税）</td>
+                    <td>{{p_interestRevenue}}元</td>
+                </tr>
+                <tr>
+                    <td>资金成本（含税）</td>
+                    <td>{{p_capitalCost}}元</td>
+                </tr>
+                <tr>
+                    <td>增值税</td>
+                    <td>{{p_valueAddedTax}}元</td>
+                </tr>
+                <tr>
+                    <td>营业税金及附加</td>
+                    <td>{{p_surtax}}元</td>
+                </tr>
+                <tr>
+                    <td>人工费用</td>
+                    <td>{{p_laborCost}}元</td>
+                </tr>
+                <tr>
+                    <td>行政费用</td>
+                    <td>{{p_administrativeExpenses}}元</td>
+                </tr>
+                <tr>
+                    <td>资产坏账拨备</td>
+                    <td>{{p_badAssetsReserve}}元</td>
+                </tr>
+                <tr>
+                    <td>金服运营成本</td>
+                    <td>{{p_operatingCost}}元</td>
+                </tr>
+                {{#isBill}}
+                <tr>
+                    <td>居间费及税金</td>
+                    <td>{{p_brokerageFee}}元</td>
+                </tr>
+                {{/isBill}}
+            </table>
+        </div>
+    </div>
+    {{/loanProfit}}
+    </div>
+{{/is_loanProfit}}
+</script>

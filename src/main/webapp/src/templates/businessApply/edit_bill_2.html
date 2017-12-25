@@ -1,0 +1,187 @@
+<form class="ui form" id="billAll_info_form">
+    <input type="hidden" name="discountTime">
+    <div class="two fields">
+        <div class="field required">
+            <label>票面总金额（元）</label>
+            <input name="totalAmount" type="text" value="" readonly="readonly" placeholder="保存票据信息后自动计算">
+        </div>
+        <div class="field required">
+            <label>贴现利息（元）</label>
+            <input name="interest" type="text" readonly="readonly" placeholder="保存票据信息后自动计算">
+        </div>
+    </div>
+    <div class="two fields">
+        <div class="field required">
+            <label>付款金额（元）</label>
+            <input name="amount" type="text" readonly="readonly" placeholder="保存票据信息后自动计算">
+        </div>
+
+        <div class="field required">
+            <label>户名</label>
+            <input name="accountName" type="text" placeholder="选择贴现人带出" readonly="readonly">
+        </div>
+    </div>
+    <div class="two fields">
+        <div class="field required">
+            <label>开户行</label>
+            <input name="accountBank" type="text" placeholder="选择贴现人带出" readonly="readonly">
+        </div>
+        <div class="field required">
+            <label>账号</label>
+            <input name="accountNo" class="js-bankCard" type="text" placeholder="选择贴现人带出" readonly="readonly">
+        </div>
+    </div>
+
+    <div class="two fields">
+        <div class="field required">
+            <label>法定代表人</label>
+            <input name="legalRepresentative" type="text" placeholder="选择贴现人带出" readonly>
+        </div>
+        <div class="field required">
+            <label>联系方式</label>
+            <input name="legalRepresentativePhone" type="text" placeholder="选择贴现人带出" readonly>
+        </div>
+    </div>
+
+    <div class="two fields">
+        <div class="field required">
+            <label>联系人</label>
+            <input name="linkman" type="text" placeholder="选择贴现人带出" readonly>
+        </div>
+        <div class="field required">
+            <label>联系方式</label>
+            <input name="linkmanPhone" type="text" placeholder="选择贴现人带出" readonly>
+        </div>
+    </div>
+
+    <div class="two fields">
+        <div class="field required">
+            <label>住所</label>
+            <input name="residence" type="text" placeholder="选择贴现人带出" readonly>
+        </div>
+    </div>
+
+
+    <div class="three fields">
+        <div class="field required eight wide">
+            <label>居间总费用（元）</label>
+            <input name="intermediaryTotalFee" type="text" readonly="readonly" placeholder="保存票据信息后自动计算">
+        </div>
+        <div class="field three wide">
+            <label>&emsp;</label>
+            <div class="ui checkbox">
+                <input type="checkbox" id="js_isIntermediary" checked>
+                <label>存在居间人</label>
+            </div>
+        </div>
+        <div class="three wide field">
+            <label> </label>
+            <div id="btn-addShow" class="ui button mini teal">新增</div>
+        </div>
+    </div>
+
+    <!--居间人信息-->
+    <div id="js_intermediaryInfo">
+        <h4 class="ui horizontal divider header blue">居间人信息</h4>
+        <div class="two fields">
+            <div class="field required">
+                <label>居间人</label>
+                <input name="intermeId" type="hidden">
+                <div id="intermediarySearch" class="ui search">
+                    <div class="ui icon input">
+                        <input value="" class="prompt" type="text" placeholder="选择居间人" name="name">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </div>
+            <div class="field required">
+                <label>身份证号</label>
+                <input name="idNumber" type="text" readonly>
+            </div>
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>手机号码</label>
+                <input name="phone" type="text" readonly>
+            </div>
+            <div class="field">
+                <label>开户行</label>
+                <input name="bank" type="text" readonly>
+            </div>
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>账号</label>
+                <input name="account" type="text" class="js-bankCard" readonly>
+            </div>
+            <div class="field">
+                <label>地址</label>
+                <input name="address" type="text" readonly>
+            </div>
+        </div>
+    </div>
+
+    <!--关联业务单-->
+    <% include("./relation_business_order.html"){} %>
+    <!--/关联业务单-->
+
+</form>
+
+
+<div class="actions">
+    <div  class="ui button" id="bill_setp3Form">
+        保存
+    </div>
+    <div class="ui teal button" id="bill_spForm">
+        保存并提交
+    </div>
+</div>
+
+<!--新增居间人-->
+<div id="modal-intermediary" class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+        新增居间人
+    </div>
+    <div class="content">
+        <form id="form-addIntermediary" class="ui form padding80">
+            <input type="hidden" value="ABLE" name="status">
+            <div class="two fields">
+                <div class="field required">
+                    <label>居间人姓名</label>
+                    <input name="name" type="text">
+                </div>
+                <div class="field required">
+                    <label>身份证号</label>
+                    <input name="idNumber" type="text">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>手机号码</label>
+                    <input name="phone" type="text">
+                </div>
+                <div class="field">
+                    <label>开户行</label>
+                    <input name="bank" type="text">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>账号</label>
+                    <input name="account" type="text" class="js-bankCard">
+                </div>
+                <div class="field">
+                    <label>地址</label>
+                    <input name="address" type="text">
+                </div>
+            </div>
+            <div class="field required">
+                <div data-action="" id="btn-addIntermediary" class="ui submit button default teal">保存</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+

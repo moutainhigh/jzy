@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+    <bean class="org.snaker.engine.access.dialect.MySqlDialect"/>
+    <bean class="org.snaker.engine.access.jdbc.JdbcAccess"/>
+    <bean class="org.snaker.engine.access.transaction.DataSourceTransactionInterceptor"/>
+    <bean class="org.snaker.engine.impl.JuelExpression"/>
+    <!-- 访问策略 -->
+    <bean class="com.kaisa.kams.components.flow.CustomAccessStrategy"/>
+
+    <!-- 任务拦截 -->
+    <bean class="org.snaker.engine.impl.SurrogateInterceptor"/>
+</config>

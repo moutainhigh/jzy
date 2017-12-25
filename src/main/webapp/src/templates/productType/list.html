@@ -1,0 +1,184 @@
+<%var jsPart = {%>
+<script src="/js/plugins/mustache.min.js"></script>
+<script src="/js/common/utils.js"></script>
+<script src="/js/pages/productType/index.js"></script>
+<%};%>
+
+
+<%var htmlPart = {%>
+
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>产品大类编号</label>
+                <input type="text" id="s_code">
+            </div>
+            <div class="field">
+                <label>产品大类名称</label>
+                <input type="text" id="s_name">
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <div class="ui tiny button teal" id="search">查询</div>
+                <div class="ui tiny button clear" id="reset">重置</div>
+                <!--<div class="ui tiny button clear" id="add">添加</div>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+
+<div class="row" id="">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">产品大类列表</a>
+            <table class="ui  celled table compact  small" id="productTypeTable">
+                <thead>
+                <tr>
+                    <th>产品大类编号</th>
+                    <th>产品大类名称</th>
+                    <th>担保类型</th>
+                    <th>业务类型</th>
+                    <th>是否生效</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="ui modal" id="add_type_modal">
+    <div class="header">
+        新增产品大类
+    </div>
+    <div class=" content  ">
+        <form class="ui form" id="add_type_form">
+            <input type="hidden" name="code" id="code">
+            <div class="inline field left-required">
+                <label>产品大类编号：</label><span style="margin-left: 5px" id="codeSpan"></span>
+            </div>
+            <div class="inline fields left-required">
+                <label>类别名称：</label>
+                <div class="field eight wide">
+                    <input type="text" name="name">
+                </div>
+
+            </div>
+            <div class="inline fields left-required">
+                <label>类别说明：</label>
+                <div class="field eight wide">
+                    <textarea name="description" maxlength="300" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="inline field left-required">
+                <label>业务类型：</label>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="businessType" checked="checked" value="PUBLIC">
+                    <label>对公业务</label>
+                </div>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="businessType" value="PRIVATE">
+                    <label>对私业务</label>
+                </div>
+            </div>
+            <div class="inline field left-required">
+                <label>担保类型：</label>
+                <select name="guarantyType">
+                    <option value="">请选择</option>
+                    <% for(guaranty in guarantyType){ %>
+                    <option value="${guaranty}">${guaranty.description}</option>
+                    <%}%>
+                </select>
+            </div>
+            <div class="inline field left-required">
+                <label>是否生效：</label>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="status" checked="checked" value="ABLE">
+                    <label>是</label>
+                </div>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="status" value="DISABLED">
+                    <label>否</label>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui mini black button" id="cancelBnt">取消</div>
+        <div class="ui mini teal button " id="addBnt">保存</div>
+    </div>
+</div>
+
+<div class="ui modal" id="edit_type_modal">
+    <div class="header">
+        修改产品大类
+    </div>
+    <div class=" content  ">
+        <form class="ui form" id="edit_type_form">
+            <input type="hidden" name="id" id="editId">
+            <div class="inline field left-required">
+                <label>产品大类编号：</label><span style="margin-left: 5px" id="editCodeSpan"></span>
+            </div>
+            <div class="inline fields left-required">
+                <label>类别名称：</label>
+                <div class="field eight wide">
+                    <input type="text" name="name" id="editName">
+                </div>
+            </div>
+            <div class="inline fields left-required">
+                <label>类别说明：</label>
+                <div class="field eight wide">
+                    <textarea name="description" id="editDescription" maxlength="300" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="inline field left-required">
+                <label>业务类型：</label>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="businessType" value="PUBLIC">
+                    <label>对公业务</label>
+                </div>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="businessType" value="PRIVATE">
+                    <label>对私业务</label>
+                </div>
+            </div>
+            <div class="inline field left-required">
+                <label>担保类型：</label>
+                <select name="guarantyType">
+                    <% for(guaranty in guarantyType){ %>
+                    <option value="${guaranty}">${guaranty.description}</option>
+                    <%}%>
+                </select>
+            </div>
+            <div class="inline field left-required">
+                <label>是否生效：</label>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="status" value="ABLE">
+                    <label>是</label>
+                </div>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="status" value="DISABLED">
+                    <label>否</label>
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui mini black button" id="editCancelBnt">取消</div>
+        <div class="ui mini teal button" id="editBnt">保存</div>
+    </div>
+</div>
+<div id="page_status" style="display: none">${"ok"}</div>
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"产品类别维护"}){}%>
+

@@ -1,0 +1,199 @@
+<%var jsPart = {%>
+<script src="/js/plugins/laydate-1.1/laydate.js"></script>
+<script>
+    var y_date = moment().subtract('days',1).format('YYYY-MM-DD');
+    var search = {
+        timeRange:function(){
+            $("#report_time").val(y_date);
+            $("#report_time").click(function(){
+                laydate({});
+            })
+        },
+
+        /*
+         * 查询重置
+         * */
+        reset:function(){
+            $('#report_time').val(y_date);
+        },
+
+        /*
+         * 查询导出
+         * */
+        export:function(){
+            //todo
+            var str = '';
+            var d =['report_time'];
+            var d_val = [];
+            for(i in d){
+                d_val.push($('#'+d[i]).val())
+            }
+            for(var i =0;i<d.length;i++){
+                if(i!=d.length-1){
+                    str += d[i]+'='+d_val[i]+'&';
+                }else{
+                    str += d[i]+'='+d_val[i];
+                }
+            }
+            window.open('/report/comprehensive_day_report_export   ?'+str,'_blank');
+        },
+
+    };
+
+    //列表初始化
+    function initLoanList() {
+        dtTable = $("#cdTable").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query b_zhd report'],
+                "data": function (d) {
+                    var data ={};
+                    data.report_time = $('#report_time').val();
+                    var _d = $.extend({}, {searchKeys:data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST",
+            },
+            columns: [
+                {data: 'productType'},
+                {data: 'businessSubmissionNumber'},
+                {data: 'approvalPassNumber'},
+                {data: 'approvalRejectNumber'},
+                {data: 'loanNumber'},
+                {data: 'loanMoney'},
+                {data: 'paymentRecordNum'},
+                {data: 'paymentRecordMoney'},
+                {data: 'repaymentNumber'},
+                {data: 'repaymentMoney'},
+                {data: 'actualRepaymentNumber'},
+                {data: 'actualRepaymentMoney'},
+
+                {data: 'overdueNumber'},
+                {data: 'overdueMoney'},
+                {data: 'overdueRate'},
+                {data: 'averageLoan'},
+            ],
+            columnDefs: [{
+                targets:[0,1,2,3,4,6,8,10,12],
+                className:'single line',
+                render: function (data, type, row, meta) {
+                    return (data=='' | !data) ?'0' : data;
+                }
+            },{
+                targets:[5,7,9,11,13],
+                className:'single line right aligned',
+                render: function (data, type, row, meta) {
+                    return (data=='' | !data) ? '0.00' : accounting.formatMoney(data,'',2,',','.');
+                }
+            },{
+                targets:[14],
+                className:'single line right aligned',
+                render:function (data, type, row, meta) {
+                    return accounting.formatMoney(data*100,'',2,',','.') + '%';
+                }
+            },{
+                targets:[15],
+                className:'single line',
+                render:function (data, type, row, meta) {
+                    return (data && data !='')? data :'--'
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+            }
+        })
+    }
+
+    function initAll(){
+        search.timeRange();
+        initLoanList();
+    }
+    initAll();
+
+    $("#search").click(function () {
+        dtTable.ajax.reload();//查询
+    });
+
+    $("#reset").click(function(){
+        search.reset();//重置
+    });
+
+    $('#export_btn').click(function(){
+        search.export();//导出
+    });
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment teal">
+                <form class="ui fluid  form">
+                    <div class="four fields">
+                        <div class="field">
+                            <label>查询时间</label>
+                            <div class="ui input">
+                                <input class="prompt" type="text" id="report_time" name="report_time">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="search" class="ui teal mini button">查询</div>
+                    <div id="reset" class="ui clear mini button">重置</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--列表-->
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">综合日报表</a>
+                <div class="overflow">
+                    <div class="chevron right">
+                        <a class="ui teal small button" id="export_btn" href="javascript:;">
+                            <i class="external share icon"></i>导出
+                        </a>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;overflow-y: hidden;">
+                    <table class="ui celled small table" id="cdTable">
+                        <thead>
+                        <tr>
+                            <th>产品类型</th>
+                            <th>业务提交笔数</th>
+                            <th>审批通过笔数</th>
+                            <th>审批拒绝笔数</th>
+                            <th>放款笔数</th>
+                            <th>放款金额（元）</th>
+                            <th>计划中还款笔数</th>
+                            <th>计划中还款金额金额（元）</th>
+                            <th>应还款笔数</th>
+                            <th>应还款金额（元）</th>
+                            <th>总回款笔数</th>
+                            <th>总回款金额（元）</th>
+
+                            <th>逾期笔数</th>
+                            <th>逾期金额（元）</th>
+                            <th>逾期率</th>
+                            <th>平均借款期限（天）</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"综合日报表"}){}%>

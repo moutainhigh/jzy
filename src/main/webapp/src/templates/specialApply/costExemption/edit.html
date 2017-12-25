@@ -1,0 +1,180 @@
+<%var jsPart = {%>
+<script src="/js/pages/specialApply/costExemption/edit.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui header small">还款计划</div>
+    <div id="repayTable">
+
+    </div>
+
+    <from class="ui form">
+        <div class="ui divider"></div>
+        <div id="costInfoBox">
+
+        </div>
+        <div class="fields">
+            <div class="field" id="businessSearchDiv">
+                <label>申请业务人员</label>
+                <div id="businessSearch" class="ui search">
+                    <div class="ui icon input">
+                        <input type="hidden" name="businessId">
+                        <input value="" class="prompt" type="text" placeholder="业务员" name="businessName">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+
+            </div>
+        </div>
+    </from>
+
+    <div class="actions" id="viewRemoveBtn">
+        <div class="ui button teal" onclick="init.save()">保存</div>
+        <div class="ui button teal" onclick="init.submitApproval()">提交</div>
+    </div>
+
+    <!--还款记录-->
+    <div class="ui modal" id="gatherRecordViewModal2">
+        <i class="close icon"></i>
+        <div class="header">
+            还款记录
+        </div>
+        <div class="content">
+            <form class="ui form">
+                <!--<div class="fields inline">-->
+                    <!--<label>备注：</label>-->
+                    <!--<div class="field fourteen wide" style="word-break: break-word">-->
+                        <!--<pre class="auto" id="remark2"></pre>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="ui segment">
+                    <table class="ui teal celled table" id="repayViewTableExtension">
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--还款记录-->
+<script type="text/mustach-template" id="loanRepayTmp">
+    <table class="ui celled table teal">
+        <thead>
+            <tr>
+                <th>期数</th>
+                <th class="single line">应还日期</th>
+                <th class="right aligned">应还本金（元）</th>
+                <th class="right aligned">应还利息（元）</th>
+                <th class="right aligned">应还综合服务费（元）</th>
+                <th class="right aligned">应还款总额（元）</th>
+                <th class="right aligned">实还本金（元）</th>
+                <th class="right aligned">实还利息（元）</th>
+                <th class="right aligned">实还综合服务费（元）</th>
+                <th class="right aligned">实还款总额（元）</th>
+                <th class="single line">还款状态</th>
+                <th class="single line">还款记录</th>
+                <th class="single line">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#repayList}}
+            <tr>
+                <td>{{period}}</td>
+                <td class="single line">{{f_dueDate}}</td>
+                <td class="right aligned">{{f_amount}}</td>
+                <td class="right aligned">{{f_interest}}</td>
+                <td class="right aligned">{{f_feeAmount}}</td>
+                <td class="right aligned">{{f_totalAmount}}</td>
+                <td class="right aligned">{{f_repayAmount}}</td>
+                <td class="right aligned">{{f_repayInterest}}</td>
+                <td class="right aligned">{{f_repayFeeAmount}}</td>
+                <td class="right aligned">{{f_repayTotalAmount}}</td>
+                <td>{{f_status}}</td>
+                <td class="single line"><div class="ui button mini" onclick="init.getRepayRecord('{{id}}')">查看</div></td>
+                {{#statusFlag}}
+                    {{#view}}
+                    <td class="single line"><div class="ui button mini disabled">减免</div></td>
+                    {{/view}}
+                    {{^view}}
+                    <td class="single line"><div class="ui button mini teal" onclick="init.subFee('{{id}}','{{period}}')">减免</div></td>
+                    {{/view}}
+                {{/statusFlag}}
+                {{^statusFlag}}
+                <td class="single line"><div class="ui button mini disabled">减免</div></td>
+                {{/statusFlag}}
+            </tr>
+            {{/repayList}}
+        </tbody>
+    </table>
+</script>
+
+<script type="text/mustach-template" id="costInfoTmp">
+    <div class="js_demoInfo">
+        <div class="ui header small red">费用减免第{{period}}期</div>
+        {{^view}}
+        <div class="ui red mini button" onclick="init.removeCost('{{repayId}}',this)">移除</div>
+        {{/view}}
+        <input type="hidden" name="repayId" value="{{repayId}}">
+        <input type="hidden" name="id" value="{{id}}">
+        <input type="hidden" name="period" value="{{period}}">
+        {{#list}}
+        <div class="three fields inline">
+            <div class="field">
+                <label>申请减免类型：</label>
+                <span>{{cnType}}</span>
+            </div>
+            <div class="field">
+                <label>剩余应还金额（元）：</label>
+                <span>{{amountStr}}</span>
+            </div>
+            <div class="field">
+                <label>减免金额（元）：</label>
+                <input type="text" class="item" name="amount" data-preType="{{type}}Pre" data-max="{{amount}}" data-type="{{type}}" value="{{f_amount}}">
+            </div>
+        </div>
+        {{/list}}
+        <div class="one fields">
+            <div class="field required">
+                <label>减免原因：</label>
+                <textarea name="exemptionReason" id="" cols="60" rows="5">{{exemptionReason}}</textarea>
+            </div>
+        </div>
+        <div class="ui divider"></div>
+    </div>
+</script>
+
+<script type="text/mustach-template" id="repayViewTableExtension-template-forQuery">
+    <thead>
+    <th>序号</th>
+    <th>还款日期</th>
+    <th class="right aligned">实还本金（元）</th>
+    <th class="right aligned">实还利息（元）</th>
+    {{#loanFeeList}}
+    <th class="right aligned">{{f_feeType}}（元）</th>
+    {{/loanFeeList}}
+    <th class="right aligned">总计</th>
+    </thead>
+    <tbody>
+    {{#loanRepayRecordList}}
+    <tr>
+        <td>{{period}}</td>
+        <td>{{f_repayDate}}</td>
+        <td class="right aligned">{{f_repayAmount}}</td>
+        <td class="right aligned">{{f_repayInterest}}</td>
+        {{#feeList}}
+        <td class="right aligned">{{repayFeeAmount}}</td>
+        {{/feeList}}
+        <td class="right aligned">{{f_repayTotalAmount}}</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    {{^loanRepayRecordList}}
+    <tr>
+        <td colspan="8" class="center aligned">暂无数据</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    </tbody>
+</script>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"费用免除编辑"}){}%>

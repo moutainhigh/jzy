@@ -1,0 +1,842 @@
+<style type="text/css">
+    #repayTable input{
+        padding: 0.5em 0.1em;
+    }
+</style>
+<script type="text/javascript">
+    function view(repayId){
+        $("#repayId").val(repayId);
+        $.get("/loan/query_repay_record",{
+            loanId:utils.getUrlParam("id"),
+            repayId:repayId
+        },function(data){
+            $("#repayId").val(repayId);
+            data.isBill = ProductTempType.isBill();
+            data.f_repayDate=function(){
+                return moment(this.repayDate).format("YYYY-MM-DD");
+            }
+            data.f_repayAmount=function(){
+                return accounting.toFixed(this.repayAmount,2);
+            }
+            data.f_repayInterest=function(){
+                return accounting.toFixed(this.repayInterest,2);
+            }
+            data.f_repayTotalAmount=function(){
+                return accounting.toFixed(this.repayTotalAmount,2);
+            }
+            data.f_feeType=function(){
+                return enums.feeType[this.feeType];
+            }
+            $("#repayViewTable").html(utils.render("#repayViewTable-template",data));
+            $("#gatherRecordViewModal #remark").text(data.loanRepay.remark);
+        });
+        $("#gatherRecordViewModal").modal({
+            observeChanges: true,
+            blurring: true
+        }).modal('show')
+    }
+
+    //足额还款
+    function fullRepay($this){
+        var period=$this.data("index");
+        var repayId= $("#repayId").val();
+        $.get("/loan/full_repay",{
+            repayId:repayId
+        },function(data){
+            var loanRepay = data.loanRepay;
+            var repayAmount = loanRepay.amount.toFixed(2);
+            var repayInterest = loanRepay.interest.toFixed(2);
+            var repayTotalAmount = loanRepay.totalAmount.toFixed(2);
+            var index=0;
+            $("#repay-tb").find("tr").each(function(){
+                index++;
+                if(period!=index&&$(this).find("input").length>0){
+                    $(this).remove();
+                }
+            })
+            index=$("#repay-tb").find("tr").length;
+            var loanFeeList=data.loanFeeList;
+            var repayFeeInfo = new Array();
+            var feeTypeArr = getFeeType();
+            for(i in feeTypeArr){
+                for(j in loanFeeList){
+                    if(feeTypeArr[i]==loanFeeList[j].feeType){
+                        repayFeeInfo.push({
+                            feeType:loanFeeList[j].feeType,
+                            repayFeeAmount:loanFeeList[j].feeAmount.toFixed(2)
+                        })
+                    }
+                }
+            }
+            changeInputStatus($this,index,moment(new Date()).format("YYYY-MM-DD"),repayAmount,repayInterest,repayFeeInfo,repayTotalAmount);
+        });
+    }
+
+    function changeInputStatus($this,period,repayDate,repayAmount,repayInterest,repayFeeInfo,repayTotalAmount){
+        var repayInfoTd="";
+        for(i in repayFeeInfo){
+            repayInfoTd+="<td><input type='text' name='"+repayFeeInfo[i].feeType+"' onblur='sum($(this))' value='"+repayFeeInfo[i].repayFeeAmount+"'/></td>";
+        }
+        var htm =
+                "<td>period</td>"+
+                "<td><input type='date' name='repayDate' value='"+repayDate+"' id='repayDate_period'/></td>"+
+                "<td><input type='text' name='repayAmount' value='"+repayAmount+"' onblur='sum($(this))' id='repayAmount_period' /></td>"+
+                "<td><input type='text' name='repayInterest' value='"+repayInterest+"' onblur='sum($(this))' id='repayInterest_period' /></td>"+
+                repayInfoTd+
+                "<td id='repayTotalAmount'>"+repayTotalAmount+"</td>"+
+                "<td></td>"+
+                "<td style='width:155px;'>" +
+                "<a href='javascript:;' class='ui button mini disabled'>还清</a>"+
+                "<a href='javascript:;' class='ui button mini teal' data-repayId='"+$("#repayId").val()+"' onclick='insertRepayRecord($(this),period)'>保存</a>" +
+                "</td>";
+        htm=htm.replace(/period/g,period);
+        $this.parent().parent().html(htm);
+    }
+
+    //本期还款确认
+    function saveLoanRepay(){
+        var index=0;
+        var repayId=$("#repayId").val();
+        var notConfirm = false;
+        $("#repay-tb").find("tr").each(function(){
+            index++;
+            var inputLen=$(this).find("input").length;
+            if(inputLen>0){
+                $.uiAlert({
+                    type: "danger",
+                    textHead: '失败',
+                    text: '第'+index+"行尚未保存",
+                    time: 3
+                });
+                notConfirm=true;
+            }
+        })
+        if(notConfirm){
+            return false;
+        }
+
+        if($("#repay-tb").find("tr").length<1){
+            $.uiAlert({
+                type: "danger",
+                textHead: '失败',
+                text: "请添加还款记录",
+                time: 3
+            });
+            return false;
+        }
+        var getRepay = function(status,callBack){
+            $.post("/loan/clear_loan_repay",{
+                loanId:utils.getUrlParam("id"),
+                repayId:repayId,
+                remark:$("textarea[name='remark']").val(),
+                clear:status
+            },function(data){
+                callBack(data)
+            })
+        };
+
+        getRepay('false',function(data){
+            if(data.ok){
+                $.uiAlert({
+                    type: "success",
+                    textHead: '成功',
+                    text: '成功',
+                    time: 10
+                });
+                window.location.reload();
+            }else{
+                $('#gatherRecordModal').modal('hidden');
+                $.uiDialog(data.msg, {
+                    onShow:function(){
+                        var obj = $('.js-dialog .actions .ok');
+                        data.status == 'ALERT' ? obj.addClass('ks-hidden'):obj.removeClass('ks-hidden');
+                    },
+                    onApprove: function () {
+                        getRepay('true',function(data){
+                            if(data.ok){
+                                $.uiAlert({
+                                    type: "success",
+                                    textHead: '成功',
+                                    text: '成功',
+                                    time: 10
+                                });
+                                window.location.reload();
+                            }else{
+                                $.uiAlert({
+                                    type: "danger",
+                                    textHead: '成功',
+                                    text: '成功',
+                                    time: 10
+                                });
+                                $("#gatherRecordModal").modal({
+                                }).modal('show')
+                            }
+                        })
+                    },
+                    onDeny: function () {
+                        $("#gatherRecordModal").modal({
+                        }).modal('show')
+                    }
+                });
+            }
+        });
+
+    }
+    function getFeeTypeTd(){
+        var arrs=getFeeType();
+        var feeTypeStr="";
+        for(i in arrs){
+            feeTypeStr+="<td><input type='text' name='"+arrs[i]+"' onblur='sum($(this))'/></td>";
+        }
+        return feeTypeStr;
+    }
+    //新增记录
+    function addRepayRecord(){
+        var period=$("#repay-tb").find("tr").length+1;
+        var totalAmount=$("#repayTotalAmount").text();
+        totalAmount = parseFloat(totalAmount);
+        var clearStr = "";
+        if(totalAmount!=0.00){
+            clearStr = "<a href='javascript:;' class='ui button mini' data-index='period' onclick='fullRepay($(this))'>还清</a>";
+        }
+        var feeTypeTd = getFeeTypeTd();
+        var htm =
+                "<tr>"+
+                "<td>period</td>"+
+                "<td><input type='date' name='repayDate' id='repayDate_period'/></td>"+
+                "<td><input type='text' name='repayAmount' id='repayAmount_period' onblur='sum($(this))' /></td>"+
+                "<td><input type='text' name='repayInterest' id='repayInterest_period' onblur='sum($(this))'/></td>"+
+                feeTypeTd+
+                "<td id='repayTotalAmount'></td>"+
+                "<td></td>"+
+                "<td style='width:155px;'>"+clearStr+"&nbsp;<a href='javascript:;' class='ui button mini teal' data-repayId='"+$("#repayId").val()+"' onclick='insertRepayRecord($(this),period)'>保存</a></td>"+
+                "</tr>";
+        htm=htm.replace(/period/g,period);
+        $("#repay-tb").append(htm);
+    }
+
+    function sum($this){
+        var tr = $this.parent().parent();
+        var total=0.0;
+        tr.find("input").not(":first").each(function(){
+            total += parseFloat($(this).val()==""?0:$(this).val());
+        });
+        tr.find("#repayTotalAmount").text(accounting.toFixed(total,2));
+    }
+
+    function repay(repayId){
+        $("#repayId").val(repayId);
+        var isBill = ProductTempType.isBill();
+        if(isBill){
+            $.uiDialog("确定要还款吗？", {
+                onApprove: function () {
+                    $.post("/loan/clear_loan_repay",{
+                        loanId:utils.getUrlParam("id"),
+                        repayId:repayId,
+                    },function(res){
+                        if(res){
+                            $.uiAlert({
+                                type: "success",
+                                textHead:  '成功',
+                                text: '保存成功',
+                                time: 1
+                            });
+                            window.location.reload();
+                        }else{
+                            $.uiAlert({
+                                type: "danger",
+                                textHead: '保存失败',
+                                time: 3
+                            });
+                        }
+                    })
+                },
+                onDeny: function () {
+                }
+            });
+            return false;
+        }
+        $.get("/loan/query_repay_record",{
+            repayId:repayId
+        },function(data){
+            var loanRepayRecordList=data.loanRepayRecordList;
+            var d = {data:loanRepayRecordList};
+            d.f_repayDate=function(){
+                return moment(this.repayDate).format("YYYY-MM-DD");
+            }
+            d.f_repayAmount=function(){
+                return accounting.toFixed(this.repayAmount,2);
+            }
+            d.f_repayInterest=function(){
+                return accounting.toFixed(this.repayInterest,2);
+            }
+            d.f_repayFeeAmount=function(){
+                return accounting.toFixed(this.repayFeeAmount,2);
+            }
+            d.f_repayTotalAmount=function(){
+                return accounting.toFixed(this.repayTotalAmount,2);
+            }
+            $("#repay-tb").html(utils.render("#repay-tb-template",d));
+            var loanRepay = data.loanRepay;
+            $("#repayAmount").text(accounting.formatNumber(loanRepay.amount,2,","));
+            $("#repayInterest").text(accounting.formatNumber(loanRepay.interest,2,","));
+            $("#repayTotalAmount").text(accounting.formatNumber(loanRepay.totalAmount,2,","));
+
+            var loanFeeListData= data.loanFeeList;
+            var feeTypeStr="";
+            for(i in loanFeeListData){
+                feeTypeStr=feeTypeStr+loanFeeListData[i].feeType+",";
+            }
+            if(feeTypeStr!=""){
+                feeTypeStr = feeTypeStr.substring(0,feeTypeStr.lastIndexOf(","));
+                $("#feeTypeStr").val(feeTypeStr);
+            }
+            var loanFeeList = {loanFeeList:data.loanFeeList};
+            loanFeeList.f_feeType=function(){
+                return enums.feeType[this.feeType];
+            }
+            loanFeeList.f_feeAmount=function(){
+                return accounting.formatNumber(this.feeAmount,2,",");
+            }
+            $("#fee-summary").html(utils.render("#fee-summary-template",loanFeeList));
+            $("#repay-th").html(utils.render("#repay-th-template",loanFeeList));
+            $("textarea[name='remark']").val(data.loanRepay.remark==null?"":data.loanRepay.remark);
+        });
+        $("#gatherRecordModal").modal({
+            observeChanges: true,
+            blurring: true,
+            allowMultiple: true,
+            onShow: function () {
+                //清空
+                $("#repay-tb").find("tr").each(function(){
+                   if($(this).find("input").length>0){
+                       $(this).remove();
+                   }
+                });
+            }
+        }).modal('show')
+    }
+    function getFeeType(){
+        var feeTypeStr = $("#feeTypeStr").val();
+        var arrs = new Array();
+        if(feeTypeStr!=""){
+            var arr=feeTypeStr.split(",");
+            for(i in arr){
+                arrs.push(arr[i]);
+            }
+        }
+        return arrs;
+    }
+
+
+    function insertRepayRecord($this,period){
+        var repayId=$this.data("repayid");
+        var repayDate = $("#repayDate_"+period).val();
+        var repayAmount = $("#repayAmount_"+period).val();
+        var repayInterest = $("#repayInterest_"+period).val();
+        var arrs = getFeeType();
+        var repayFeeInfo=new Array();
+        var obj=$this.parent().parent();
+        for(i in arrs){
+            var repayFeeAmount=obj.find("input[name="+arrs[i]+"]").val();
+            if(repayFeeAmount==""||isNaN(repayFeeAmount)){
+                $.uiAlert({
+                    type: "danger",
+                    textHead:  '失败',
+                    text: '金额格式不对，请检查',
+                    time: 3
+                });
+                return false;
+            }
+            repayFeeInfo.push({
+                feeType:arrs[i],
+                repayFeeAmount:repayFeeAmount
+            })
+        }
+        if(repayDate==''){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '失败',
+                text: '还款日期不能为空',
+                time: 3,
+            });
+            return false;
+        }
+        if(new Date(repayDate)>new Date()){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '失败',
+                text: '还款日期不能大于当前时间',
+                time: 3
+            });
+            return false;
+        }
+        if(repayAmount==''|| isNaN(repayAmount)|| repayInterest=='' || isNaN(repayInterest)){
+            $.uiAlert({
+                type: "danger",
+                textHead:  '失败',
+                text: '金额格式不对，请检查',
+                time: 3,
+            });
+            return false;
+        }
+        $.get("/loan/insert_repay_record",{
+            repayId:repayId,
+            repayDate:repayDate,
+            repayAmount:repayAmount,
+            repayInterest:repayInterest,
+            repayFeeInfo:JSON.stringify(repayFeeInfo),
+            remark:$("textarea[name='remark']").val()
+        },function(res){
+            if(res){
+                $.uiAlert({
+                    type: "success",
+                    textHead:  '成功',
+                    text: '保存成功',
+                    time: 1
+                });
+                repay(repayId);
+            }else{
+                $.uiAlert({
+                    type: "danger",
+                    textHead: '保存失败',
+                    time: 2
+                });
+            }
+        })
+    }
+
+
+    //提前还款模块
+
+    var repaymentModal = {
+        showModal:function(){
+            $('#earlyRepaymentModal').modal('show');
+        },
+        hideModal:function(){
+            $('#earlyRepaymentModal').modal('hide');
+        },
+        getRepaymentDetail:function(){
+            this.showModal();
+            $(document).api({
+                on:'now',
+                action:'get pre repayment detail',
+                method:'get',
+                data:{
+                    loanId:utils.getUrlParam('id')
+                },
+                onSuccess:function(data){
+                    var _data={};
+                    _data.list = data;
+                    _data.f_amount = function(){
+                        return accounting.formatMoney(this.amount,'',2,',','.');
+                    };
+                    _data.f_repayAmount = function(){
+                        return accounting.formatMoney(this.repayAmount,'',2,',','.');
+                    };
+                    _data.f_interest= function(){
+                        return accounting.formatMoney(this.interest,'',2,',','.');
+                    };
+                    _data.f_repayInterest = function(){
+                        return accounting.formatMoney(this.repayInterest,'',2,',','.');
+                    };
+                    _data.f_feeAmount = function(){
+                        return accounting.formatMoney(this.feeAmount,'',2,',','.');
+                    };
+                    _data.f_repayFeeAmount = function(){
+                        return accounting.formatMoney(this.repayFeeAmount,'',2,',','.');
+                    };
+                    _data.f_totalAmount = function(){
+                        return accounting.formatMoney(this.totalAmount,'',2,',','.');
+                    };
+                    _data.f_repayTotalAmount = function(){
+                        return accounting.formatMoney(this.repayTotalAmount,'',2,',','.');
+                    };
+                    var $htm = utils.render('#preRepaymentTemplate',_data);
+                    $('#preRepaymentList').html($htm)
+                },
+                onFailure:function(res){
+                    $.uiAlert({
+                        type: "danger",
+                        textHead: '失败',
+                        text:res.msg,
+                        time: 2
+                    });
+                }
+
+            })
+        },
+
+        //确认还清
+        repayClear:function(){
+            $(document).api({
+                on:'now',
+                action:'clear pre repayment',
+                method:'post',
+                data:{
+                    loanId:utils.getUrlParam('id')
+                },
+                onSuccess:function(res){
+                    $.uiAlert({
+                        type: "success",
+                        textHead: '成功',
+                        text:res.msg,
+                        time: 1,
+                        onClosed:function(){
+                            this.hideModal();
+                            window.location.reload();
+                        }
+                    });
+                },
+                onFailure:function(res){
+                    $.uiAlert({
+                        type: "danger",
+                        textHead: '失败',
+                        text: res.msg,
+                        time: 2
+                    });
+                }
+            })
+        }
+    };
+</script>
+<script type="text/mustach-template" id="repay-tb-template">
+    {{#data}}
+    <tr>
+        <td>{{period}}</td>
+        <td>{{f_repayDate}}</td>
+        <td class="right aligned">{{f_repayAmount}}</td>
+        <td class="right aligned">{{f_repayInterest}}</td>
+        {{#feeList}}
+        <td class="right aligned">{{repayFeeAmount}}</td>
+        {{/feeList}}
+        <td class="right aligned">{{f_repayTotalAmount}}</td>
+        <td>{{repayments}}</td>
+        <td sytle="width:155px;">
+            <div class=" ui button mini disabled">还清</div>&nbsp;<div class="ui button mini teal disabled">保存</div>
+        </td>
+    </tr>
+    {{/data}}
+</script>
+<script type="text/mustach-template" id="repay-th-template">
+    <tr>
+        <th>序号</th>
+        <th>还款日期</th>
+        <th class="right aligned">实还本金（元）</th>
+        <th class="right aligned">实还利息（元）</th>
+        {{#loanFeeList}}
+        <th class="right aligned">{{f_feeType}}（元）</th>
+        {{/loanFeeList}}
+        <th class="right aligned">总计（元）</th>
+        <th>还款人</th>
+        <th class="single line">操作</th>
+    </tr>
+</script>
+<script type="text/mustach-template" id="repayViewTable-template">
+    {{#isBill}}
+        <thead>
+            <th>序号</th>
+            <th>还款日期</th>
+            <th class="right aligned">实还金额</th>
+            <th>还款人</th>
+        </thead>
+        <tbody>
+            {{#loanRepayRecordList}}
+            <tr>
+                <td>1</td>
+                <td>{{f_repayDate}}</td>
+                <td class="right aligned">{{f_repayAmount}}</td>
+                <td>{{repayments}}</td>
+            </tr>
+            {{/loanRepayRecordList}}
+        </tbody>
+    {{/isBill}}
+    {{^isBill}}
+    <thead>
+        <th>序号</th>
+        <th>还款日期</th>
+        <th class="right aligned">实还本金（元）</th>
+        <th class="right aligned">实还利息（元）</th>
+        {{#loanFeeList}}
+        <th class="right aligned">{{f_feeType}}（元）</th>
+        {{/loanFeeList}}
+        <th class="right aligned">总计（元）</th>
+        <th>还款人</th>
+    </thead>
+    <tbody>
+        {{#loanRepayRecordList}}
+        <tr>
+            <td>{{period}}</td>
+            <td>{{f_repayDate}}</td>
+            <td class="right aligned">{{f_repayAmount}}</td>
+            <td class="right aligned">{{f_repayInterest}}</td>
+            {{#feeList}}
+            <td class="right aligned">{{repayFeeAmount}}</td>
+            {{/feeList}}
+            <td class="right aligned">{{f_repayTotalAmount}}</td>
+            <td>{{repayments}}</td>
+        </tr>
+        {{/loanRepayRecordList}}
+    </tbody>
+    {{/isBill}}
+</script>
+<script type="text/mustach-template" id="fee-summary-template">
+    {{#loanFeeList}}
+    <div class="inline fields">
+        <div class="eight wide field">
+            <label class="three wide">{{f_feeType}}（元）：</label>
+            <label>{{f_feeAmount}}</label>
+        </div>
+    </div>
+    {{/loanFeeList}}
+</script>
+
+<script type="text/mustach-template" id="preRepaymentTemplate">
+    {{#list}}
+    <tr>
+        <td>第{{period}}期</td>
+        <td>{{f_amount}}</td>
+        <td>{{f_repayAmount}}</td>
+        <td>{{f_interest}}</td>
+        <td>{{f_repayInterest}}</td>
+        <td>{{f_feeAmount}}</td>
+        <td>{{f_repayFeeAmount}}</td>
+        <td>{{f_totalAmount}}</td>
+        <td>{{f_repayTotalAmount}}</td>
+    </tr>
+    {{/list}}
+</script>
+
+<script type="text/mustach-template" id="gatherTemplate">
+    <div class="ui bottom teal segment">
+        <a class="ui teal left ribbon label">放款信息</a>
+        <!--<h3 class="ui dividing center aligned header">风控审批信息</h3>-->
+        <div class="ui  padded  segment ">
+            <div class="ui grid">
+                <div class="row">
+                    <div class="column">
+                    <div class="ui segment teal">
+                        <h4>放款信息</h4>
+                        <div class="ui equal width form">
+                            <div class="inline fields">
+                                <div class="field">
+                                    <label>放款金额:</label>
+                                    <label>{{f_actualAmount}}</label>元
+                                </div>
+                                <div class="field">
+                                    <label>放款日期:</label>
+                                    <labe>{{f_loanTime}}</labe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                        <b for="">
+                            还款计划：
+                        </b>
+                        {{#canPreRepay}}
+                        <span class="ui button mini teal mb_5 right floated" onclick="repaymentModal.getRepaymentDetail()">提前还款</span>
+                        {{/canPreRepay}}
+                        <table class="ui celled table teal" id="">
+                            {{#isBill}}
+                                <thead>
+                                <tr>
+                                    <th>期数</th>
+                                    <th>票号</th>
+                                    <th>到期日</th>
+                                    <th>宽限期（天）</th>
+                                    <th>应还金额（元）</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#loanRepayList}}
+                                <tr>
+                                    <td>{{loanRepay.period}}</td>
+                                    <td >{{billNo}}</td>
+                                    <td>{{f_dueDate}}</td>
+                                    <td>{{overdueDays}}</td>
+                                    <td class="right aligned">{{f_amount}}</td>
+                                    <td>{{f_status}}</td>
+                                    {{#f_clear}}
+                                    <td><a href="javascript:;" onclick="view('{{id}}')">查看</a></td>
+                                    {{/f_clear}}
+                                    {{^f_clear}}
+                                    <td><a href="javascript:;" onclick="repay('{{id}}')">还款确认</a></td>
+                                    {{/f_clear}}
+                                </tr>
+                                {{/loanRepayList}}
+                                </tbody>
+                            {{/isBill}}
+                            {{^isBill}}
+                                <thead>
+                                <tr>
+                                    <th>期数</th>
+                                    <th>应还日期</th>
+                                    <th class="right aligned">应还本金（元）</th>
+                                    <th class="right aligned">应还利息（元）</th>
+                                    <th class="right aligned">应还本息（元）</th>
+                                    <th class="right aligned">剩余本金（元）</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#loanRepayList}}
+                                <tr>
+                                    <td>{{period}}</td>
+                                    <td >{{f_dueDate}}</td>
+                                    <td class="right aligned">{{f_amount}}</td>
+                                    <td class="right aligned">{{f_interest}}</td>
+                                    <td class="right aligned">{{f_total}}</td>
+                                    <td class="right aligned">{{f_outstanding}}</td>
+                                    <td>{{f_status}}</td>
+                                    {{#f_clear}}
+                                    <td><a href="javascript:;" onclick="view('{{id}}')">查看</a></td>
+                                    {{/f_clear}}
+                                    {{^f_clear}}
+                                    {{#f_repay}}
+                                    <td><a href="javascript:;" onclick="repay('{{id}}')">还款</a></td>
+                                    {{/f_repay}}
+                                    {{^f_repay}}
+                                    <td><a href="javascript:;">--</a></td>
+                                    {{/f_repay}}
+                                    {{/f_clear}}
+                                </tr>
+                                {{/loanRepayList}}
+                                </tbody>
+                            {{/isBill}}
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="ui modal large" id="gatherRecordModal">
+        <i class="close icon"></i>
+        <input type="hidden" id="repayId"/>
+        <input type="hidden" id="feeTypeStr"/>
+        <div class="header">
+            本期应还
+        </div>
+        <div class="content">
+            <form class="ui form">
+                <div class="ui teal segment">
+                    <div class="inline fields">
+                        <div class="eight wide field">
+                            <label class="three wide">本金（元）：</label>
+                            <label id="repayAmount"></label>
+                        </div>
+                    </div>
+                    <div class="inline fields">
+                        <div class="eight wide field">
+                            <label class="three wide">利息（元）：</label>
+                            <label id="repayInterest"></label>
+                        </div>
+                    </div>
+                    <div id="fee-summary">
+
+                    </div>
+                    <div class="inline fields">
+                        <div class="eight wide field">
+                            <label class="three wide">总计（元）：</label>
+                            <label id="repayTotalAmount"></label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="header">
+            还款记录
+        </div>
+        <div class="content">
+            <form class="ui form">
+                <div class="fields inline">
+                    <label>备注：</label>
+                    <div class="field fourteen wide">
+                        <textarea name="remark" placeholder="备注" maxlength="200" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <div class="ui button teal js-addRepayRecord" onclick="addRepayRecord()"><i class="plus  icon"></i>新增还款记录</div>
+                </div>
+                <div class="ui segment">
+                    <table class="ui teal celled table small" id="repayTable">
+                        <thead id="repay-th">
+
+                        </thead>
+                        <tbody id="repay-tb"></tbody>
+                    </table>
+                </div>
+                <div class="actions">
+                    <div class="ui gray deny button">
+                        取消
+                    </div>
+                    <div class="ui   teal submit button" onclick="saveLoanRepay()">
+                        本期还清确认
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="ui modal" id="gatherRecordViewModal">
+        <i class="close icon"></i>
+        <div class="header">
+            还款记录
+        </div>
+        <div class="content">
+            <form class="ui form">
+                <div class="fields inline">
+                    <label>备注：</label>
+                    <div class="field fourteen wide" style="word-break: break-word">
+                        <pre class="auto" id="remark"></pre>
+                    </div>
+                </div>
+                <div class="ui segment">
+                    <table class="ui teal celled table" id="repayViewTable">
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="ui modal" id="earlyRepaymentModal">
+        <i class="close icon"></i>
+        <div class="header">
+            当前应还期数和金额
+        </div>
+        <div class="content">
+            <table class="ui teal celled table">
+                <thead>
+                <tr>
+                    <th>期数</th>
+                    <th>应还本金</th>
+                    <th>实还本金</th>
+                    <th>应还利息</th>
+                    <th>实还利息</th>
+                    <th>应还费用</th>
+                    <th>实还费用</th>
+                    <th>合计应还</th>
+                    <th>合计实还</th>
+                </tr>
+                </thead>
+                <tbody id="preRepaymentList">
+                    <tr>
+                        <td colspan="9">
+                            加载中...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="actions">
+            <div class="ui gray deny button">取消</div>
+            <div class="ui   teal submit button" onclick="repaymentModal.repayClear()">确定提前还清</div>
+        </div>
+    </div>
+</script>
+

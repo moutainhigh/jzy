@@ -1,0 +1,39 @@
+<!--新增影像资料上传弹框-->
+<div class="ui modal" id="updateModel">
+    <i class="close icon"></i>
+    <div class="header">
+        修改影像资料上传
+    </div>
+    <div class="content">
+        <form class="ui form" method="post" action="/media_upload/upload" enctype="multipart/form-data">
+            <input type="hidden" name="loanId" value="0"/>
+            <input type="hidden" name="additional"/>
+            <div class="inline fields">
+                <div class="four wide field">
+                    <label>影像资料所属类别</label>
+                    <label>车贷</label>
+                </div>
+                <div class="four wide field">
+                    <label>借款名称</label>
+                    <label>车贷</label>
+                </div>
+            </div>
+
+            <div id="item_display">
+            </div>
+            <br>
+            <div class="actions">
+                <div class="ui gray deny button">
+                    取消
+                </div>
+                <div class="ui primary  blue ok button">
+                    提交
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+

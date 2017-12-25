@@ -1,0 +1,805 @@
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/common/one_fileUpload.js"></script>
+<script type="text/javascript">
+
+function view1(repayId){
+    $.get("/loan/query_repay_record",{
+        loanId:utils.getUrlParam("id"),
+        repayId:repayId
+    },function(data){
+        data.isBill = ProductTempType.isBill();
+        data.f_repayDate=function(){
+            return moment(this.repayDate).format("YYYY-MM-DD");
+        }
+        data.f_repayAmount=function(){
+            return accounting.toFixed(this.repayAmount,2);
+        }
+        data.f_repayInterest=function(){
+            return accounting.toFixed(this.repayInterest,2);
+        }
+        data.f_repayTotalAmount=function(){
+            return accounting.toFixed(this.repayTotalAmount,2);
+        }
+        data.f_feeType=function(){
+            return enums.feeType[this.feeType];
+        }
+        $("#repayViewTableExtension").html(utils.render("#repayViewTableExtension-template-forQuery",data));
+        if(data.loanRepay && data.loanRepay.remark){
+            $("#gatherRecordViewModal2 #remark2").text(data.loanRepay.remark);
+        }
+    });
+    $("#gatherRecordViewModal2").modal({
+        observeChanges: true,
+        blurring: true
+    }).modal('show')
+}
+
+function closeViewWindow() {
+    $("#gatherRecordViewModal2 #remark2").text("");
+}
+
+
+$(document).on('click','.js_clear',function(){
+    $(this).parents('.js_file').remove();
+})
+
+
+//校验
+$.fn.form.settings.rules.termRule = function(value){
+    var type = $('#extensionDetailFrom').find('select[name="termType"]').val();
+    if(type != 'FIXED_DATE'){
+        var reg = new RegExp("^[1-9]*[1-9][0-9]*$","gim");
+        return (reg.test(value)) || value == "";
+    }else{
+        var reg = /^[1-2][0-9][0-9][0-9]-(0[1-9]|1[012])-(0[1-9]|[12]\d|3[01])$/;
+        return (reg.test(value)) || value == "";
+    }
+};
+
+$.fn.form.settings.rules.termSize = function(value,size){
+    var size_month=  parseFloat(size.split('-')[0]);
+    var size_day = parseFloat(size.split('-')[1]);
+    var type = $('#extensionDetailFrom').find('select[name="termType"]').val();
+    if(type == 'DAYS'){
+        return parseFloat(value) <= size_day;
+    }else if(type =='MOTHS'){
+        return parseFloat(value) <= size_month;
+    }else{
+        return true;
+    }
+};
+
+$.fn.form.settings.rules.lastDate = function(value){
+    var type = $('#extensionDetailFrom').find('select[name="termType"]').val();
+    if($('#last_date').val() !=''){
+        if(type == 'FIXED_DATE'){
+            var nowTime = value.split('-');
+            var lastTime = $('#last_date').val().split('-');
+            var a = moment([nowTime[0],nowTime[1]-1,nowTime[2]]);
+            var b = moment([lastTime[0],lastTime[1]-1,lastTime[2]]);
+            var dif = a.diff(b, 'days');
+            return dif > 0;
+        }else{
+            return true;
+        }
+    }else{
+        return true;
+    }
+};
+
+
+$.fn.form.settings.rules.isRate = function(value){
+    var methodVal = $('#extensionDetailInfo select[name="repayMethod"]').find('option:selected').val();
+    if(methodVal =='EQUAL_INSTALLMENT' && value !='FIX_RATE'){
+        return false
+    }else{
+        return true
+    }
+};
+
+$.fn.form.settings.rules.minInterestVal = function (value) {
+    var minVal = submit_init.minVal();
+    if(parseFloat(value)< minVal){
+        return false;
+    }else{
+        return true;
+    }
+
+}
+
+var minValjson ={
+    DAYS:{
+        'FIX_AMOUNT':parseFloat($('#stepData').attr('data-dayMinInterestAmount')),
+        'FIX_RATE':parseFloat($('#stepData').attr('data-dayMinInterestRate'))
+    },
+    MOTHS:{
+        'FIX_AMOUNT':parseFloat($('#stepData').attr('data-monthMinInterestAmount')),
+        'FIX_RATE':parseFloat($('#stepData').attr('data-monthMinInterestRate'))
+    },
+    FIXED_DATE:{
+        'FIX_AMOUNT':parseFloat($('#stepData').attr('data-minInterestAmount')),
+        'FIX_RATE':parseFloat($('#stepData').attr('data-minInterestRate'))
+    },
+    SEASONS:{
+        'FIX_AMOUNT':parseFloat($('#stepData').attr('data-seasonMinInterestRate')),
+        'FIX_RATE':parseFloat($('#stepData').attr('data-seasonMinInterestAmount'))
+    }
+}
+
+var addExtensionFrom = {
+    delay:'true',
+    inline: true,
+    on: 'blur',
+    fields: {
+        term:{
+            identifier: 'term',
+            rules:[{
+                type: 'empty',
+                prompt: '展期期限不为空'
+            },{
+                type:'termRule',
+                prompt:'输入正确格式的日期（天/月：大于0的正整数，固定时间："yyyy-mm-dd")'
+            },{
+                type:'termSize[12-365]',
+                prompt:'期限范围（天：1-365；月：1-12）'
+            },{
+                type:'lastDate',
+                prompt:'展期期限大于最后应还日期'
+            }]
+        },
+        interest:{
+            identifier: 'interest',
+            rules:[{
+                type: 'empty',
+                prompt: '展期利息不为空'
+            },{
+                type:'canBeDecimal[10]',
+                prompt:'最多10位小数'
+            },{
+                type:'minInterestVal',
+                prompt:'{name}'
+            }]
+        },
+        enterpriseExplain:{
+            identifier: 'enterpriseExplain',
+            rules:[{
+                type: 'maxLength[300]',
+                prompt: '300字符长度'
+            }]
+        },
+        repayMethod:{
+            identifier:'repayMethod',
+            rules:[{
+                type: 'empty',
+                prompt: '请选择还息类型'
+            }]
+        },
+        calculationMethod:{
+            identifier:'calculationMethod',
+            rules:[{
+                type:'empty',
+                prompt:'请选择计算方式'
+            }]
+        },
+        loanLimitType:{
+            identifier:'loanLimitType',
+            rules:[{
+                type:'isRate',
+                prompt:'还息类型为“等额本息”，借款利率只能选择“比例计息（%）'
+            }]
+        }
+    }
+}
+
+var submit_init ={
+    minVal:function(){
+        var _termTypeVal = $('#extensionDetailFrom select[name="termType"]').find('option:selected').val();
+        var loanlimiType = $('#extensionDetailFrom select[name="loanLimitType"]').find('option:selected').val();
+        return minValjson[_termTypeVal][loanlimiType]
+    },
+
+    /**
+    * 生成展期
+    * */
+    add_extension:function(){
+        $(document).on('click','#extension_addForm',function(){
+            var minval = submit_init.minVal();
+            $('#extensionDetailFrom input[name="interest"]').attr('placeholder','展期利息最小为'+minval)
+            $.uiDialog('请确定申请的展期！',{
+                onApprove:function(){
+                    minval = submit_init.minVal();
+                    $('#extensionDetailFrom').form(addExtensionFrom).api({
+                        action: 'extension insert',
+                        method: 'POST',
+                        serializeForm: true,
+                        beforeSend:function(settings){
+                            var enterpriseAgreement = [];
+                            var $this =$('#extensionDetailFrom');
+                            settings.data["term"] = $.trim($this.find('input[name="term"]').val());
+                            settings.data["interest"] = $.trim($this.find('input[name="interest"]').val());
+
+                            settings.data["loanId"] = utils.getUrlParam('id');
+                            $('.js_filebox .js_file a').each(function () {
+                                enterpriseAgreement.push({
+                                    'fileName':$(this).html(),
+                                    'fileUrl':$(this).attr('href')
+                                })
+                            });
+
+                            settings.data["enterpriseAgreement"] = JSON.stringify(enterpriseAgreement);
+                            return settings;
+                        },
+                        onSuccess:function(response){
+                            $.uiAlert({
+                                type: "success",
+                                textHead: '保存成功',
+                                text: '',
+                                time: 1,
+                                onClosed:function(){
+                                    window.location.href = '/business_apply/extension';
+                                }
+                            });
+                        },
+                        onFailure:function(response){
+                            $.uiAlert({type: "danger", textHead: '保存失败', text: response.msg, time: 4});
+                        }
+                    });
+                    $("#extensionDetailFrom").submit();
+                }
+            })
+        });
+    },
+
+    get_repayList:function(){
+        /**
+        * 生成还款计划
+        * */
+        $(document).on('click','#extension_loan_repay',function(){
+            var minval = submit_init.minVal();
+            $('#extensionDetailFrom input[name="interest"]').attr('placeholder','展期利息最小为'+minval)
+            $('#extensionDetailFrom').form(addExtensionFrom).api({
+                action: 'extension loan repay',
+                method: 'POST',
+                serializeForm: true,
+                beforeSend:function(settings){
+                    var $this =$('#extensionDetailFrom');
+                    settings.data["term"] = $.trim($this.find('input[name="term"]').val());
+                    settings.data["interest"] = $.trim($this.find('input[name="interest"]').val());
+                    settings.data["loanId"] = utils.getUrlParam('id');
+                    return settings;
+                },
+                onSuccess:function(data){
+                    data.newRepayList = data.data;
+                    data.f_dueDate=function(){
+                        return moment(this.dueDate).format("YYYY-MM-DD");
+                    }
+                    data.f_amount=function(){
+                        return accounting.formatNumber(this.amount,2,",");
+                    }
+                    data.f_interest=function(){
+                        return accounting.formatNumber(this.interest,2,",");
+                    }
+                    data.f_total=function(){
+                        return accounting.formatNumber(this.feeAmount,2,",");
+                    }
+                    data.f_repay_total = function(){
+                        return accounting.formatNumber(this.totalAmount,2,",");
+                    }
+                    data.f_name=function(){
+                        return enums.feeType[this.feeType];
+                    };
+                    data.f_feeAmount=function(){
+                        return accounting.formatNumber(this.feeAmount,2,",")
+                    }
+                    data.f_repayFeeAmount=function(){
+                        return accounting.formatNumber(this.repayFeeAmount,2,",");
+                    }
+                    data.f_repayDate=function(){
+                        return moment(this.repayDate).format('YYYY-MM-DD');
+                    }
+                    data.f_status=function(){
+                        if(null != this.loanRepay){
+                            return enums.Loan_repay_status[this.status];
+                        }
+                        return enums.Loan_repay_status[this.status];
+                    }
+                    data.f_remark = function (){
+                        if(this.remark){
+                            return this.remark;
+                        }else{
+                            return '--'
+                        }
+                    }
+                    $('.js_new_loan_repay').removeClass('ks-hidden');
+                    var extensionHtm = utils.render("#extensionLoanRepayTmp",data);
+                    $('#new_loan_repay').html(extensionHtm);
+                },
+                onFailure:function(response){
+                    $.uiAlert({type: "danger", textHead: '生成失败', text: response.msg, time: 4});
+                }
+            });
+            $("#extensionDetailFrom").submit();
+        });
+    },
+
+
+    set_laydate:function(){
+        /**
+        * 相关表单级联
+        * */
+
+        //类型为固定时间切换日期控件
+        $(document).on('click','#extensionDetailInfo input[name="term"].laydate',function(){
+            laydate({});
+        });
+        $(document).on('change','#extensionDetailFrom select[name="termType"]',function(){
+            var termType = $(this).val();
+            if(termType == 'FIXED_DATE'){
+                $('#extensionDetailInfo input[name="term"]').addClass('laydate')
+            }else{
+                $('#extensionDetailInfo input[name="term"]').removeClass('laydate')
+            }
+            if(termType == 'FIXED_DATE' || termType == 'DAYS') {
+                $('#extensionDetailInfo select[name="calculationMethod"]').val("CALCULATE_HEAD_AND_TAIL");
+            }
+            switch(termType){
+                case 'DAYS':
+                    var interestValAboutTermType = $('#stepData').attr('data-dayInterestType');
+                    break;
+                case 'MOTHS':
+                    var interestValAboutTermType = $('#stepData').attr('data-monthInterestType');
+                    break;
+                case 'FIXED_DATE':
+                    var interestValAboutTermType = $('#stepData').attr('data-interestType');
+                    break;
+                case 'SEASONS':
+                    var interestValAboutTermType = $('#stepData').attr('data-seasonInterestType');
+                    break;
+            }
+            $('#extensionDetailFrom input[name="interest"]').attr('placeholder','展期利息最小为'+submit_init.minVal())
+            getBinChoices('interestType',interestValAboutTermType);
+            select.selectForPaymethod('extensionDetailInfo','true');
+            select.calculate('extensionDetailInfo','calculationMethod');
+        });
+
+        $(document).on('change','#extensionDetailFrom select[name="repayMethod"]',function() {
+            setRepayDate('extensionDetailInfo','repayDateType');
+        });
+
+        $(document).on('change','#extensionDetailFrom select[name="loanLimitType"]',function() {
+            $('#extensionDetailFrom input[name="interest"]').attr('placeholder','展期利息最小为'+submit_init.minVal())
+        })
+
+    },
+
+};
+function setRepayDate(id,name){
+    var methodVal = $('#'+id+' select[name="repayMethod"]').find('option:selected').val();
+    var repayDate = $('#'+id+' select[name="'+name+'"]');
+    if(methodVal == "INTEREST_MONTHS" || methodVal == 'INTEREST_DAYS') {
+        repayDate.removeClass('disabled')
+    } else {
+        repayDate.val("REPAY_SUF").addClass('disabled');
+    }
+    if(methodVal == 'INTEREST_DAYS') {
+       $("#extensionDetailInfo select[name='calculationMethod']").val("CALCULATE_HEAD_AND_TAIL").addClass('disabled');
+    } else {
+        $("#extensionDetailInfo select[name='calculationMethod']").removeClass('disabled');
+    }
+}
+submit_init.set_laydate();
+submit_init.add_extension();
+submit_init.get_repayList();
+</script>
+
+<style>
+    .actions {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<script type="text/mustach-template" id="repayViewTableExtension-template-forQuery">
+    {{#isBill}}
+    <thead>
+    <th>序号</th>
+    <th>还款日期</th>
+    <th class="right aligned">实还金额</th>
+    </thead>
+    <tbody>
+    {{#loanRepayRecordList}}
+    <tr>
+        <td>1</td>
+        <td>{{f_repayDate}}</td>
+        <td class="right aligned">{{f_repayAmount}}</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    {{^loanRepayRecordList}}
+    <td colspan="3" class="center aligned">暂无数据</td>
+    {{/loanRepayRecordList}}
+    </tbody>
+    {{/isBill}}
+    {{^isBill}}
+    <thead>
+    <th>序号</th>
+    <th>还款日期</th>
+    <th class="right aligned">实还本金</th>
+    <th class="right aligned">实还利息</th>
+    {{#loanFeeList}}
+    <th class="right aligned">{{f_feeType}}</th>
+    {{/loanFeeList}}
+    <th class="right aligned">总计</th>
+    </thead>
+    <tbody>
+    {{#loanRepayRecordList}}
+    <tr>
+        <td>{{period}}</td>
+        <td>{{f_repayDate}}</td>
+        <td class="right aligned">{{f_repayAmount}}</td>
+        <td class="right aligned">{{f_repayInterest}}</td>
+        {{#feeList}}
+        <td class="right aligned">{{repayFeeAmount}}</td>
+        {{/feeList}}
+        <td class="right aligned">{{f_repayTotalAmount}}</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    {{^loanRepayRecordList}}
+    <tr>
+        <td colspan="8" class="center aligned">暂无数据</td>
+    </tr>
+    {{/loanRepayRecordList}}
+    </tbody>
+    {{/isBill}}
+</script>
+
+<!--生成新还款计划-->
+<script type="text/mustach-template" id="extensionLoanRepayTmp">
+    {{#newRepayList}}
+    <tr>
+        <td>{{period}}</td>
+        <td >{{f_dueDate}}</td>
+        <td class="right aligned">{{f_amount}}</td>
+        <td class="right aligned">{{f_interest}}</td>
+        <td class="right aligned">{{f_total}}</td>
+        <td class="right aligned">{{f_repay_total}}</td>
+        <td>{{f_status}}</td>
+        <td><a href="javascript:;" onclick="view1('{{id}}')">查看</a></td>
+        <td>{{f_remark}}</td>
+    </tr>
+    {{/newRepayList}}
+    {{^newRepayList}}
+    <tr>
+        <td colspan="7" class="center aligned">暂无数据</td>
+    </tr>
+    {{/newRepayList}}
+</script>
+
+<script type="text/mustach-template" id="extensionTemplate">
+    <div class="ui bottom teal segment">
+        <a class="ui teal left ribbon label">业务展期</a>
+        <input type="hidden" id="last_date" value="{{last_Date}}">
+        <div class="divider ui hidden "></div>
+        <div id="extensionDetailInfo" class="ui form">
+            <!--增加展期表单-->
+            <form id="extensionDetailFrom">
+                <!-- todo-->
+            </form>
+
+            <div class="ui grid">
+                <div class="row">
+                    <div class="column">
+                        <b for="">
+                            原还款计划：
+                        </b>
+                        {{#repayList}}
+                        <div class="js_title">
+                            <h4 class="title"></h4>
+                            <div class="detailInfo">
+                                <div class="js_reject_info"></div>
+                                    <!--to be fill-->
+
+                            </div>
+                        </div>
+
+                        <table class="ui celled table teal">
+                            <thead>
+                            <tr>
+                                <th>期数</th>
+                                <th>应还日期</th>
+                                <th class="right aligned">应还本金（元）</th>
+                                <th class="right aligned">应还利息（元）</th>
+                                <th class="right aligned">应还综合服务费（元）</th>
+                                <th class="right aligned">还款总额（元）</th>
+                                <th>还款状态</th>
+                                <th>还款记录</th>
+                                <th>备注</th>
+                            </tr>
+                            </thead>
+                            <tbody class="js_his_list">
+                            </tbody>
+                        </table>
+                        {{/repayList}}
+                    </div>
+                </div>
+            </div>
+            {{#is_extension}}
+            <br>
+            <div id="reject_list">
+
+            </div>
+
+            {{#rejectExtensionList}}
+            <div class="js_reject_list ks-hidden">
+                <div class="ui  padded attached  small segment">
+                    <div class="ui grid">
+                        <div class="three column row">
+                            <div class="column">
+                                <b>展期审批状态：</b>
+                                <span class="ui header red">{{f_approvalStatusType}}</span>
+                                {{#hasExtensionId}}
+                                <a target="_blank" href="/flow/to_approval_list?id={{extensionId}}&flowConfigureType=EXTENSION" class="ui teal">[查看审批流程]</a>
+                                {{/hasExtensionId}}
+                            </div>
+                            <div class="column">
+                                <b>展期申请编号：</b>
+                                <span>{{extensionCode}}</span>
+                            </div>
+                        </div>
+
+                        <div class="three column row">
+                            <div class="column">
+                                <b for="">展期期限：</b>
+                                <span>{{loanExtension_term}}</span>
+                            </div>
+                            <div class="column">
+                                <b for="">展期利息：</b>
+                                <span>{{loanExtension_rate}}</span>
+                            </div>
+                            <div class="column">
+                                <b for="">还息方式：</b>
+                                <span>{{loanExtension_repayMethod}}</span>
+                            </div>
+                        </div>
+                        <div class="three column row">
+                            <div class="column">
+                                <b for="">收息时间：</b>
+                                <span>{{loanExtension_repayDateType}}</span>
+                            </div>
+                            <div class="column">
+                                <b for="">计算方式：</b>
+                                <span>{{loanExtension_calculateMethod}}</span>
+                            </div>
+                        </div>
+                        <div class="column row">
+                            <div class="column">
+                                <b >展期协议：</b>
+                                <span class="js_agreement break-all ks-hidden">{{loanExtension_agreement}}</span>
+                            </div>
+                        </div>
+                        <div class="row column">
+                            <div class="column">
+                                <b>说明：</b>
+                                <div class="break-all">
+                                    <pre class="auto">{{enterpriseExplain}}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+            </div>
+            {{/rejectExtensionList}}
+
+
+            <br>
+            <a href="JavaScript:;" class="ui button teal" id="extension_loan_repay">生成新还款计划</a>
+            <br>
+            <br>
+            {{/is_extension}}
+
+            <div class="ui grid js_new_loan_repay ks-hidden">
+                <div class="row">
+                    <div class="column">
+                        <table class="ui celled  center aligned table teal">
+                            <thead>
+                            <tr>
+                                <th>期数</th>
+                                <th>应还日期</th>
+                                <th class="right aligned">应还本金（元）</th>
+                                <th class="right aligned">应还利息（元）</th>
+                                <th class="right aligned">应还综合服务费（元）</th>
+                                <th class="right aligned">还款总额（元）</th>
+                                <th>还款状态</th>
+                                <th>还款记录</th>
+                                <th>备注</th>
+                            </tr>
+                            </thead>
+                            <tbody id="new_loan_repay">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {{#is_extension}}
+            <div class="actions">
+                <div id="extension_addForm" class="ui button teal">
+                    申请展期
+                </div>
+            </div>
+            {{/is_extension}}
+        </div>
+    </div>
+
+
+    <!---->
+    <div id="extensionInfo">
+    {{#loanExtensionList}}
+        <div class="ui  padded attached  small segment js_detail_list ks-hidden">
+            <div class="ui grid">
+                <div class="three column row">
+                    <div class="column">
+                        <b>展期审批状态：</b>
+                        {{#hasExtensionId}}
+                        <span class="ui header red">已审批</span>
+                        <a target="_blank" href="/flow/to_approval_list?id={{extensionId}}&flowConfigureType=EXTENSION" class="ui teal">[查看审批流程]</a>
+                        {{/hasExtensionId}}
+                        {{^hasExtensionId}}
+                        <span class="ui header red">--</span>
+                        {{/hasExtensionId}}
+                    </div>
+                    <div class="column">
+                        <b>展期申请编号：</b>
+                        <span>{{extensionCode}}</span>
+                    </div>
+                </div>
+
+                <div class="three column row">
+                    <div class="column">
+                        <b for="">展期期限：</b>
+                        <span>{{loanExtension_term}}</span>
+                    </div>
+                    <div class="column">
+                        <b for="">展期利息：</b>
+                        <span>{{loanExtension_rate}}</span>
+                    </div>
+                    <div class="column">
+                        <b for="">还息方式：</b>
+                        <span>{{loanExtension_repayMethod}}</span>
+                    </div>
+                </div>
+                <div class="three column row">
+                    <div class="column">
+                        <b for="">收息时间：</b>
+                        <span>{{loanExtension_repayDateType}}</span>
+                    </div>
+                    <div class="column">
+                        <b for="">计算方式：</b>
+                        <span>{{loanExtension_calculateMethod}}</span>
+                    </div>
+                </div>
+                <div class="column row">
+                    <div class="column">
+                        <b >展期协议：</b>
+                        <span class="js_agreement break-all ks-hidden">{{loanExtension_agreement}}</span>
+                    </div>
+                </div>
+                <div class="row column">
+                    <div class="column">
+                        <b>说明：</b>
+                        <div class="break-all">
+                            <pre class="auto">{{enterpriseExplain}}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/loanExtensionList}}
+    </div>
+
+
+    <!--还款记录-->
+    <div class="ui modal" id="gatherRecordViewModal2">
+        <i class="close icon" onclick="closeViewWindow()"></i>
+        <div class="header">
+            还款记录
+        </div>
+        <div class="content">
+            <form class="ui form">
+                <div class="fields inline">
+                    <label>备注：</label>
+                    <div class="field fourteen wide" style="word-break: break-word">
+                        <pre class="auto" id="remark2"></pre>
+                    </div>
+                </div>
+                <div class="ui segment">
+                    <table class="ui teal celled table" id="repayViewTableExtension">
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</script>
+
+<!--需要提交的表单-->
+<script type="text/mustach-template" id="extensionFormTemp">
+    {{#isExtension}}
+    <div class="three fields">
+        <div class="field">
+            <label>展期期限类型</label>
+            <select name="termType" >
+                {{#termTypeChoices}}
+                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                {{/termTypeChoices}}
+            </select>
+        </div>
+        <div class="field required">
+            <label>展期期限</label>
+            <input type="text" name="term">
+        </div>
+        <div class="field required">
+            <label>还息类型</label>
+            <select name="repayMethod">
+                <option value="">请选择</option>
+                {{#repayMethodChoices}}
+                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                {{/repayMethodChoices}}
+            </select>
+        </div>
+    </div>
+    <div class="three fields">
+        <div class="field">
+            <label>展期利息类型</label>
+            <select name="loanLimitType">
+                {{#interestTypeChoices}}
+                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                {{/interestTypeChoices}}
+            </select>
+        </div>
+        <div class="field required">
+            <label>展期利息</label>
+            <div class="field ">
+                <input type="text" name="interest" placeholder="">
+            </div>
+        </div>
+        <div class="field required">
+            <label>收息时间</label>
+            <select name="repayDateType" class="ui fluid dropdown">
+                <option value="REPAY_PRE">期初收息</option>
+                <option value="REPAY_SUF">期末收息</option>
+            </select>
+        </div>
+    </div>
+    <div class="three fields">
+        <div class="field required">
+            <label>计算方式</label>
+            <select name="calculationMethod" class="ui fluid dropdown">
+                <option value="">请选择</option>
+                <option value="CALCULATE_HEAD_AND_TAIL">算头算尾</option>
+                <option value="CALCULATE_HEAD_NOT_TAIL">算头不算尾</option>
+                <option value="CALCULATE_TAIL_NOT_HEAD">算尾不算头</option>
+            </select>
+        </div>
+    </div>
+    <div class="fields">
+        <div class=" field">
+            <label>展期协议</label>
+            <span class="js-uploadBtn button ui mini" data-file="more" data-catalog="extension"><i class="upload icon"></i>选择上传文件</span>
+            <div class="js_fileBox">
+                <br/>
+                <a href="" target="_blank" class="js-fileName"></a>
+            </div>
+            <input type="hidden" name="contractFileName" disabled>
+            <input type="hidden" name="contractFileUrl" disabled>
+            <input type="hidden" name="enterpriseAgreement">
+        </div>
+    </div>
+    <div class="three fields">
+        <div class="field sixteen wide">
+            <label>说明</label>
+            <textarea name="enterpriseExplain" cols="60" rows="5"></textarea>
+        </div>
+    </div>
+    {{/isExtension}}
+</script>

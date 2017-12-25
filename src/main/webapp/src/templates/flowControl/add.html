@@ -1,0 +1,187 @@
+
+<script type="application/javascript" >
+    var point = 1;
+    function addNode(cur){
+          $(cur).parents(".modal").find(".nodeArea").append("<tr>" +
+                      "<td>"+point+"</td>" +
+                      "<td><input type='text' class='name' /></td>" +
+                      "<td><input type='text' class='organizeId' /></td>" +
+                  "</tr>");
+        point++;
+    }
+
+    /**
+     * 重置表单
+     */
+    function addFormReset(){
+        $("#addModal").find("form")[0].reset();
+        $("#addModal").find(".nodeArea").html("");
+    }
+
+    function delNode(cur){
+        $(cur).parents(".modal").find(".nodeArea").find("tr:last").remove();
+        point--;
+    }
+
+    /**
+     * 关闭模态窗
+     */
+    function closeAddModal(){
+       $("#addModal").modal('hide');
+    }
+
+    function add(){
+        //组装json
+        var flowControlItems = [];
+        $("#addModal").find(".nodeArea").find("tr").each(function(){
+            var name = $.trim($(this).find(".name").val());
+            var organizeId = $(this).find(".organizeId").val();
+            if(""!=name&&""!=organizeId){
+                var item = new Object();
+                item.name =name;
+                item.organizeId =organizeId;
+                flowControlItems.push(item);
+            }
+
+        });
+
+
+        $("#addModal").find(".form").form({
+            on: 'blur',
+            inline:true,
+            fields: {
+                productTypeId:{
+                    identifier: 'flowControlTmpl.productTypeId',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '请选择产品大类'
+                        }
+                    ]
+                },
+                productId:{
+                    identifier: 'flowControlTmpl.productId',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '请选择产品'
+                        }
+                    ]
+                },
+                name:{
+                    identifier: 'flowControlTmpl.name',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '请填写流程名称'
+                        }
+                    ]
+                },
+                description:{
+                    identifier: 'flowControlTmpl.description',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '请填写流程描述'
+                        }
+                    ]
+                }
+            }
+        }).api({
+            url:"/flow_control/add",
+            serializeForm:true,
+            method:"post",
+            data:{"flowControlItems":JSON.stringify(flowControlItems),"flowControlTmpl.type":$("#flowControlType").val()},
+            beforeSend:function(settings){
+                for(i in settings.data){
+                    if(i !='user.roles'){
+                        var val = settings.data[i];
+                        settings.data[i] = $.trim(val);
+                    }
+                }
+                return settings
+            },
+            onSuccess:function(data){
+                alert(data.msg);
+                if(data.ok){
+                    $("#addModal").modal('hide');
+                    list();
+                }
+            }
+        });
+    }
+
+</script>
+
+<div class="ui modal" id="addModal" style="overflow: scroll">
+    <i class="close icon"></i>
+    <div class="header">${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程新增</div>
+    <div class="content">
+        <form class="ui form">
+            <div class="two inline fields">
+                <div class=" required field">
+                    <label >产品大类</label>
+                    <select name="flowControlTmpl.productTypeId" onchange="queryProductByType(this)">
+                        <option value="">请选择</option>
+                        <%for(productType in productTypes){%>
+                        <option value="${productType.id}">${productType.name}</option>
+                        <%}%>
+                    </select>
+                </div>
+
+                <div class=" required field">
+                    <label>产品名称</label>
+                    <select name="flowControlTmpl.productId" class="product">
+                     </select>
+                </div>
+            </div>
+
+            <div class="inline fields">
+                <div class=" required field">
+                    <label>${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程名称</label>
+                    <input name="flowControlTmpl.name" type="text" placeholder='${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程名称' />
+                </div>
+            </div>
+
+
+            <div class="required field">
+                <label>${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程描述</label>
+                <input name="flowControlTmpl.description" type="text" placeholder='${type=="BUSINESS_CONTROL"?"业务":type=="RISK_CONTROL"?"风控":"财务"}审批流程描述'>
+            </div>
+
+            <div class="inline fields">
+                <div class=" required field">
+                    <label>是否生效</label>
+                    <select name="flowControlTmpl.status">
+                        <%for(sta in status){%>
+                           <option value="${sta}">${sta.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 节点 -->
+            <table class="ui very basic table">
+                <thead>
+                <tr>
+                    <th>节点编号</th>
+                    <th>节点名称</th>
+                    <th>岗位</th>
+                </tr>
+                </thead>
+                <tbody class="nodeArea">
+
+                </tbody>
+            </table>
+
+            <div>
+                <span onclick="addNode(this)"  class="ui grey basic button">新增节点</span>
+                <span onclick="delNode(this)" class="ui grey basic button">删除最后节点</span>
+                <button onclick="add()"  class="ui grey basic button">保存数据</button>
+                <span onclick="closeAddModal()" class="ui grey basic button" >关闭窗口</span>
+            </div>
+        </form>
+
+
+    </div>
+</div>

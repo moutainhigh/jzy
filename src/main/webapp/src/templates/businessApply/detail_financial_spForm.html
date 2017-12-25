@@ -1,0 +1,65 @@
+<script type="text/mustach-template" id="financialFormTemplate">
+
+    <!--财务审批流程：表单-->
+    <div class="ui bottom teal segment  ">
+        <form class="ui form" id="financialForm">
+            {{#isBill}}
+            <a class="ui teal left ribbon label">居间费立项审批</a>
+            <div class="ui grouped fields">
+                <label>&emsp;</label>
+                <div class="field">
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="intermediary" value="true" checked>
+                        <label>同意居间费立项</label>
+                    </div>
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="intermediary" value="false">
+                        <label>不同意居间费立项</label>
+                    </div>
+                </div>
+            </div>
+            {{/isBill}}
+
+            {{#enterprise}}
+            <a class="ui teal left ribbon label">用印审批</a>
+            <div class="ui grouped fields">
+                <label>&emsp;</label>
+                <div class="field ">
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="enterprise" value="true">
+                        <label>同意用印</label>
+                    </div>
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="enterprise" value="false">
+                        <label>不同意用印</label>
+                    </div>
+                </div>
+            </div>
+            {{/enterprise}}
+            {{#workItem}}
+            <a class="ui teal left ribbon label">财务审批流程</a>
+            <h3 class="ui header">审批流程节点：<span id="risk_arrorval">{{taskKey}}-{{taskName}}</span></h3>
+                <input type="hidden" id="taskKey" value="{{taskKey}}">
+                <div class="ui grouped required  fields">
+                    <label>审批结果</label>
+                    <div class="field ">
+                        {{#resultEnums}}
+                        <div class="ui radio checkbox ">
+                            <input type="radio" name="approvalCode" value="{{value}}">
+                            <label>{{name}}</label>
+                        </div>
+                        {{/resultEnums}}
+                    </div>
+                </div>
+                <div class="required field ">
+                    <label>审批意见</label>
+                    <textarea name="content"></textarea>
+                </div>
+                <input type="hidden" name="needRepeatFlow" value="false">
+                <div class="ui button teal" id="financialFlowSubmitBnt">提交</div>
+                <div class="ui error message"></div>
+            {{/workItem}}
+        </form>
+    </div>
+    <!--/财务审批流程：表单-->
+</script>

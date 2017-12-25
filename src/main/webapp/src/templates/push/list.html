@@ -1,0 +1,170 @@
+<%var jsPart = {%>
+<script type="text/javascript" src="/js/common/two-cascade.js"></script>
+<script src="/js/pages/push/index.js"></script>
+<%};%>
+
+
+<%var htmlPart = {%>
+
+<div class="ui segment teal">
+    <div class="ui tabular menu" id="tab_menu">
+        <a data-status="one" class="item active teal">待推单</a>
+        <a data-status="two" class="item teal">部分推单</a>
+        <a data-status="three" class="item teal">推单完成</a>
+    </div>
+
+    <form class="ui form" id="searchForm">
+        <div class="four wide fields">
+            <div class="field">
+                <label>业务单号</label>
+                <input type="text" name="loanCode" id="loanCode">
+            </div>
+            <div class="field">
+                <label>业务人员</label>
+                <input type="text" name="saleName" id="saleName">
+            </div>
+            <div class="field" >
+                <label>借款人</label>
+                <input type="text" name="masterBorrowerName" id="masterBorrowerName">
+            </div>
+            <div class="field">
+                <label>渠道来源</label>
+                <input type="text" name="channelName" id="channelName">
+            </div>
+        </div>
+        <div class="four wide fields">
+            <div class="field">
+                <label>产品大类</label>
+                <select name="productTypeId" class="ui dropdown" id="productType">
+                </select>
+            </div>
+            <div class="field">
+                <label>产品子类</label>
+                <select name="productId" class="ui dropdown" id="product">
+                </select>
+            </div>
+            <div class="field" >
+                <label>放款主体</label>
+                <select name="loanSubjectId" id="loanSubjectId">
+                    <option value="">请选择</option>
+                    <%for(data in loanSubjectList){ %>
+                    <option value="${data.id}">${data.name}</option>
+                    <%}%>
+                </select>
+            </div>
+            <div class="field disabled ks-hidden" id="js_dueDate">
+                <label>标的最小结清日期</label>
+                <input name="loanMaxDueDate" id="loanMaxDueDate">
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="aligned center">
+                <div class="ui tiny button teal" onclick="initList.search()">查询</div>
+                <div class="ui tiny button clear" onclick="initList.reset()">重置</div>
+            </div>
+        </div>
+    </form>
+
+    <div class="ui divider hidden"></div>
+    <div class="row js_part" id="part_one">
+        <div class="column">
+            <div class=" ui segment teal">
+                <a class="ui teal left ribbon label">待推单列表</a>
+                <table class="ui  celled table compact  small" id="noPush">
+                    <thead>
+                    <tr>
+                        <th>业务单号</th>
+                        <th>产品大类</th>
+                        <th>产品子类</th>
+                        <th>放款主体</th>
+                        <th>业务来源</th>
+                        <th>借款人</th>
+                        <th>借款期限</th>
+                        <th>审批金额（元）</th>
+                        <th>审批完成时间</th>
+                        <th>放款时间</th>
+                        <th>放款金额（元）</th>
+                        <th>应结清时间</th>
+                        <th>业务单状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row js_part ks-hidden" id="part_two">
+        <div class="column">
+            <div class=" ui segment teal">
+                <a class="ui teal left ribbon label">部分推单列表</a>
+                <table class="ui  celled table compact  small" id="littlePush">
+                    <thead>
+                    <tr>
+                        <th>业务单号</th>
+                        <th>产品大类</th>
+                        <th>产品子类</th>
+                        <th>放款主体</th>
+                        <th>业务来源</th>
+                        <th>借款人</th>
+                        <th>借款期限</th>
+                        <th>审批金额（元）</th>
+                        <th>审批完成时间</th>
+                        <th>放款时间</th>
+                        <th>放款金额（元）</th>
+                        <th>业务单状态</th>
+                        <th>应结清时间</th>
+                        <th>标的最小应结清时间</th>
+                        <th>实际结清时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row js_part ks-hidden" id="part_three">
+        <div class="column">
+            <div class=" ui segment teal">
+                <a class="ui teal left ribbon label">推单完成列表</a>
+                <table class="ui  celled table compact  small" id="allPush">
+                    <thead>
+                    <tr>
+                        <th>业务单号</th>
+                        <th>产品大类</th>
+                        <th>产品子类</th>
+                        <th>放款主体</th>
+                        <th>业务来源</th>
+                        <th>借款人</th>
+                        <th>借款期限</th>
+                        <th>审批金额（元）</th>
+                        <th>审批完成时间</th>
+                        <th>放款时间</th>
+                        <th>放款金额（元）</th>
+                        <th>业务单状态</th>
+                        <th>应结清时间</th>
+                        <th>标的最大应结清时间</th>
+                        <th>实际结清时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"推单管理"}){}%>
+

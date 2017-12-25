@@ -1,0 +1,186 @@
+<script type="text/mustach-template" id="mortgageTemplate">
+    <a class="ui teal left ribbon label">抵押详情</a>
+    <h4 class="ui top attached block small  header">基本信息</h4>
+
+    <div class="ui  padded attached  small segment">
+        <div class="ui grid">
+            <div class="four column row">
+                <div class="column">
+                    <b>房产抵押编号：</b>
+                    <span>{{mortgageCode}}</span>
+                </div>
+                <div class="column">
+                    <b>业务来源：</b>
+                    <span>{{businessSource}}</span>
+                </div>
+                <div class="column">
+                    <b>类型：</b>
+                    <span>{{houseMortgage_type}}</span>
+                </div>
+                <div class="column">
+                    <b>放款主体：</b>
+                    <span>{{loanSubjectName}}</span>
+                </div>
+            </div>
+            <div class="four column row">
+                <div class="column">
+                    <b>填单人：</b>
+                    <span>{{createBy}}</span>
+                </div>
+                <div class="column">
+                    <b>提交时间：</b>
+                    <span>{{updateTime}}</span>
+                </div>
+                <div class="column">
+                    <a class="ui button mini teal" target="_blank" href="/flow/to_approval_list?id={{id}}&flowConfigureType=MORTGAGE">查看审批流程</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <h4 class="ui top attached block small  header">房产信息</h4>
+    <div class="ui  padded attached  small segment">
+        {{#mortgageHouseList}}
+        <div class="ui grid">
+            <div class="three column row">
+                <div class="column">
+                    <b for="">房地产权证号：</b>
+                    <span>{{house.housePropertyNumber}}</span>
+                </div>
+                <div class="column">
+                    <b for="">房产地址：</b>
+                    <span>{{house.address}}</span>
+                </div>
+                <div class="column">
+                    <b for="">房产面积（㎡）：</b>
+                    <span>{{house.area}}</span>
+                </div>
+            </div>
+            <div class="three column row">
+                <div class="column">
+                    <b for="">借款利息：</b>
+                    <span>{{loanInterestRate}}%/月</span>
+                </div>
+                <div class="column">
+                    <b for="">最高借款金额（元）：</b>
+                    <span>{{maximumLoanAmount}}</span>
+                </div>
+                <div class="column">
+                    <b for="">借款时间：</b>
+                    <span>{{startTime}} ~ {{endTime}}</span>
+                </div>
+            </div>
+
+            {{#house.equityHolderList}}
+            <div class="three column row">
+                <div class="column">
+                    <b for="">权利人：</b>
+                    <span>{{name}}</span>
+                </div>
+                <div class="column">
+                    <b for="">证件号码：</b>
+                    <span>{{certif_type}}/{{certificateNo}}</span>
+                </div>
+                <div class="column">
+                    <b>家庭住址</b>
+                    <span>{{homeAddress}}</span>
+                </div>
+            </div>
+            {{/house.equityHolderList}}
+
+            <div class="one column row">
+                {{#isPersonal}}
+                {{/isPersonal}}
+                {{^isPersonal}}
+                <div class="ui button small teal" onclick="checkFile('{{mortgageId}}','{{houseId}}','{{houseMortgageType}}')">单证查看</div>
+                {{/isPersonal}}
+                <span>（放款主体为个人，无单证）</span>
+            </div>
+        </div>
+        {{/mortgageHouseList}}
+    </div>
+
+    <!-- 单证下载 -->
+    <div class="ui modal" id="fileUploadModal">
+
+    </div>
+</script>
+
+<script type="text/mustach-template" id="fileModalTemplate1">
+    <i class="close icon"></i>
+    <div class="header">单证下载</div>
+    <div class="content">
+        {{#_data}}
+        <div class="fields inline">
+            <div class="field">
+                <label>{{name}}</label>
+                <a class="ui button teal mini" target="_blank" href="/mortgage/document_download?mortgageDocumentType={{type}}&mortgageId={{id}}&houseId={{houseId}}">下载</a>
+            </div>
+        </div>
+        {{/_data}}
+        {{^_data}}
+        <p>暂无单证信息</p>
+        {{/_data}}
+    </div>
+</script>
+
+<script>
+    if(templateType =='mortgage') {
+
+        function checkFile(id,houseId,houseMortgageType){
+            $(document).api({
+                on:'now',
+                method:'post',
+                action:'mortgage file list',
+                data:{
+                    houseMortgageType:houseMortgageType
+                },
+                onSuccess:function(data){
+                    var Data ={
+                        '_data':data
+                    };
+
+                    Data.houseId = houseId;
+                    Data.id = id;
+
+                    var htm = utils.render("#fileModalTemplate1",Data);
+                    $('#fileUploadModal').html(htm);
+                    $('#fileUploadModal').modal('show');
+                }
+            })
+        }
+
+
+        $(document).api({
+            on: 'now',
+            method: 'post',
+            action: 'get mortgage detail',
+            data: {
+                id: utils.getUrlParam('id')
+            },
+            onSuccess: function (data) {
+                var data = data;
+                data.houseMortgage_type = function(){
+                    return enums.houseMortgageType[this.houseMortgageType]
+                };
+                data.certif_type = function(){
+                    return enums.certifType[this.certifType];
+                };
+
+                data.startTime = function(){
+                    return moment(this.startBorrowingTime).format('YYYY-MM-DD');
+                };
+                data.isPersonal = data.loanSubject.type =='PERSONAL'?true:false;
+                data.endTime = function(){
+                    return moment(this.endBorrowingTime).format('YYYY-MM-DD');
+                }
+                var $applyTemplate = utils.render("#mortgageTemplate", data);
+                $("#detailTemplate").append($applyTemplate);
+            },
+            onFailure: function (data) {
+                $.uiAlert({type: "danger", textHead: '获取数据失败', text: data.msg, time: 3});
+            }
+        })
+    }
+</script>

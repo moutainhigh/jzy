@@ -1,0 +1,86 @@
+<script type="text/mustach-template" id="costExemptionTemplate">
+    <a class="ui teal left ribbon label">费用减免详情</a>
+    <a class="ui button mini" target="_blank" href="/business_apply/detail?id={{loanId}}&tab=business">查看业务单详情</a>
+    <a class="ui button mini" target="_blank" href="/flow/to_approval_list?id={{id}}&flowConfigureType=COST_WAIVER">查看审批流程</a>
+    <div class="ui grid">
+        <div class="ui divider hidden"></div>
+        {{#costExemptionItemList}}
+        <div class="column row">
+            <div class="column">
+                <div class="ui header red small">费用减免第{{period}}期</div>
+            </div>
+        </div>
+        {{#list}}
+            <div class="three column row">
+                <div class="column">
+                    <b>申请减免类型：</b>
+                    <span>{{cnType}}</span>
+                </div>
+                <div class="column">
+                    <b>剩余应还金额（元）：</b>
+                    <span>{{amountStr}}</span>
+                </div>
+                <div class="column">
+                    <b>减免金额（元）：</b>
+                    <span>{{f_amount}}</span>
+                </div>
+            </div>
+            {{/list}}
+            <div class="one column row">
+                <div class="column">
+                    <b>减免原因：</b>
+                    <pre class="auto">{{exemptionReason}}</pre>
+                </div>
+            </div>
+        <div class="ui divider"></div>
+        {{/costExemptionItemList}}
+        <div class="one column row">
+            <div class="column">
+                <b>申请业务人员：</b>
+                <span>{{businessName}}</span>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+<script>
+    if(templateType == 'costExemption') {
+        var feeList = ['prepaymentFee', 'prepaymentFeeRate', 'overdueFee', 'manageFee', 'guaranteeFee', 'serviceFee', 'interest'];
+        var id = utils.getUrlParam('id'),
+                loanId = utils.getUrlParam('loanId');
+        flowType = utils.getUrlParam('flowConfigureType');
+
+        $(document).api({
+            on: 'now',
+            action: 'get cost detail',
+            method: 'post',
+            data: {
+                id: id
+            },
+            onSuccess: function (data) {
+                if (data.costExemptionItemList.length > 0) {
+                    var costInfo = data.costExemptionItemList;
+                    for (var i = 0; i < costInfo.length; i++) {
+                        var lists = [];
+                        var Data = costInfo[i];
+                        for (n in Data) {
+                            if (feeList.indexOf(n) > -1) {
+                                lists.push({
+                                    'f_amount':accounting.formatMoney(Data[n], '', 2, ',', '.'),
+                                    'type': n,
+                                    'cnType': enums.feeList[n],
+                                    'amount': Data[n + 'Pre'],
+                                    'amountStr': accounting.formatMoney(Data[n + 'Pre'], '', 2, ',', '.'),
+                                })
+                            }
+                        }
+                        costInfo[i].list = lists;
+                    }
+                }
+                var $costExemptionTemplate = utils.render("#costExemptionTemplate", data);
+                $("#detailTemplate").append($costExemptionTemplate);
+            }
+        })
+    }
+</script>

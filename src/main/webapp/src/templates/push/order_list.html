@@ -1,0 +1,131 @@
+<%var jsPart = {%>
+<script src="/js/pages/push/order_list.js"></script>
+
+<script type="text/mustach-template" id="basicTmpInfo">
+    <div class="row" id="loanBasicDetail">
+        <div class="column">
+            <div class="ui segment small teal">
+                <div class="ui grid" id="basicInfo">
+                    <div class="three column row">
+                        <div class="column">
+                            <b>业务单号：</b>
+                            <span>{{base.loanCode}}</span>
+                        </div>
+                        <div class="column">
+                            <b>业务员：</b>
+                            <span>{{base.saleName}}</span>
+                        </div>
+                        <div class="column">
+                            <b>产品大类：</b>
+                            <span>{{base.productTypeName}}</span>
+                        </div>
+                    </div>
+                    <div class="three column row">
+                        <div class="column">
+                            <b>填单人：</b>
+                            <span>{{base.loanCreateBy}}</span>
+                        </div>
+                        <div class="column">
+                            <b>提交时间：</b>
+                            <span>{{base.submitTime}}</span>
+                        </div>
+                        <div class="column">
+                            <b></b>
+                            <a target="_blank" class="ui button teal mini" href="/flow/to_approval_list?id={{base.loanId}}&comeFrom=/loan_push/index&flowConfigureType=BORROW_APPLY">查看审批流程</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            {{^isPushed}}
+            <span class="ui button teal mini" onclick="pushed()">推单完成</span>
+            <a class="ui button teal mini" href="/loan_push_order/add?loanPushId={{base.id}}&comeFrom=/loan_push/index">新推单</a>
+            {{/isPushed}}
+            <a class="ui button mini basic" href="/loan_push_order/attach_download?loanId={{base.loanId}}&comeFrom=/loan_push/index"><i class="icon download"></i>影响资料下载</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <div style="overflow-x:auto;overflow-y: hidden;">
+                <table class="ui celled  small table">
+                    <thead>
+                    <tr>
+                        <th>推送目标</th>
+                        <th>资产单号</th>
+                        <th>对应项目</th>
+                        <th>标的单号</th>
+                        <th>推单金额（元）</th>
+                        <th>项目期限</th>
+                        <th>还款方式</th>
+                        <th>渠道资金利率（%）</th>
+                        <th>推单时间</th>
+                        <th>标的放款日期</th>
+                        <th>标的利率（%）</th>
+                        <th>标的期数</th>
+                        <th>标的下期还款时间</th>
+                        <th>标的应结清时间</th>
+                        <th>标的实际结清时间</th>
+                        <th>资产状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {{#loanPushOrderList}}
+                        <tr>
+                            <td>{{f_pushTarget}}</td>
+                            <td>{{code}}</td>
+                            <td>{{itemType}}</td>
+                            <td>{{platformLoanCode}}</td>
+                            <td>{{f_amount}}</td>
+                            <td>{{termStr}}</td>
+                            <td>{{repayMethod}}</td>
+                            <td>{{channelRate}}</td>
+                            <td>{{f_pushDateTime}}</td>
+                            <td>{{f_platformLoanTime}}</td>
+                            <td>{{platformLoanRate}}</td>
+                            <td>{{platformLoanCurrentPeriod}}/{{platformLoanTotalPeriod}}</td>
+                            <td>{{f_platformLoanNextDueDate}}</td>
+                            <td>{{f_platformLoanDueDate}}</td>
+                            <td>{{f_platformLoanClearedDate}}</td>
+                            <td>{{f_status}}</td>
+                            <td class="single line">
+                                {{#isEdit}}
+                                <a class="ui button mini teal" href="/loan_push_order/edit?id={{id}}&comeFrom=/loan_push/index">
+                                    <i class="icon edit"></i>编辑
+                                </a>
+                                {{/isEdit}}
+                                <a class="ui button green mini" href="/loan_push_order/detail?id={{id}}&comeFrom=/loan_push/index">资产单详情</a>
+                                {{#isLoan}}
+                                <a class="ui button mini green" href="">还款计划</a>
+                                {{/isLoan}}
+
+                            </td>
+                        </tr>
+                        {{/loanPushOrderList}}
+                        {{^loanPushOrderList}}
+                            <tr>
+                                <td colspan="17">暂无数据</td>
+                            </tr>
+                        {{/loanPushOrderList}}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</script>
+<%};%>
+
+
+<%var htmlPart = {%>
+<div  class="ui grid segment" id="info">
+
+</div>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"推单"}){}%>
+

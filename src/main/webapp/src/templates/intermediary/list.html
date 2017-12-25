@@ -1,0 +1,385 @@
+<%var jsPart = {%>
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/common/one_fileUpload.js"></script>
+<script>
+    var init = {
+        reset:function(){
+            $('#name').val("");
+        },
+
+        getTable:function(){
+            dtTable = $('#listTable').DataTable({
+                serverSide: true,//服务端分页
+                searching: false,//显示默认搜索框
+                ordering: false,//开启排序
+                autoWidth: true,//自适应宽度
+                "ajax": {
+                    "url": $(document).api.settings.api['query intermediary list'],
+                    "data": function (d) {
+                        var data = {};
+                        data.name = $('#name').val();
+                        var _d = $.extend({}, {searchKeys:data},{start:d.start,length:d.length,draw:d.draw});
+                        return JSON.stringify(_d);
+                    },
+                    "type": "POST",
+                },
+                columns: [
+                    {data: 'name'},
+                    {data: 'idNumber'},
+                    {data: 'phone'},
+                    {data: 'address'},
+                    {data: null}
+                ],
+                columnDefs:[{
+                    targets:[0,1,2,3],
+                    render:function(data, type, row, meta){
+                        return data? data :''
+                    }
+                },{
+                    targets:4,
+                    render:function(data, type, row, meta){
+                        return data.status == 'ABLE'? '生效':'失效'
+                    }
+                },{
+                    //   指定第最后一列
+                    className:"single line",
+                    targets: 5,
+                    render: function (data, type, row, meta) {
+                        return  '<span class="ui mini basic button" onclick="init.editIntermediary(\''+row.id+'\')"><i class="edit icon"></i>编辑</span>'+
+                                '<span class="ui mini basic button" onclick="init.viewIntermediary(\''+row.id+'\')"><i class="info circle icon"></i>查看</span>';
+                    }
+                }]
+            })
+        },
+
+        reload:function(){
+            dtTable.ajax.reload();
+        },
+        searchReload:function(){
+            $('#search').click(function(){
+                dtTable.ajax.reload();
+            })
+        },
+
+        addIntermediary:function(){
+            $('#addIntermediary').modal('show');
+            document.getElementById('addIntermediaryFrom').reset();
+            var code = (new Date()).Format("yyyyMMddhhmmss");
+            $('.js-uploadBtn').attr('data-code',code);
+        },
+        editIntermediary:function(id){
+            $('#editIntermediary').modal('show');
+            var code = (new Date()).Format("yyyyMMddhhmmss");
+            $('.js-uploadBtn').attr('data-code',code);
+            $(document).api({
+                on: "now",
+                method: 'get',
+                action: "query intermediary detail",
+                data: {
+                    id:id
+                },
+                onSuccess:function(data){
+                    document.getElementById('editIntermediaryFrom').reset();
+                    var _data = data.data;
+                    $('#editIntermediary input.js_init').each(function(i,ele){
+                        var name = $(ele).attr('name');
+                        $(ele).val(_data[name]);
+                    });
+                    if(_data.status == 'ABLE'){
+                        $('#editIntermediary input[name="status"]:eq(0)').attr('checked',true);
+                    }else{
+                        $('#editIntermediary input[name="status"]:eq(1)').attr('checked',true);
+                    }
+                    if(_data.contractFileUrls){
+                        var urls = JSON.parse(_data.contractFileUrls);
+                        $('#editIntermediary .js-fileName').html(urls[0].name);
+                        $('#editIntermediary .js-fileName').attr('href',urls[0].url);
+                        $('#editIntermediary input[name="contractFileName"]').val(urls[0].name);
+                        $('#editIntermediary input[name="contractFileUrl"]').val(urls[0].url);
+                    }else{
+                        $('#editIntermediary .js-fileName').html('');
+                        $('#editIntermediary .js-fileName').attr('href','');
+                        $('#editIntermediary input[name="contractFileName"]').val('');
+                        $('#editIntermediary input[name="contractFileUrl"]').val('');
+                    }
+                }
+            })
+        },
+        viewIntermediary:function(id){
+            $('#viewIntermediary').modal('show');
+            $(document).api({
+                on: "now",
+                method: 'get',
+                action: "query intermediary detail",
+                data: {
+                    id:id
+                },
+                onSuccess:function(data){
+                    var _data = data.data;
+                    $('#viewIntermediary input.js_init').each(function(i,ele){
+                        var name = $(ele).attr('name');
+                        $(ele).val(_data[name]);
+                    });
+                    if(_data.status == 'ABLE'){
+                        $('#viewIntermediary input[name="status"]:eq(0)').attr('checked',true);
+                    }else{
+                        $('#viewIntermediary input[name="status"]:eq(1)').attr('checked',true);
+                    }
+                    if(_data.contractFileUrls) {
+                        var urls = JSON.parse(_data.contractFileUrls);
+                        $('#viewIntermediary .js-fileName').html(urls[0].name);
+                        $('#viewIntermediary .js-fileName').attr('href',urls[0].url);
+                    }
+                }
+            })
+        }
+    }
+    init.getTable();
+    init.searchReload();
+
+    //
+    $.fn.form.settings.rules.phoneNum = function(value){
+        var reg = /^[0-9]+([0-9]|\-)[0-9]+$/;
+        return reg.test(value) || value == '';
+    };
+
+    //
+    $.fn.form.settings.rules.reg_account = function(value){
+        var reg = /^\d+$/;
+        var val = value.replace(/[\s""]/gi,"");
+        return reg.test(val) || value =='';
+    }
+
+    var settingsFrom = {
+        inline: true,
+        on: 'blur',
+        fields: {
+            name:{
+                identifier: 'name',
+                rules: [{
+                    type: 'empty',
+                    prompt: '姓名不能为空'
+                },{
+                    type:'maxLength[20]',
+                    prompt:'字符长度[20]'
+                }]
+            },
+            idNumber:{
+                identifier: 'idNumber',
+                rules: [{
+                    type: 'empty',
+                    prompt: '身份证号不为空'
+                },{
+                    type:'identityCodeValid',
+                    prompt:'身份证格式不正确'
+                }]
+            },
+            phone:{
+                identifier: 'phone',
+                rules: [{
+                    type: 'empty',
+                    prompt: '电话不为空'
+                },{
+                    type:'phoneNum',
+                    prompt:'电话号格式不对'
+                },{
+                    type:'maxLength[20]',
+                    prompt:'字符长度[20]'
+                }]
+            },
+            bank:{
+                identifier: 'bank',
+                rules: [{
+                    type: 'empty',
+                    prompt: '开户行不为空'
+                }]
+            },
+            account:{
+                identifier: 'account',
+                rules: [{
+                    type: 'empty',
+                    prompt: '账号不为空'
+                },{
+                    type:'reg_account',
+                    prompt:'账号不正确'
+                }]
+            },
+            address:{
+                identifier:'address',
+                rules: [{
+                    type: 'maxLength[100]',
+                    prompt: '字符长度100'
+                }]
+            }
+        }
+    };
+
+    var submitFrom={
+        add:function(){
+            $('#addIntermediaryBtn').click(function(){
+                var urls =[];
+                urls.push({
+                    'name':$('#addIntermediaryFrom input[name="contractFileName"]').attr('value'),
+                    'url':$('#addIntermediaryFrom input[name="contractFileUrl"]').attr('value')
+                });
+                $('#addIntermediaryFrom input[name="contractFileUrls"]').val(JSON.stringify(urls));
+                $('#addIntermediaryFrom').form(settingsFrom).api({
+                    url: '/intermediary/add',
+                    method: 'POST',
+                    serializeForm: true,
+                    beforeSend:function(settings){
+                        for(i in settings.data){
+                            var val = settings.data[i];
+                            settings.data[i] = $.trim(val);
+                        }
+                        return settings;
+                    },
+                    onSuccess: function (response) {
+                        $.uiAlert({type: "success", textHead: '新增居间人', text: '保存成功', time: 1,
+                            onClosed:function(){
+                                $('#addIntermediary').modal('hide');
+                                init.reload();
+                            }
+                        });
+                    },
+                    onFailure: function (response) {
+                        $.uiAlert({type: "danger", textHead: '新增居间人', text: response.msg, time: 3});
+                    }
+                })
+            });
+        },
+        edit:function(){
+            $('#editIntermediaryBtn').click(function() {
+                var urls = [];
+                urls.push({
+                    'name': $('#editIntermediaryFrom input[name="contractFileName"]').attr('value'),
+                    'url': $('#editIntermediaryFrom input[name="contractFileUrl"]').attr('value')
+                });
+                $('#editIntermediaryFrom input[name="contractFileUrls"]').val(JSON.stringify(urls));
+                $('#editIntermediaryFrom').form(settingsFrom).api({
+                    url: '/intermediary/update',
+                    method: 'POST',
+                    serializeForm: true,
+                    beforeSend:function(settings){
+                        for(i in settings.data){
+                            var val = settings.data[i];
+                            settings.data[i] = $.trim(val);
+                        }
+                        return settings;
+                    },
+                    onSuccess: function (response) {
+                        $.uiAlert({type: "success", textHead: '编辑居间人', text: '保存成功', time: 1,
+                            onClosed:function(){
+                                $('#editIntermediary').modal('hide');
+                                init.reload();
+                            }
+                        });
+                    },
+                    onFailure: function (response) {
+                        $.uiAlert({type: "danger", textHead: '编辑居间人', text: response.msg, time: 3});
+                    }
+                })
+            });
+        },
+
+
+        /**
+        * obj form表单ID
+        * */
+        clearFile: function(obj){
+            var $this = $('#'+obj);
+            $('.js-fileName').html("");
+            $this.find('input[name="contractFileName"]').val("");
+            $this.find('input[name="contractFileUrl"]').val("");
+            $this.find('input[name="contractFileUrls"]').val("");
+        }
+    };
+    submitFrom.add();
+    submitFrom.edit();
+
+    // 绑定上传事件
+    function bindUpload(){
+        $(".js-uploadBtn").each(function(index) {
+            var uploader = Object.create(Uploader_oneFile).set({
+                //自己的单独参数
+                browse_button: $('.js-uploadBtn')[index],
+            });
+            uploader.init();
+        });
+    }
+    bindUpload();
+
+    //银行卡号4位一空
+    $(document).on("keyup",".js-bankCard",function(){
+        var Val = $(this).val().replace(/\D/g, '').replace(/....(?!$)/g, '$& ');
+        $(this).val(Val);
+    });
+
+</script>
+
+<%};%>
+
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <form class="ui fluid  form js-searchForm">
+                    <div class="three fields">
+                        <div class="field">
+                            <label>居间人姓名</label>
+                            <input name="product" class="input ui" id="name">
+                        </div>
+                        <div class="field">
+                            <label>&nbsp;</label>
+                            <div class="ui teal mini button" id="search">查询</div>
+                            <div class="ui clear mini button" onclick="init.reset()">重置</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">居间人维护</a>
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="eight wide column"></div>
+                        <div class="right aligned eight wide column" >
+                            <a class="ui teal small button" onclick="init.addIntermediary()">
+                                <i class="add icon"></i>新增居间人
+                            </a>
+                        </div>
+                    </div>
+                    <table class="ui celled small table" id="listTable">
+                        <thead>
+                        <tr>
+                            <th>居间人姓名</th>
+                            <th>身份证号码</th>
+                            <th>电话</th>
+                            <th>地址</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%
+include("/intermediary/add.html"){}
+include("/intermediary/edit.html"){}
+include("/intermediary/view.html"){}
+%>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"居间人维护"}){}%>

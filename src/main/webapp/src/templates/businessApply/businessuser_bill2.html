@@ -1,0 +1,345 @@
+<%var htmlPart = {%>
+<div class="ui top attached tabular menu js-detailsMenu">
+    <div class="item" data-tab="商票" onclick="initTAbs('商票')">商票</div>
+    <div class="item" data-tab="银票" onclick="initTAbs('银票')">银票</div>
+</div>
+<div class="ui  tab js-tab" data-tab="商票" id="bbill">
+<div class="ui bottom attached active tab segment">
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>票号</label>
+                <input type="text" id="billCode">
+            </div>
+            <div class="field">
+                <label>付款人</label>
+                <input type="text" id="payer" >
+            </div>
+        </div>
+        <div class="fields">
+            <div class="field">
+                <label>贴现日期</label>
+                <input type="text" id="discountTime" placeholder="请选择贴现日期">
+            </div>
+            <div class="field">
+                <label>票面金额（元）</label>
+                <div class="fields">
+                    <div class="six wide field">
+                        <input type="number" id="beginAmount" >
+                    </div>
+                    <label>~</label>
+                    <div class="six wide field">
+                        <input type="number" id="endAmount" >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <button class="ui tiny submit button teal" onclick="queryList();">查询</button>
+                <button class="ui tiny button clear" onclick="queryFormReset();" type="reset">重置</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+
+<!--列表-->
+<div class="row" id="">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">票据列表</a>
+            <table class="ui  celled table compact  small" id="businessBillListByBusinessuser">
+                <thead>
+                <tr>
+                    <th>票号</th>
+                    <th>付款人</th>
+                    <th>贴现日期</th>
+                    <th>到期日期</th>
+                    <th>票面金额（元）</th>
+                    <th>成本（%）</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<div class="ui  tab js-tab" data-tab="银票" id="ybill">
+    <div class="ui bottom attached active tab segment">
+        <div class="ui segment teal">
+            <div class="ui equal width form">
+                <div class="fields">
+                    <div class="field">
+                        <label>票号</label>
+                        <input type="text" id="ybillCode">
+                    </div>
+                    <div class="field">
+                        <label>付款行全称</label>
+                        <input type="text" id="ybankName">
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="field">
+                        <label>贴现日期</label>
+                        <input type="text" id="ydiscountTime" placeholder="请选择贴现日期">
+                    </div>
+                    <div class="field">
+                        <label>票面金额（元）</label>
+                        <div class="fields">
+                            <div class="six wide field">
+                                <input type="number" id="ybeginAmount" >
+                            </div>
+                            <label>~</label>
+                            <div class="six wide field">
+                                <input type="number" id="yendAmount" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="aligned center">
+                        <button class="ui tiny submit button teal" onclick="queryListForYBill();">查询</button>
+                        <button class="ui tiny button clear" onclick="queryFormResetForYbill();" type="reset">重置</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui hidden divider"></div>
+
+        <!--列表-->
+        <div class="row">
+            <div class="column">
+                <div class=" ui segment teal">
+                    <a class="ui teal left ribbon label">票据列表</a>
+                    <table class="ui  celled table compact  small" id="yBillList">
+                        <thead>
+                        <tr>
+                            <th>票号</th>
+                            <th>付款行全称</th>
+                            <th>贴现日期</th>
+                            <th>到期日期</th>
+                            <th>票面金额（元）</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%};%>
+
+
+<%var jsPart = {%>
+<script type="text/javascript" src="/js/plugins/moment.min.js"></script>
+<script type="text/javascript" src="/js/plugins/jquery.daterangepicker.js"></script>
+
+<script>
+
+    /**
+     * 重置表单
+     */
+    function queryFormReset() {
+        $("#billCode").val("");
+        $("#payer").val("");
+        $("#discountTime").val("");
+        $("#beginAmount").val("");
+        $("#endAmount").val("");
+    }
+    /**
+     * 重置表单
+     */
+    function queryFormResetForYbill() {
+        $("#ybillCode").val("");
+        $("#ybankName").val("");
+        $("#ydiscountTime").val("");
+        $("#ybeginAmount").val("");
+        $("#yendAmount").val("");
+    }
+
+    /**
+     * 查询列表
+     */
+    function queryList() {
+
+        var dtTable = $("#businessBillListByBusinessuser").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            bDestroy: true,
+            "ajax": {
+                "url": "/business_apply/query_businessuser_bill",
+                "data": {
+                    "billCode": $("#billCode").val(),
+                    "payer": $("#payer").val(),
+                    "bankName": $("#bankName").val(),
+                    "discountTime": $("#discountTime").val(),
+                    "billType": 'PIAOJU',
+                    "beginAmount": $("#beginAmount").val(),
+                    "endAmount": $("#endAmount").val()
+
+                },
+                "type": "POST"
+            },
+            columns: [
+                {data: 'billNo'},
+                {data: "payer"},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null}
+            ],
+            columnDefs: [{
+                targets:2,
+                render:function(data, type, row, meta){
+                    return row.discountTime == '--' ? row.discountTime : moment(row.discountTime).format('YYYY-MM-DD');
+                }
+            },{
+                targets: 3,
+                render: function (data, type, row, meta) {
+                    return row.dueDate == '--' ? row.dueDate : moment(row.dueDate).format('YYYY-MM-DD');
+                }
+            }, {
+                targets: 4,
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    var strAmount = accounting.formatMoney(row.totalAmount,'',2,',','.');
+                    return strAmount;
+                }
+            }, {
+                targets: 5,
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    var year = 360;
+                    var days = moment(data.dueDate).diff(moment(data.discountTime),'days')+parseInt(data.overdueDays);
+                    var price = 0;
+                    if(null!= days && 0 != days && '--'!= row.price){
+                        var price = (row.price/100*days/year)/(1-(row.price/100*days/year))*(year/days)*100;
+                    }
+                    console.log(price);
+                    var price = accounting.formatMoney(price,'',2,',','.');
+                    return price;
+                }
+            },  {
+                className: "single line",
+                targets: 6,
+                render: function (data, type, row, meta) {
+                    return '<a target="_blank" href="/business_apply/detail?id=' + row.loanId + '&tab=business&process=false&billView=true&comeFrom='+window.location.pathname+'" class="ui basic mini button"><i class="info circle icon"></i>查看</a>';
+                }
+            }
+            ],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+        });
+    }
+
+    function queryListForYBill() {
+
+        var dtTable = $("#yBillList").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            bDestroy: true,
+            "ajax": {
+                "url": "/business_apply/query_businessuser_bill",
+                "data": {
+                    "billCode": $("#ybillCode").val(),
+                    "payer": $("#ypayer").val(),
+                    "bankName": $("#ybankName").val(),
+                    "discountTime": $("#ydiscountTime").val(),
+                    "billType": 'YINPIAO',
+                    "beginAmount": $("#ybeginAmount").val(),
+                    "endAmount": $("#yendAmount").val()
+                },
+                "type": "POST"
+            },
+            columns: [
+                {data: 'billNo'},
+                {data: "bankName"},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null}
+            ],
+            columnDefs: [{
+                targets:2,
+                render:function(data, type, row, meta){
+                    return row.discountTime == '--' ? row.discountTime : moment(row.discountTime).format('YYYY-MM-DD');
+                }
+            },{
+                targets: 3,
+                render: function (data, type, row, meta) {
+                    return row.dueDate == '--' ? row.dueDate : moment(row.dueDate).format('YYYY-MM-DD');
+                }
+            }, {
+                targets: 4,
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    var strAmount = accounting.formatMoney(data.totalAmount,'',2,',','.');
+                    return strAmount;
+                }
+            },  {
+                className: "single line",
+                targets: 5,
+                render: function (data, type, row, meta) {
+                    return '<a target="_blank" href="/business_apply/detail?id=' + row.loanId + '&tab=business&process=false&billView=true&comeFrom='+window.location.pathname+'" class="ui basic mini button"><i class="info circle icon"></i>查看</a>';
+                }
+            }
+            ],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+        });
+    }
+
+    initTAbs();
+    queryList();
+    queryListForYBill();
+
+    $("#discountTime").dateRangePicker({separator: '~'});
+    $("#ydiscountTime").dateRangePicker({separator: '~'});
+
+    function initTAbs( type ) {
+        //todo 根据链接参数选中对应的tab;
+        var $js_DetailsMenu = $(".js-detailsMenu");
+        switch (type){
+            case "商票":
+                $js_DetailsMenu.find(".item[data-tab='商票']").addClass("active");
+                $(".js-tab[data-tab='商票']").addClass("active");
+                $js_DetailsMenu.find(".item[data-tab='银票']").removeClass("active");
+                $(".js-tab[data-tab='银票']").removeClass("active");
+                break;
+            case "银票":
+                $js_DetailsMenu.find(".item[data-tab='银票']").addClass("active");
+                $(".js-tab[data-tab='银票']").addClass("active");
+                $js_DetailsMenu.find(".item[data-tab='商票']").removeClass("active");
+                $(".js-tab[data-tab='商票']").removeClass("active");
+                break;
+            default:
+                //默认到第一个选项卡
+                $(".js-detailsMenu .item:first").addClass("active")
+                $(".js-tab:first").addClass("active")
+                break;
+        }
+    }
+</script>
+<%};%>
+
+
+<% include("/common/menu.html", {jsSection:jsPart, htmlSection:htmlPart,title:"票据查询"}){} %>

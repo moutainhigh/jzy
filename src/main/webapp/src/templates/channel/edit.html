@@ -1,0 +1,142 @@
+<%var jsPart = {%>
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/pages/channel/upload_file.js"></script>
+<script src="/js/pages/channel/edit.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<style type="text/css">
+    .fbox{margin-bottom: 5px;}
+</style>
+<div class="ui guid">
+    <div class="row">
+        <div class="column">
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">编辑渠道</span>
+            </h5>
+            <div class=" ui segment">
+                <form id="form-addChannel" class="ui form padding80">
+                    <div class="fields">
+                        <div class="field inline">
+                            <label>渠道代码:</label>
+                            <span id="channelCode"></span>
+                            <input class="item" name="code" type="hidden" value="">
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field required">
+                            <label>渠道全称</label>
+                            <input class="item"  type="text" name="fullName">
+                        </div>
+                        <div class="field required">
+                            <label>渠道简称</label>
+                            <input class="item"  type="text" name="name">
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field required">
+                            <label>渠道经理</label>
+                            <div id="managerSearch" class="ui search">
+                                <div class="ui icon input">
+                                    <input value="" class="prompt item" type="text" placeholder="输入业务员代码/姓名查询" name="manager">
+                                    <input type="hidden" name="managerId" class="item">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                        <div class="field required">
+                            <label>授信金额（元）</label>
+                            <input class="item" type="text" name="cooperationAmount">
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field required">
+                            <label>保证金杠杆额度（元）</label>
+                            <input class="item" type="text" name="depositLimit">
+                        </div>
+                        <div class="field ">
+                            <label>剩余额度（元）</label>
+                            <input class="item" type="text" name="usedAmount" readonly>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>已用额度（元）</label>
+                            <input class="item" type="text" name="residualAmount" value="0" readonly>
+                        </div>
+                        <div class="field">
+                            <label>已收保证金（元）</label>
+                            <input class="item"  type="text" name="guaranteeAmount">
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>利率（%/天）</label>
+                            <input class="item" type="text" name="interestRate">
+                        </div>
+                        <div class="field required">
+                            <label>生效日期</label>
+                            <input class="item" type="date" name="effectiveDate" id="effectiveDate">
+                        </div>
+                    </div>
+
+                    <div class="field required">
+                        <label>合作产品类型</label>
+                        <span class="button ui teal" id="cooperationProductType"><i class="linkify icon"></i>关联</span>
+                        <input class="item"  type="hidden" name="cooperationProductType">
+                    </div>
+                    <div class="field">
+                        <label>合作方对接人</label>
+                        <input class="item"  type="text" name="buttMan">
+                    </div>
+                    <div class="field">
+                        <label>联系方式</label>
+                        <input class="item"  type="text" name="contactWay">
+                    </div>
+                    <div class="field required">
+                        <label>风控措施</label>
+                        <textarea class="item" name="riskControlMeasure" cols="30" rows="10"></textarea>
+                    </div>
+                    <div class="field required">
+                        <label>合作协议</label>
+                        <span class="js-uploadBtn button ui mini"><i class="upload icon"></i>选择上传文件</span>
+                        <span id="percent"></span>
+                        <!--多文件上传-->
+                        <div id="fileBox"></div>
+                        <input type="hidden" name="contract">
+                        <!--<a href="" target="_blank" class="js-fileName"></a>
+                        <span class="ui red button mini" id="clearFile">删除</span>-->
+                        <input class="item" type="hidden" name="contractFileName">
+                        <input class="item" type="hidden" name="contractFileUrl">
+                    </div>
+                    <div class="inline fields">
+                        <div class="field required">
+                            <label>状态</label>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="status" value="ABLE">
+                                <label>生效</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="status" value="DISABLED">
+                                <label>失效</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field required">
+                        <div id="btn-addChannel" class="ui button default teal">保存</div>
+                        <a class="ui button default" href="/channel/list">返回</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<%include("./common_product.html"){}%>
+<%};include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"编辑渠道"}){}%>

@@ -1,0 +1,163 @@
+<%var jsPart = {%>
+<script src="/js/pages/push/approval_detail.js"></script>
+<%include("/push/comme_template/HONGBEN.html"){}%>
+<%include("/push/comme_template/SHULOU.html"){}%>
+<%include("/push/comme_template/CHEDAI.html"){}%>
+<%include("/push/comme_template/GERENDAI.html"){}%>
+<%include("/push/comme_template/PIAOJU.html"){}%>
+<%include("/push/comme_template/YINPIAO.html"){}%>
+<%include("/push/comme_template/BAOLI.html"){}%>
+<script type="text/mustach-template" id="basicTmpInfo">
+    <div class="ui form segment teal attached">
+        <input type="hidden" name="loanId" value="{{order.loanId}}">
+        <input type="hidden" name="id" value="{{order.id}}">
+        <input type="hidden" name="pushId" value="{{order.pushId}}">
+        <input type="hidden" name="code" value="{{order.code}}">
+
+        <div class="ui header">基本信息</div>
+        <div class="ui divider"></div>
+        <div class="three fields ">
+            <div class="field">
+                <label>推送至</label>
+                <select name="pushTarget">
+                    <option value="KAISAFAX">佳兆业金服</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>产品大类</label>
+                <input type="text" name="productTypeName" value="{{order.productTypeName}}" readonly>
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field ">
+                <label>放款主体</label>
+                <input type="text" name="loanSubjectName" value="{{order.loanSubjectName}}" readonly>
+            </div>
+            <div class="field required">
+                <label>渠道资金利率（%）</label>
+                <input type="text" name="channelRate" value="{{order.channelRate}}" readonly>
+            </div>
+        </div>
+
+        <div class="three fields">
+            <div class="field ">
+                <label>还款方式</label>
+                <select name="repayMethod" disabled>
+                    <option value="BULLET_REPAYMENT">一次性还款</option>
+                    <option value="EQUALITY">等额本金</option>
+                    <option value="EQUAL_INSTALLMENT">等额本息</option>
+                    <option value="INTEREST">先息后本</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>推单金额（元）</label>
+                <input type="text" name="amount" value="{{order.amount}}" readonly>
+            </div>
+        </div>
+
+        <div class="three fields">
+            <div class="field">
+                <label>平台借款人姓名</label>
+                <input id="platformBorrower" name="platformBorrower" type="text" readonly value="{{order.platformBorrower}}" readonly>
+            </div>
+            <div class="fields two wide">
+                <div class="field required">
+                    <label>推单期限</label>
+                    <select name="termType" disabled>
+                        <option value="FIXED_DATE">固定日期</option>
+                        <option value="YEAS">年</option>
+                        <option value="MOTHS">月</option>
+                        <option value="DAYS">日</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>&emsp;</label>
+                    <input type="text" name="term" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="three fields ks-hidden disabled" id="billRelation">
+            <div class="field required">
+                <label>关联票号</label>
+                <select id="billList" disabled multiple="" name="billCode" class="ui fluid normal dropdown">
+
+                </select>
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field">
+                <label>对应平台借款用户</label>
+                <input type="hidden" name="platformBorrowerId" value="{{order.platformBorrowerId}}">
+                <input type="text" readonly id="mobile" name="platformBorrowerName" value="{{order.platformBorrowerName}}" placeholder="请输入11位手机号/用户名">
+            </div>
+        </div>
+
+
+        <div class="ui header">项目信息</div>
+        <div class="ui divider"></div>
+
+        <!--项目信息模板-->
+        <div id="loanTmpInfo"></div>
+
+
+        <form class="ui form" id="approvalForm">
+            {{#approvalInfo}}
+            <a class="ui teal left ribbon label">审批流程</a>
+            <h3 class="ui header">审批流程节点：<span id="risk_arrorval">{{taskName}}-{{displayName}}</span></h3>
+            <input type="hidden" name="needRepeatFlow" value="false">
+            <div class="ui grouped required  fields">
+                <label>审批结果</label>
+                <div class="field ">
+                    {{#resultEnums}}
+                    <div class="ui radio checkbox ">
+                        <input type="radio" name="approvalCode" value="{{value}}">
+                        <label>{{name}}</label>
+                    </div>
+                    {{/resultEnums}}
+                </div>
+            </div>
+            <div class="required field ">
+                <label>审批意见</label>
+                <textarea name="content"></textarea>
+            </div>
+            <div class="ui button teal" id="businessFormBtn">提交</div>
+            <div class="ui error message"></div>
+            {{/approvalInfo}}
+        </form>
+    </div>
+
+</script>
+
+
+<%};%>
+
+
+<%var htmlPart = {%>
+<div  class="ui grid segment" id="info">
+
+</div>
+
+<div class="ui modal" id="needRepeatFlowModal">
+    <i class="close icon"></i>
+    <div class="header">
+        是否重走流程？
+    </div>
+    <div class="content">
+        <div class="two fields">
+            <div class="ui radio checkbox checked">
+                <input type="radio" checked="checked" name="needRepeatFlowRadio" value="true">
+                <label>是</label>
+            </div>
+            <div class="ui radio checkbox checked">
+                <input type="radio" name="needRepeatFlowRadio" value="false">
+                <label>否</label>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui green button approve">提交</div>
+        <div class="ui button deny">取消</div>
+    </div>
+</div>
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"推单管理"}){}%>
+

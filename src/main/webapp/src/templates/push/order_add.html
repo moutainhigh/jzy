@@ -1,0 +1,127 @@
+<%var jsPart = {%>
+<script src="/js/pages/push/order_add.js"></script>
+<%include("/push/comme_template/HONGBEN.html"){}%>
+<%include("/push/comme_template/SHULOU.html"){}%>
+<%include("/push/comme_template/CHEDAI.html"){}%>
+<%include("/push/comme_template/GERENDAI.html"){}%>
+<%include("/push/comme_template/PIAOJU.html"){}%>
+<%include("/push/comme_template/YINPIAO.html"){}%>
+<%include("/push/comme_template/BAOLI.html"){}%>
+<script type="text/mustach-template" id="basicTmpInfo">
+    <form class="ui form segment teal attached">
+        <input type="hidden" name="loanId" value="{{baseInfo.loanId}}">
+        <input type="hidden" name="id" value="{{baseInfo.id}}">
+        <input type="hidden" name="pushId" value="{{baseInfo.pushId}}">
+        <input type="hidden" name="code" value="{{baseInfo.code}}">
+
+        <div class="ui header">基本信息</div>
+        <div class="ui divider"></div>
+        <div class="three fields ">
+            <div class="field">
+                <label>推送至</label>
+                <select name="pushTarget">
+                    <option value="KAISAFAX">佳兆业金服</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>产品大类</label>
+                <input type="text" name="productTypeName" value="{{baseInfo.productTypeName}}" readonly>
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field ">
+                <label>放款主体</label>
+                <input type="text" name="loanSubjectName" value="{{baseInfo.loanSubjectName}}" readonly>
+            </div>
+            <div class="field required">
+                <label>渠道资金利率（%）</label>
+                <input type="text" name="channelRate">
+            </div>
+        </div>
+
+        <div class="three fields">
+            <div class="field required">
+                <label>还款方式</label>
+                <select name="repayMethod">
+                    {{#repayMethod}}
+                    <option value="{{key}}">{{name}}</option>
+                    {{/repayMethod}}
+                </select>
+            </div>
+            <div class="field required">
+                <label>推单金额（元）</label>
+                <div class="field">
+                    <input type="text" name="amount" placeholder="">
+                </div>
+            </div>
+        </div>
+
+        <div class="three fields">
+            <div class="field required">
+                <label>平台借款人姓名</label>
+                <input id="platformBorrower" name="platformBorrower" type="text" readonly>
+            </div>
+            <div class="fields two wide">
+                <div class="field required">
+                    <label>推单期限</label>
+                    <select name="termType">
+                        <option value="MOTHS">月</option>
+                        <option value="DAYS">日</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>&emsp;</label>
+                    <input type="text" name="term">
+                </div>
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field">
+                <label>最大投标人数</label>
+                <input type="text" name="maxInvestor">
+            </div>
+
+            <div class="field required ks-hidden disabled" id="billRelation">
+                <label>关联票号</label>
+                <select id="billList" disabled multiple="" name="billCode" class="ui fluid normal dropdown">
+
+                </select>
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field required">
+                <label>对应平台借款用户</label>
+                <input type="hidden" name="platformBorrowerId">
+                <input type="text" id="mobile" name="platformBorrowerName" placeholder="请输入11位手机号/用户名">
+            </div>
+            <div class="field">
+                <label>&emsp;</label>
+                <div class="ui button teal small" onclick="platBorrower()">关联</div>
+                <div class="ui button red small" onclick="resetBorrower()">重置借款用户</div>
+
+            </div>
+        </div>
+
+
+        <div class="ui header">项目信息</div>
+        <div class="ui divider"></div>
+
+        <!--项目信息模板-->
+        <div id="loanTmpInfo"></div>
+
+        <div class="margin30t">
+            <div class="ui button teal" onclick="init.orderSave('true',this)">推单</div>
+            <div class="ui button teal" onclick="init.orderSave('false',this)">保存</div>
+            <div class="ui button red" onclick="window.history.go(-1)">取消</div>
+            <div class="margin30t"></div>
+        </div>
+    </form>
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+<div  class="ui grid segment" id="info">
+
+</div>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"新增推单"}){}%>

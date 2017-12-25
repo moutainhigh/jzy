@@ -1,0 +1,62 @@
+<div class="two fields">
+    <div class="ui required   field">
+        <label>组织名称</label>
+        <input type="text" name="org.name" id ="name" placeholder="组织名称">
+    </div>
+    <div class="ui    field">
+        <label>组织别名</label>
+        <input type="text" name="org.aliasName" id ="aliasName" placeholder="默认跟组织名称一样，可修改">
+    </div>
+</div>
+
+<div class="two fields">
+    <div class="ui    field">
+        <label>联系地址</label>
+        <input type="text" name="org.address" placeholder="联系地址">
+    </div>
+    <div class="ui    field">
+        <label>联系电话</label>
+        <input type="text" name="org.telNumber" placeholder="联系电话">
+    </div>
+</div>
+
+<div class="two fields">
+    <div class="ui    field">
+        <label>成立时间</label>
+        <input type="date" name="org.establishDate" placeholder="成立时间" class="js-modal_setupTime" id="establishDate">
+    </div>
+    <div class="ui    field">
+        <label>撤销时间</label>
+        <input type="date" name="org.revokeDate" placeholder="撤销时间" class="js-modal_revokeTime" id="revokeDate">
+    </div>
+</div>
+
+<div class="two fields">
+    <div class="ui   field">
+        <label>主管姓名</label>
+        <div class="ui search js-modal__managerSearch">
+            <div class="ui icon input">
+                <input class="prompt" type="text" placeholder="输入业务员代码/姓名查询" name="searchManager">
+                <input type="hidden" name="org.managerId">
+                <input type="hidden" name="org.managerName">
+                <i class="search icon"></i>
+            </div>
+            <div class="results"></div>
+        </div>
+    </div>
+</div>
+
+<div class="ui grouped required  fields">
+    <label>状态</label>
+    <div class="field ">
+        <div class="ui radio checkbox js-modal__checkbox">
+            <input type="radio" name="org.status" value="ABLE">
+            <label>有效</label>
+        </div>
+        <div class="ui radio checkbox">
+            <input type="radio" name="org.status" value="DISABLED">
+            <label>无效</label>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,327 @@
+<%var jsPart = {%>
+<script type="text/javascript" src="/js/common/two-cascade.js"></script>
+<script>
+    var  productTypeCascade = TwoCascade({parentSelect:$("#productType"),subSelect:$("#product")})
+    productTypeCascade.create();
+    var formQuery = {
+        data: {
+            'agencyId':'',
+            'businessLine':'',
+            'orgId':'',
+            'borrower':'',
+            'loanTime':'',
+            'productType':'',
+            'product':'',
+            'loanStatus':'LOANED,CLEARED,OVERDUE'
+        },
+        reset: function () {
+            this.data = {
+                'agencyId':'',
+                'businessLine':'',
+                'orgId':'',
+                'borrower':'',
+                'loanTime':'',
+                'productType':'',
+                'product':'',
+                'loanStatus':'LOANED,CLEARED,OVERDUE'
+            }
+        }
+    };
+    var searchForm = {
+        init: function () {
+            var othis = this;
+            othis.initAgencySearch();
+            othis.initOrganizitionSearch();
+
+            //查询
+            $(".js-searchForm").form({
+                onSuccess: function (e, fields) {
+                    e.preventDefault();
+                    formQuery.reset();
+                    $.extend(formQuery.data, fields);
+                    dtTable.ajax.reload();
+                }
+            })
+
+        },
+        initAgencySearch: function () {
+            $('.js-agcSearch').search({
+                apiSettings: {
+                    method: "post",
+                    url: $(document).api.settings.api['search agency'] + '?search={query}'
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },
+                onSelect: function (result, response) {
+                    $(this).find('input[name="agencyId"]').val(result.id)
+                },
+            })
+
+            $('.js-agcSearch .js-input').on('input propertychange', function () {
+                $(this).prev('input').val("");
+            })
+        },
+        initOrganizitionSearch: function () {
+            $('.js-orgSearch').search({
+                apiSettings: {
+                    method: "post",
+                    url: $(document).api.settings.api['search organizition'] + '?search={query}'
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },
+                // minCharacters : 3
+                onSelect: function (result, response) {
+                    $(this).find('input[name="orgId"]').val(result.id)
+                },
+
+            })
+
+            $('.js-orgSearch  .js-input').on('input propertychange', function () {
+                $(this).prev('input').val("");
+            })
+        },
+
+    }
+    $(function () {
+        $("#loanTime").dateRangePicker({});
+        searchForm.init();
+    })
+    //列表初始化
+    function initLoanList() {
+        dtTable = $("#laonedTable").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query loan list'],
+                "data": function (d) {
+                    var _d = $.extend({}, {searchKeys:formQuery.data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST",
+            },
+            columns: [
+                {data: 'code'},
+                {data: 'productTypeName'},
+                {data: 'productName'},
+                {data: 'agencyName'},
+                {data: null},
+                {data: 'saleName'},
+                {data: 'borrserName'},
+                {data: 'loanTime'},
+                {data: null},
+                {data: null},
+                {data: null},
+                {data: null}
+            ],
+            columnDefs: [{
+                targets: 4,
+                render: function (data, type, row, meta) {
+                    return data.businessLine == "--" ? data.businessLine : enums.business_line[data.businessLine];
+                }
+            }, {
+                targets: 7,
+                render: function (data, type, row, meta) {
+                    return moment(row.loanTime).format('YYYY-MM-DD');
+                }
+            },{
+                targets:8,
+                className:'right aligned',
+                render: function (data, type, row, meta) {
+                    return accounting.formatMoney(data.actualAmount,'',2,',','.');
+                }
+            },{
+                targets: 9,
+                render: function (data, type, row, meta) {
+                    if("FIXED_DATE"==data.termType){
+                        return "至"+data.term;
+                    }else{
+                        if(data.termType!=undefined && enums.loanTermType[data.termType] != undefined){
+                            return data.term + enums.loanTermType[data.termType];
+                        }else{
+                            return "--";
+                        }
+                    }
+                }
+            }, {
+                targets: 10,
+                render: function (data, type, row, meta) {
+                    return enums.loan_status[data.loanStatus];
+                }
+            }, {
+                //   指定第最后一列
+                className:"single line",
+                targets: 11,
+                render: function (data, type, row, meta) {
+                    return '<a class="ui mini basic button " data-id="' + row.id + '" target="_blank" href="/business_apply/detail?id=' + row.id + '&tab=financial&comeFrom='+window.location.pathname+'"><i class="info circle icon"></i>查看</a>';
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+            }
+        })
+    }
+    initLoanList();
+    function getManager(obj){
+        $('#'+obj).search({
+                              apiSettings: {
+                                  method: "post",
+                                  url: '/channel/list_channel_name' + '?channelName={query}&channelType=1'
+                              },
+                              fields: {
+                                  results: 'data',
+                                  title: 'name',
+                                  description: 'code'
+                              },
+                              onSelect: function (data) {
+                                  var $this = $('#'+obj);
+                                  $this.find('input').attr('readonly',true);
+                                  $this.find('.js_search').addClass('close');
+                                  $this.find('.js_search').css('pointer-events','auto');
+                                  $("#channelId").val(data.id);
+                              },onResults: function(data) {}
+                          });
+    }
+    getManager('managerChannelSearch');
+    $(document).on('click','.js_search.close',function(){
+        $(this).css('pointer-events','none');
+        $(this).siblings('input').attr('readonly',false);
+        $(this).siblings('input').val("");
+        $(this).removeClass('close');
+        $("#channelId").val("");
+    });
+
+    $(document).on('click','#resetBnt',function(){
+        productTypeCascade.reset();
+        $(".js_search.close").each(function(){
+            $(this).click();
+        });
+    });
+</script>
+
+<%};%>
+<style type="text/css">
+</style>
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <form class="ui fluid  form js-searchForm">
+                    <div class="four fields">
+                        <div class="field">
+                            <label>机构</label>
+                            <div class="ui search js-agcSearch">
+                                <div class="ui icon input">
+                                    <input type="hidden" name="agencyId">
+                                    <input class="prompt js-input" type="text" placeholder="机构代码/名称检索">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+
+                        <div class="field js-SearchForm__lineField">
+                            <label>所属条线</label>
+                            <select name="businessLine" id="businessLine" class="ui dropdown">
+                                <option value="">全部</option>
+                                <% for(businessLine in businessLineList){%>
+                                <option value="${businessLine}">${businessLine.description}</option>
+                                <%}%>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label>产品大类</label>
+                            <select name="productType" class="ui dropdown" id="productType">
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>产品子类</label>
+                            <select name="product" class="ui dropdown" id="product">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="four fields">
+                        <div class="field">
+                            <label>借款人</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" placeholder="借款人" name="borrower" id="borrower">
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>放款时间</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" placeholder="放款时间" name="loanTime" id="loanTime">
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>渠道</label>
+                            <div id="managerChannelSearch" class="ui search">
+                                <div class="ui icon input">
+                                    <input value="" class="prompt" type="text" placeholder="输入渠道名/渠道简称">
+                                    <i class="js_search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                            <input type="hidden" id="channelId" name="channelId">
+                        </div>
+                        <div class="field">
+                            <label>&nbsp;</label>
+                            <div class="ui teal mini submit button">查询</div>
+                            <div class="ui clear mini button" id="resetBnt">重置</div>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">放款列表</a>
+                <table class="ui celled small table" id="laonedTable">
+                    <thead id="thead">
+                    <tr>
+                        <th>业务单号</th>
+                        <th>产品大类</th>
+                        <th>产品子类</th>
+                        <th>机构</th>
+                        <th>条线</th>
+                        <th>业务来源</th>
+                        <th>借款人</th>
+                        <th>放款时间</th>
+                        <th>放款金额（元）</th>
+                        <th>期限</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"放款查询"}){}%>

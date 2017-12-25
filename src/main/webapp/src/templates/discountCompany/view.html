@@ -1,0 +1,129 @@
+<%var jsPart = {%>
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/pages/multiple_upload_file.js"></script>
+<script src="/js/pages/discountCompany/view.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<style type="text/css">
+    .fbox{margin-bottom: 5px;}
+</style>
+<div class="ui guid">
+    <div class="row">
+        <div class="column">
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">编辑贴现企业</span>
+            </h5>
+            <div class=" ui segment">
+                <form id="form-borrower" class="ui form padding80">
+                    <div class="two fields">
+                        <div class="field required">
+                            <label>企业类型</label>
+                            <select name="discountType" disabled>
+                                <option value="DISCOUNT_COMPANY">贴现人/企业</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                    <div class="field required">
+                        <label>企业名称</label>
+                        <input type="text" name="name" readonly>
+                    </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field required">
+                            <label>证件类型</label>
+                            <select name="certifType" disabled>
+                                <option value="BUSINESS_LICENSE">营业执照编号</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                    <div class="field required">
+                        <label>证件号码</label>
+                        <input type="text" name="certifNumber" readonly>
+                    </div>
+                    </div>
+
+                    <div class="two fields">
+                        <div class="field">
+                            <label>营业执照</label>
+                            <!--多文件上传-->
+                            <div id="fileBox0"></div>
+                        </div>
+                        <div class="field">
+                            <label>法人身份证</label>
+                            <!--多文件上传-->
+                            <div id="fileBox1"></div>
+                        </div>
+                    </div>
+
+                    <div class="two fields">
+                        <div class="field ">
+                            <label>户名</label>
+                            <input type="text" name="accountName" readonly>
+                        </div>
+                        <div class="field ">
+                            <label>账号</label>
+                            <input type="text" name="account" readonly>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field ">
+                            <label>开户行</label>
+                            <input type="text" name="bankName" readonly>
+                        </div>
+                        <div class="field required">
+                            <label>住所</label>
+                            <input name="residence" type="text" readonly>
+                        </div>
+                    </div>
+
+                    <div class="two fields">
+                        <div class="field required">
+                            <label>法定代表人</label>
+                            <input name="legalRepresentative" type="text" readonly>
+                        </div>
+                        <div class="field required">
+                            <label>联系方式</label>
+                            <input name="legalRepresentativePhone" type="text" readonly>
+                        </div>
+                    </div>
+
+                    <div class="two fields">
+                        <div class="field required">
+                            <label>联系人</label>
+                            <input name="linkman" type="text" readonly>
+                        </div>
+                        <div class="field required">
+                            <label>联系方式</label>
+                            <input name="linkmanPhone" type="text" readonly>
+                        </div>
+                    </div>
+
+                    <div class="inline fields">
+                        <div class="field required">
+                            <label>状态</label>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="status" value="ABLE" disabled>
+                                <label>生效</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="status" value="DISABLED" disabled>
+                                <label>失效</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field required">
+                        <a class="ui button default" href="/borrower/discountCompanyList">返回</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<%};include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"查看贴现企业"}){}%>

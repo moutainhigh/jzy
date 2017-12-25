@@ -1,0 +1,166 @@
+<%var jsPart = {%>
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script type="text/javascript" src="/js/plugins/touch.js"></script>
+<script>
+    // 修改轮播图star
+    var liNum = null;
+    var index = null;
+    var liDataUrl = new Array();;
+    var cancelOBJ = null;
+
+    function allFileOut(obj) {
+        $.each(obj,function (index,item) {
+            var dataUrl = $(this).attr('data-url');
+            var index = dataUrl.lastIndexOf('.');
+            var last = dataUrl.substring(index+1).toLowerCase();
+            if(last != 'jpg' && last != 'gif'&& last != 'png' && last!= 'bmp'){
+                $(this).html('<div class="show_word">'+last+'</div>')
+            }
+        })
+    }
+
+    $(function () {
+        liNum = $('#uploaderFiles li') //拿到所有li的对象
+        allFileOut(liNum);
+        $(document).on('swipeLeft', '.swipe_tab', function(){
+            index++;
+            if(index >= liDataUrl.length-1){
+                index = liDataUrl.length-1
+            }
+            $(this).find("span").css({'background-image':'url("'+liDataUrl[index]+'")'});
+            $(this).find("span").addClass('bg_center');
+            cancelOBJ = $(liNum[index]);
+            addUrlBtn(cancelOBJ);
+        });
+
+        $(document).on('swipeRight', '.swipe_tab', function(){
+            index--;
+            if(index <= 0){
+                index = 0
+            }
+            $(this).find("span").css({'background-image':'url("'+liDataUrl[index]+'")'});
+            $(this).find("span").addClass('bg_center');
+            cancelOBJ = $(liNum[index]);
+            addUrlBtn(cancelOBJ);
+        });
+    })
+
+
+    $("#uploaderFiles").on('click', 'li', function(){
+        document.addEventListener('touchmove', handler ,false);
+        liNum = $('#uploaderFiles li');
+        index = $(this).index();
+        cancelOBJ = $(liNum[index]);
+        liDataUrl = [];
+        $.each(liNum,function(index,item){
+            liDataUrl.push($(this).attr("data-url"));
+        })
+        var gallery = weui.gallery("'"+cancelOBJ.attr('data-url')+"'", {
+            className: 'swipe_tab',
+            onDelete: function(){
+                weui.confirm('确认删除', {
+                    buttons: [{
+                        label: '取消',
+                        type: 'default',
+                        onClick: function(){}
+                    }, {
+                        label: '确认',
+                        type: 'primary',
+                        onClick: function(){
+                            deleteImageLi(cancelOBJ);
+                            gallery.hide();
+                        }
+                    }]
+                });
+            }
+        });
+        addUrlBtn(cancelOBJ);
+    });
+
+    //        封装增加按钮和url下载路径
+    function addUrlBtn(obj) {
+        if(clickObj(obj)){
+            $('.weui-gallery span').html(clickDownLoad()).find('.weui-btn_primary.aDownLoad').on('click',function (e) { stopProgation(e) });
+            var fileName = obj.data('name');
+            var href = obj.data('url');
+            $('#js-download-div .aDownLoad').attr('href',href);
+            $('#js-download-div .downLoadName').text(fileName);
+        }else {
+            $('.weui-gallery span').html('');
+        }
+        $('.weui-gallery__opr').remove();
+    }
+
+    //        点击下载按钮时阻止冒泡行为
+    function stopProgation(e) {
+        e.stopPropagation();
+    }
+    //      创造点击下载按钮
+    function clickDownLoad() {
+        return '<div class="weui-msg__opr-area download bg-showFile" id="js-download-div">' +
+                '<div class="weui-uploader__hd">' +
+                '<h3 class="weui-uploader__title weui-msg downLoadName"></h3>' +
+                '</div>'+
+                '<div class="weui-btn-area">' +
+                '<a href="#" class="weui-btn weui-btn_primary aDownLoad">下载</a>' +
+                '</div>' +
+                '</div>'
+    }
+    //        判断点击时候的data-url的扩张名
+    function clickObj(obj) {
+        var data_url = obj.attr('data-url');
+        var index = data_url.lastIndexOf('.');
+        var strKzm = data_url.substring(index+1,index+4);
+        var fileType = strKzm.toLowerCase();
+        if(fileType!= 'jpg' && fileType!= 'png' && fileType!= 'gif' && fileType!= 'bmp')
+            return true;
+        else
+            return false;
+    }
+
+    //      移除事件
+    $(document).on('click','.weui-gallery__img',function () {
+        document.removeEventListener('touchmove', handler ,false);
+    })
+    //      阻止默认滚动行为
+    function handler() {
+        event.preventDefault();
+    }
+</script>
+<%};%>
+<%var htmlPart = {%>
+<style>
+    * { touch-action: none; }
+    body{ height:100%;}
+    #container{ height: 100%; overflow-y: auto;}
+    .process{position: relative;margin-top:30px; background:#eee;}
+    .bar {background-color: green; display:block; width:0%; height:10px; }
+    .percent{position:absolute; height:15px; top:13px; text-align:center; display:inline-block; left:0px; width:80px; color:#666; line-height:15px; font-size:12px; }
+    .word{ line-height: 80px; text-align: center; font-size: 24px; border: 1px solid #d9d9d9;display: none;}
+    .show_word{ line-height: 80px; text-align: center; font-size: 24px; border: 1px solid #d9d9d9;}
+    .download{position: relative;top: 250px}
+    .bg-showFile{background: #fff;  padding:15px;word-break: break-word;}
+    .bg_center{background-size:contain;background-position: center;background-repeat: no-repeat;-webkit-background-size: contain}
+</style>
+<div class="weui-uploader">
+    <div class="weui-uploader__hd">
+        <p class="weui-uploader__title">资料查看</p>
+        <div class="weui-uploader__info"></div>
+    </div>
+    <div class="weui-uploader__bd">
+        <ul class="weui-uploader__files" id="uploaderFiles">
+            <% if (obj.attach.productMediaAttachDetails.~size>0) { %>
+            <% for(detail in obj.attach.productMediaAttachDetails){
+            var attachName = detail.attachName;
+            var lastName = @attachName.substring(@attachName.lastIndexOf(".")+1).toLowerCase();
+            %>
+            <% if(@lastName.equals("jpg")||@lastName.equals("png")||@lastName.equals("gif")||@lastName.equals("bmp")){ %>
+            <li class="weui-uploader__file" style="background-image:url('${detail.url}')" data-url="${detail.url}" data-name="${detail.attachName}"></li>
+            <%} else {%>
+            <li class="weui-uploader__file"  data-url="${detail.url}" data-name="${detail.attachName}"></li>
+            <% }}} %>
+        </ul>
+    </div>
+</div>
+<a class="weui-btn weui-btn_default" href="javaScript:window.history.back();">关闭</a>
+<%}; include("/h5/common.html",{jsSection:jsPart,htmlSection:htmlPart,title:"资料查看"}){}%>

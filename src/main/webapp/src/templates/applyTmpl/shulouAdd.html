@@ -1,0 +1,841 @@
+<div class="column sixteen wide">
+    <form id="step3Form" class="ui form">
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label">业务信息</a>
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">房产信息</span>
+            </h5>
+            <div class="js-add_house_info ui button teal">
+                + 添加赎楼房产
+            </div>
+            <div id="hk_house_info">
+                <% if(productInfoItemData.houseList.~size > 0){ %>
+                <% for(houseDetail in productInfoItemData.houseList) { %>
+                <div class="js-houseInfo">
+                    <div class="diver hidden"></div>
+                    <div class="ui segment">
+                        <div class="ui top left attached label js-houseNum">${houseDetailLP.index}</div>
+                            <% if(houseDetailLP.index > 1) { %>
+                            <div class="circular ui icon button floatBtn mini js_removeHouse">
+                                <i class="icon remove"></i>
+                            </div>
+                            <%  }else{%>
+                            <div class="circular ui icon button floatBtn mini js_removeHouse ks-hidden">
+                                <i class="icon remove"></i>
+                            </div>
+                            <% } %>
+                        <div class="three fields margin20t">
+                            <div class="field required">
+                                <label>房产证号</label>
+                                <input class="item" name="house_code" type="text" value="${houseDetail.code}">
+                            </div>
+                            <div class="field required">
+                                <label>权属人</label>
+                                <input class="item" name="user" type="text" value="${houseDetail.ower}">
+                            </div>
+                            <div class="field required">
+                                <label>房产面积（㎡）</label>
+                                <input class="item" name="area" type="text" value="${houseDetail.area}">
+                            </div>
+                        </div>
+                        <div class="fields">
+                            <div class="field sixteen wide">
+                                <div class="fields margin0b">
+                                    <div class="sixteen wide field required">
+                                        <label>房产地址</label>
+                                        <input class="item" name="address" type="text" value="${houseDetail.address}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="four fields">
+                            <div class="field required">
+                                <label>房产估值（万元）</label>
+                                <input class="item" name="price" type="text" value="${houseDetail.price}">
+                            </div>
+                            <div class="field">
+                                <label>估值渠道</label>
+                                <input class="item" name="channel" type="text" value="${houseDetail.channel}">
+                            </div>
+                            <div class="field">
+                                <label>公司估值系数</label>
+                                <input type="text" class="item" name="budgetPercentage" value="${houseDetail.budgetPercentage}">
+                            </div>
+                            <div class="field required">
+                                <label>公司估值金额（万元）</label>
+                                <input type="text" class="item" name="budgetPrice" value="${houseDetail.budgetPrice}" readonly>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <% } %>
+                <% }else{ %>
+                <div class="js-houseInfo">
+                    <div class="diver hidden"></div>
+                    <div class="ui segment">
+                        <div class="ui top left attached label js-houseNum">1</div>
+                            <div class="circular ui icon button floatBtn mini js_removeHouse ks-hidden">
+                                <i class="icon remove"></i>
+                            </div>
+                            <div class="three fields margin20t">
+                                <div class="field required">
+                                    <label>房产证号</label>
+                                    <input class="item" name="house_code" type="text" value="">
+                                </div>
+                                <div class="field required">
+                                    <label>权属人</label>
+                                    <input class="item" name="user" type="text" value="">
+                                </div>
+                                <div class="field required">
+                                    <label>房产面积（㎡）</label>
+                                    <input class="item" name="area" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="fields">
+                                <div class="field sixteen wide">
+                                    <div class="fields margin0b">
+                                        <div class="sixteen wide field required">
+                                            <label>房产地址</label>
+                                            <input class="item" name="address" type="text" value="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="four fields">
+                                <div class="field required">
+                                    <label>房产估值（万元）</label>
+                                    <input class="item" name="price" type="text" value="">
+                                </div>
+                                <div class="field">
+                                    <label>估值渠道</label>
+                                    <input class="item" name="channel" type="text" value="">
+                                </div>
+                                <div class="field required">
+                                    <label>公司估值系数</label>
+                                    <input type="text" class="item" name="budgetPercentage" value="0.7">
+                                </div>
+                                <div class="field required">
+                                    <label>公司估值金额</label>
+                                    <input type="text" class="item" name="budgetPrice" value="" readonly>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <% } %>
+            </div>
+            
+            <div class="fields margin20t">
+                <div class="field required">
+                    <label>公司估值总金额（万元）</label>
+                    <input type="text" name="budgetAllPrice" class="item" value="${productInfoItemData.budgetAllPrice}" readonly>
+                </div>
+            </div>
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">审批银行信息</span>
+            </h5>
+            <div class="three fields margin20t">
+                <div class="field required">
+                    <label>审批银行</label>
+                    <input class="item" name="approval_bank" type="text" value="${productInfoItemData.approval_bank}">
+                </div>
+                <div class="field">
+                    <label>审批时间</label>
+                    <input class="item laydate" name="approval_time" value="${productInfoItemData.approval_time}">
+                </div>
+                <div class="field required">
+                    <label>审批金额（万元）</label>
+                    <input class="item" name="approval_amount" type="text" value="${productInfoItemData.approval_amount}">
+                </div>
+            </div>
+            <div class="fields">
+                <div class="field five wide">
+                    <label>审批银行联系人</label>
+                    <input class="item" name="approval_contact" type="text" value="${productInfoItemData.approval_contact}" placeholder="联系人/联系方式">
+                </div>
+                <div class="field fourteen wide">
+                    <div class="fields">
+                        <div class="fourteen wide field">
+                            <label>审批银行地址</label>
+                            <input class="item" name="approval_address" type="text" value="${productInfoItemData.approval_address}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">赎楼银行信息</span>
+            </h5>
+            <div class="three fields margin20t">
+                <div class="field">
+                    <label>赎楼银行</label>
+                    <input class="item" name="ransom_bank" type="text" value="${productInfoItemData.ransom_bank}">
+                </div>
+                <div class="field">
+                    <label>赎楼银行联系人</label>
+                    <input class="item" name="ransom_contact" type="text" value="${productInfoItemData.ransom_contact}" placeholder="联系人/联系方式">
+                </div>
+            </div>
+            <div class="fields">
+                <div class="field sixteen wide">
+                    <div class="fields">
+                        <div class="ten wide field">
+                            <label>约定赎楼时间</label>
+                            <input class="item laydateInTime" name="ransom_time" value="${productInfoItemData.ransom_time}">
+                        </div>
+                        <div class="six wide field">
+                            <label>&emsp;</label>
+                            <div class="ui checkbox" style="margin-top: 10px;">
+                                <input name="ransom_anytime" type="checkbox" tabindex="0" class="item" <% if(productInfoItemData.ransom_anytime == "true"){ %>checked <%}%>>
+                                <label>随时</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fields">
+                <div class="field sixteen wide">
+                    <div class="fields margin0b">
+                        <div class="sixteen wide field">
+                            <label>赎楼银行地址</label>
+                            <input class="item" name="ransom_bank_address" type="text" value="${productInfoItemData.ransom_bank_address}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="three fields">
+                <div class="field">
+                    <label>赎楼账户户名</label>
+                    <input class="item" name="ransom_user" type="text" value="${productInfoItemData.ransom_user}">
+                </div>
+                <div class="field">
+                    <label>赎楼账户账号</label>
+                    <input class="item" name="ransom_account" type="text" value="${productInfoItemData.ransom_account}">
+                </div>
+            </div>
+
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">回款银行信息</span>
+            </h5>
+            <div class="js-add_bill_info ui button teal">
+                + 添加
+            </div>
+            <div id="hk_bank_info">
+                <% if(productInfoItemData.bakAccountList.~size > 0){ %>
+                    <% for(attacheDetail in productInfoItemData.bakAccountList) { %>
+                    <div class="js-bakInfo">
+                        <div class="diver hidden"></div>
+                        <div class="ui segment">
+                            <div class="ui top left attached label js-slNum">${attacheDetailLP.index}</div>
+                            <div class="three fields">
+                                <% if(attacheDetailLP.index > 1) { %>
+                                <div class="circular ui icon button floatBtn mini js_removeBank">
+                                    <i class="icon remove"></i>
+                                </div>
+                                <%  }else{%>
+                                <div class="circular ui icon button floatBtn mini js_removeBank ks-hidden">
+                                    <i class="icon remove"></i>
+                                </div>
+                                <% } %>
+                                <div class="field required">
+                                    <label>回款账户户名</label>
+                                    <div id="search-account" class="ui search focus js-search">
+                                        <div class="ui icon input">
+                                            <input value="${attacheDetail.name}" class="prompt" placeholder="选择回款账户户名" type="text" autocomplete="off" name="name">
+                                            <i class="search icon "></i>
+                                        </div>
+                                        <div class="results"></div>
+                                    </div>
+                                </div>
+                                <div class="field required">
+                                    <label>回款账户开户行</label>
+                                    <input class="" name="bank" type="text" value="${attacheDetail.bank}">
+                                </div>
+                                <div class="field required">
+                                    <label>回款账户账号</label>
+                                    <input class="" name="account" type="text" value="${attacheDetail.account}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+                <% }else{ %>
+                <div class="js-bakInfo">
+                    <div class="diver hidden"></div>
+                    <div class="ui segment">
+                        <div class="ui top left attached label js-slNum">1</div>
+                        <div class="three fields">
+                            <div class="circular ui icon button floatBtn mini js_removeBank ks-hidden">
+                                <i class="icon remove"></i>
+                            </div>
+                            <div class="field required">
+                                <label>回款账户户名</label>
+                                <!--<input class="" name="name" type="text" value="">-->
+                                <div class="ui search focus js-search">
+                                    <div class="ui icon input">
+                                        <input value="" class="prompt" placeholder="选择回款账户户名" type="text" autocomplete="off" name="name">
+                                        <i class="search icon"></i>
+                                    </div>
+                                    <div class="results"></div>
+                                </div>
+                            </div>
+                            <div class="field required">
+                                <label>回款账户开户行</label>
+                                <input class="" name="bank" type="text" value="">
+                            </div>
+                            <div class="field required">
+                                <label>回款账户账号</label>
+                                <input class="" name="account" type="text" value="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </div>
+        <div class="ui error message"></div>
+        <%if(loan.loanStatus == "SAVE" || loan.loanStatus == "CHANNELSAVE"){%>
+        <div class="actions">
+            <div id="btn-submit-step3" class="ui button teal">确定</div>
+        </div>
+        <%}%>
+    </form>
+</div>
+
+<div id="js-demo">
+    <div class="js-bankDemo ks-hidden">
+        <div class="diver hidden"></div>
+        <div class="ui segment">
+            <div class="ui top left attached label js-slNum"></div>
+            <div class="three fields">
+                <div class="circular ui icon button floatBtn mini js_removeBank ks-hidden">
+                    <i class="icon remove"></i>
+                </div>
+                <div class="field required">
+                    <label>回款账户户名</label>
+                    <!--<input class="" name="name" type="text" value="">-->
+                    <div  class="ui search js-demo-search">
+                        <div class="ui icon input">
+                            <input class="prompt" type="text" placeholder="选择回款账户户名"
+                                   name="name">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </div>
+                <div class="field required">
+                    <label>回款账户开户行</label>
+                    <input class="" name="bank" type="text" value="">
+                </div>
+                <div class="field required">
+                    <label>回款账户账号</label>
+                    <input class="" name="account" type="text" value="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="js-house-demo">
+    <div class="js-houseDemo ks-hidden">
+        <div class="diver hidden"></div>
+        <div class="ui segment">
+            <div class="ui top left attached label js-houseNum"></div>
+                <div class="three fields margin20t">
+                    <div class="circular ui icon button floatBtn mini js_removeHouse ks-hidden">
+                        <i class="icon remove"></i>
+                    </div>
+                    <div class="field required">
+                        <label>房产证号</label>
+                        <input class="item" name="house_code" type="text" value="">
+                    </div>
+                    <div class="field required">
+                        <label>权属人</label>
+                        <input class="item" name="user" type="text" value="">
+                    </div>
+                    <div class="field required">
+                        <label>房产面积（㎡）</label>
+                        <input class="item" name="area" type="text" value="">
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="field sixteen wide">
+                        <div class="fields margin0b">
+                            <div class="sixteen wide field required">
+                                <label>房产地址</label>
+                                <input class="item" name="address" type="text" value="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="three fields">
+                    <div class="field required">
+                        <label>房产估值（万元）</label>
+                        <input class="item" name="price" type="text" value="">
+                    </div>
+                    <div class="field">
+                        <label>估值渠道</label>
+                        <input class="item" name="channel" type="text" value="">
+                    </div>
+                    <div class="field required">
+                        <label>公司估值系数</label>
+                        <input type="text" class="item" name="budgetPercentage" value="0.7">
+                    </div>
+                    <div class="field required">
+                        <label>公司估值金额</label>
+                        <input type="text" class="item" name="budgetPrice" value="" readonly>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(".laydateInTime").dateRangePicker({
+        separator: ' ~ ',
+        format: 'YYYY-MM-DD HH:mm',
+        autoClose: false,
+        time: {
+            enabled: true
+        },
+        defaultTime: moment().startOf('day').toDate(),
+        defaultEndTime: moment().startOf('day').toDate()
+    });
+
+
+    //计算公司估值金额 & 公司估值总额
+    function calculationAmount(){
+        $(document).on('input propertychange','.js-houseInfo input[name="price"]',function(){
+            var thisParent = $(this).parents('.js-houseInfo');
+            var percent = thisParent.find('input[name="budgetPercentage"]').val() ==''? 0:parseFloat(thisParent.find('input[name="budgetPercentage"]').val());
+            thisParent.find('input[name="budgetPrice"]').val(mul($(this).val(),percent))
+
+            calculationAllAmount()
+        });
+
+        $(document).on('input propertychange','.js-houseInfo input[name="budgetPercentage"]',function(){
+            var thisParent = $(this).parents('.js-houseInfo');
+            var price = thisParent.find('input[name="price"]').val() ==''? 0:parseFloat(thisParent.find('input[name="price"]').val());
+            thisParent.find('input[name="budgetPrice"]').val(mul($(this).val(),price))
+        })
+
+        function calculationAllAmount(){
+            var amount =0;
+            $('#hk_house_info .js-houseInfo input[name="price"]').each(function(n,ele){
+                var val = $(ele).val()==''? 0:parseFloat($(ele).val());
+                amount += val;
+            });
+            $('input[name="budgetAllPrice"]').val(amount);
+        }
+
+    }
+    calculationAmount()
+
+
+    //添加回款银行
+    function addBillInfo(){
+        var cloneHtml = $('#js-demo').find('.js-bankDemo');
+        $('#hk_bank_info').append(cloneHtml.clone());
+        $('#hk_bank_info').find('.js-bankDemo .js_removeBank').removeClass('ks-hidden');
+        $('#hk_bank_info').find('.js-bankDemo').removeClass('ks-hidden');
+        $('#hk_bank_info').find('.js-bankDemo').addClass('js-bakInfo');
+        $('.js-slNum').each(function(i,ele){
+            var i = i+1;
+            $(this).html(i);
+        });
+    }
+    $('.js-add_bill_info').click(function(){
+        addBillInfo();
+    });
+
+    //添加房产
+    function addHouseInfo(){
+        var cloneHtml = $('#js-house-demo').find('.js-houseDemo');
+        $('#hk_house_info').append(cloneHtml.clone());
+        $('#hk_house_info').find('.js-houseDemo .js_removeHouse').removeClass('ks-hidden');
+        $('#hk_house_info').find('.js-houseDemo').removeClass('ks-hidden');
+        $('#hk_house_info').find('.js-houseDemo').addClass('js-houseInfo');
+        $('.js-houseNum').each(function(i,ele){
+            var i = i+1;
+            $(this).html(i);
+        });
+    }
+    $('.js-add_house_info').click(function(){
+        addHouseInfo();
+    });
+
+    //删除房产
+    $(document).on('click','.js_removeHouse',function(){
+        $(this).parents('.js-houseInfo').remove();
+    });
+
+    //删除回款银行
+    $(document).on('click','.js_removeBank',function(){
+        $(this).parents('.js-bakInfo').remove();
+    });
+
+
+    //银行账号4位一空
+    $(document).on('keyup','input[name="ransom_account"],input[name="account"]',function(){
+        var Val = $(this).val().replace(/\D/g, '').replace(/....(?!$)/g, '$& ');
+        $(this).val(Val);
+    });
+
+
+    var step3FormOption = {
+        inline:true,
+        fields:{
+            'approval_bank': {
+                identifier: 'approval_bank',
+                rules: [{
+                    type: 'empty',
+                    prompt: '审批银行不能为空'
+                },{
+                    type:'maxLength[50]',
+                    prompt:'审批银行不超过50个字符'
+                }]
+            },
+            'approval_amount': {
+                identifier: 'approval_amount',
+                rules: [{
+                    type: 'empty',
+                    prompt: '审批金额不能为空'
+                },{
+                    type:'validateNumFloat',
+                    prompt:'输入正整数或2位小数且在0.01-99999999.99内'
+                }]
+            },
+            'approval_contact': {
+                identifier: 'approval_contact',
+                rules: [{
+                    type:'maxLength[50]',
+                    prompt:'审批银行联系人不超过50个字符'
+                }]
+            },
+            'approval_address': {
+                identifier: 'approval_address',
+                rules: [{
+                    type:'maxLength[200]',
+                    prompt:'审批银行地址不超过200个字符'
+                }]
+            },
+            'ransom_bank': {
+                identifier: 'ransom_bank',
+                rules: [{
+                    type:'maxLength[50]',
+                    prompt:'输入不超过50位的字符'
+                }]
+            },
+            'ransom_contact': {
+                identifier: 'ransom_contact',
+                rules: [{
+                    type:'maxLength[50]',
+                    prompt:'赎楼银行联系人不超过50个字符'
+                }]
+            },
+            'ransom_bank_address': {
+                identifier: 'ransom_bank_address',
+                rules: [{
+                    type:'maxLength[200]',
+                    prompt:'赎楼银行地址不超过200个字符'
+                }]
+            },
+            'ransom_user': {
+                identifier: 'ransom_user',
+                rules: [{
+                    type:'maxLength[50]',
+                    prompt:'输入不超过50位字符'
+                }]
+            },
+            'ransom_account': {
+                identifier: 'ransom_account',
+                rules: [{
+                    type: 'bankCard',
+                    prompt: '赎楼账户账号不正确（请输入6-30位数字）'
+                }]
+            }
+        }
+    };
+
+    var step3FormOption1 = {
+        inline:true,
+        fields:{
+            'bank': {
+                identifier: 'bank',
+                rules: [{
+                    type: 'empty',
+                    prompt: '回款账户开户行不能为空'
+                },{
+                    type:'maxLength[50]',
+                    prompt:'输入不超过50位的中文'
+                }]
+            },
+            'name': {
+                identifier: 'name',
+                rules: [{
+                    type: 'empty',
+                    prompt: '回款账户户名不能为空'
+                },{
+                    type:'maxLength[50]',
+                    prompt:'输入不超过50位的中文'
+                }]
+            },
+            'account': {
+                identifier: 'account',
+                rules: [{
+                    type: 'empty',
+                    prompt: '回款账户账号不能为空'
+                },{
+                    type: 'bankCard',
+                    prompt: '回款账户账号不正确（请输入6-30位数字）'
+                }]
+            }
+        }
+    };
+
+    var step3FormOptionForHouse = {
+        inline:true,
+        fields:{
+            'house_code': {
+                identifier: 'house_code',
+                rules: [{
+                    type:'maxLength[100]',
+                    prompt:'房产证号不超过100个字符'
+                },{
+                    type:'empty',
+                    prompt:'房产证号不为空'
+                }]
+            },
+            'user': {
+                identifier: 'user',
+                rules: [{
+                    type: 'empty',
+                    prompt: '权属人不能为空'
+                },{
+                    type:'maxLength[20]',
+                    prompt:'权属人不超过20个字符'
+                }]
+            },
+            'area': {
+                identifier: 'area',
+                rules: [{
+                    type: 'empty',
+                    prompt: '房产面积不为空'
+                },{
+                    type:'validateNumFloat',
+                    prompt:'输入正整数或2位小数且在0.01-99999999.99内'
+                }]
+            },
+            'address': {
+                identifier: 'address',
+                rules: [{
+                    type: 'empty',
+                    prompt: '房屋地址不能为空'
+                },{
+                    type:'maxLength[200]',
+                    prompt:'房屋地址不超过200个字符'
+                }]
+            },
+            'price': {
+                identifier: 'price',
+                rules: [{
+                    type: 'empty',
+                    prompt: '房产估值不能为空'
+                },{
+                    type:'validateNumFloat',
+                    prompt:'输入正整数或2位小数且在0.01-99999999.99内'
+                }]
+            },
+            'channel': {
+                identifier: 'channel',
+                rules: [{
+                    type:'maxLength[100]',
+                    prompt:'估值渠道不超过100个字符'
+                }]
+            },
+            'budgetPercentage':{
+                identifier: 'budgetPercentage',
+                rules: [{
+                    type: 'empty',
+                    prompt: '公司估值系数不能为空'
+                },{
+                    type:'validateNumFloat[0-1]',
+                    prompt:'系数范围[0-1]之间的2位小数'
+                }]
+            },
+            'budgetPrice':{
+                identifier: 'budgetPrice',
+                rules: [{
+                    type: 'empty',
+                    prompt: '公司估值金额不能为空'
+                }]
+            }
+        }
+    };
+
+
+    $('.ui.checkbox').checkbox();
+
+    var ransom_anytime_checked = $('#step3Form input[name="ransom_anytime"]').prop("checked");
+    if(ransom_anytime_checked) {
+        $('#step3Form input[name="ransom_time"]').attr({disabled: true}).parent().addClass("disabled");
+    }
+    $('#step3Form input[name="ransom_anytime"]').change(function() {
+        var checked = $(this).prop("checked");
+        if(checked) {
+            $('#step3Form input[name="ransom_time"]').attr({disabled: true}).parent().addClass("disabled");
+        } else {
+            $('#step3Form input[name="ransom_time"]').attr({"disabled": false}).parent().removeClass("disabled");
+        }
+    });
+
+    $('#btn-submit-step3').click(function(){
+       var flag = true;
+        var flag2 = true;
+        $('.js-bakInfo').each(function(){
+            var s_flag = $(this).form(step3FormOption1).form("validate form");
+            flag = flag && s_flag;
+        });
+        $('.js-houseInfo').each(function(){
+            var h_flag = $(this).form(step3FormOptionForHouse).form("validate form");
+            flag2 = flag && h_flag;
+        });
+
+        if(flag && flag2){
+            $("#step3Form").form(step3FormOption).api({
+                action: "update loan business",
+                method: 'POST',
+                beforeSend: function(settings) {
+                    var _step = "";
+                    if($("#linkStep1").hasClass("completed")) {
+                        _step += "1"
+                    }else {
+                        _step += "0"
+                    }
+                    if($("#linkStep2").hasClass("completed")) {
+                        _step += "1"
+                    }else {
+                        _step += "0"
+                    }
+                    _step += "1"
+                    if($("#linkStep4").hasClass("completed")) {
+                        _step += "1"
+                    }else {
+                        _step += "0"
+                    }
+                    settings.data["step"] = _step;
+
+                    var loanId = $("#stepData").data("loan_id")
+                    var tmplId = $("#stepData").data("product_info_tmpl_id")
+                    settings.data["id"] = loanId;
+                    var items = [];
+                    var bakList = [];
+                    var houseList = [];
+                    $("#step3Form .item").each(function(i) {
+                        var isDate = $(this).hasClass("laydate");
+                        if(isDate) {
+                            var type = 'date';
+                        } else {
+                            var type = $(this).attr('type');
+                        }
+
+                        if(type == 'checkbox') {
+                            var checked = $(this).prop("checked");
+                            if(checked) {
+                                var dataValue = "true";
+                            } else {
+                                var dataValue = "false";
+                            }
+                        } else {
+                            var dataValue = $(this).val();
+                        }
+
+                        items.push({
+                            'loanId': loanId,
+                            'tmplId': tmplId,
+                            'keyName': $(this).attr('name'),
+                            'dataValue': dataValue,
+                            'type': type
+                        })
+                    });
+
+                    $('#hk_bank_info .js-bakInfo').each(function(k,ele){
+                        bakList.push({
+                            'bank':$(ele).find('input[name="bank"]').val(),
+                            'name':$(ele).find('input[name="name"]').val(),
+                            'account':$(ele).find('input[name="account"]').val()
+                        })
+                    });
+                    $('#hk_house_info .js-houseInfo').each(function(k,ele){
+                        houseList.push({
+                            'code':$(ele).find('input[name="house_code"]').val(),
+                            'ower':$(ele).find('input[name="user"]').val(),
+                            'area':$(ele).find('input[name="area"]').val(),
+                            'address':$(ele).find('input[name="address"]').val(),
+                            'price':$(ele).find('input[name="price"]').val(),
+                            'channel':$(ele).find('input[name="channel"]').val(),
+                            'budgetPercentage':$(ele).find('input[name="budgetPercentage"]').val(),
+                            'budgetPrice':$(ele).find('input[name="budgetPrice"]').val(),
+                            'budgetAllPrice':$('#step3Form input[name="budgetAllPrice"]').val()
+                        })
+                    });
+                    settings.data["bakAccountListStr"] = JSON.stringify(bakList);
+                    settings.data["houseAccountListStr"] = JSON.stringify(houseList);
+                    settings.data["items"] = JSON.stringify(items);
+                    return settings;
+                },
+                onSuccess: function (response) {
+                    $("#linkStep3").addClass("completed");
+                    goStep("Step4");
+                },
+                onFailure: function(response) {
+                    $.uiAlert({type: "danger", textHead: '保存失败', text: response.msg, time: 3});
+                }
+            });
+            $("#step3Form").submit();
+        }
+    });
+
+    //查询回款账户
+    $(document).on('click','.js-search',function(){
+        $(this).search({
+            apiSettings: {
+                method: "post",
+                url: $(document).api.settings.api['query account'] + '?name={query}'
+            },
+            fields: {
+                results: 'data',
+                title: 'name',
+                description: 'account'
+            },
+            onSelect: function (data) {
+                var $this = $(this).parent().siblings();
+                $(this).find('input').attr('value',data.name).val(data.name);
+                $this.find("input[name='bank']").val(data.bankName);
+                $this.find("input[name='account']").val(data.account);
+            }
+        })
+    });
+
+    $(document).on('click','.js-demo-search',function(){
+        $(this).search({
+            apiSettings: {
+                method: "post",
+                url: $(document).api.settings.api['query account'] + '?name={query}'
+            },
+            fields: {
+                results: 'data',
+                title: 'name',
+                description: 'account'
+            },
+            onSelect: function (data) {
+                var $this = $(this).parent().siblings();
+                $(this).find('input').attr('value',data.name).val(data.name);
+                $this.find("input[name='bank']").val(data.bankName);
+                $this.find("input[name='account']").val(data.account);
+            }
+        })
+    });
+
+
+</script>

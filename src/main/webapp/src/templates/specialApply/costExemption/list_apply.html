@@ -1,0 +1,125 @@
+<%var jsPart = {%>
+<script src="/js/pages/specialApply/costExemption/list_apply.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>业务单号</label>
+                <input type="text" name="code" id="code">
+            </div>
+            <div class="field">
+                <label>申请业务人员</label>
+                <input type="text" name="businessName" id="businessName">
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <div class="ui tiny button teal" onclick="init.search()">查询</div>
+                <div class="ui tiny button clear" onclick="init.reset()">重置</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" id="part_one">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">费用免除申请列表</a>
+            <table class="ui  celled table compact  small" id="applyTale">
+                <thead>
+                <tr>
+                    <th>费用免除申请编号</th>
+                    <th>业务单号</th>
+                    <th>申请业务人员</th>
+                    <th>申请时间</th>
+                    <th>状态</th>
+                    <th>审批状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="ui modal" id="applyCost">
+    <i class="close icon js_close"></i>
+    <div class="header">关联需要减免的单<span class="ui header red" style="font-size: 14px;">（支持还款中和已逾期的单，票据的单不支持减免）</span></div>
+    <div class="content">
+        <div class="ui form">
+            <div class="two fields">
+                <div class="field">
+                    <label>业务单号：</label>
+                    <input type="text" id="businessCode">
+                </div>
+            </div>
+            <div class="fields">
+                <div class="field">
+                    <div class="ui  button teal mini" id="js_applyCostBtn">关联</div>
+                    <div class="ui small button mini" id="js_applyReset">重置</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="applyInfo">
+
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui button teal small" id="js_applySubmit">申请费用免除</div>
+        <div class="ui button small js_close">取消</div>
+    </div>
+</div>
+
+<script type="text/mustach-template" id="busniessInfoTmp">
+    <div class="ui grid">
+        <input type="hidden" value="{{id}}" id="loanId">
+        <div class="two column row">
+            <div class="column">
+                <b>业务单号：</b>
+                <span>{{code}}</span>
+            </div>
+            <div class="column">
+                <b>产品大类：</b>
+                <span>{{productType}}</span>
+            </div>
+        </div>
+        <div class="two column row">
+            <div class="column">
+                <b>业务来源：</b>
+                <span>{{businessSource}}</span>
+            </div>
+            <div class="column">
+                <b>主借款人：</b>
+                <span>{{borrower}}</span>
+            </div>
+        </div>
+        <div class="two column row">
+            <div class="column">
+                <b>放款金额（元）：</b>
+                <span>{{f_amount}}</span>
+            </div>
+            <div class="column">
+                <b>放款日：</b>
+                <span>{{f_loanDate}}</span>
+            </div>
+        </div>
+        <div class="two column row">
+            <div class="column">
+                <b>期限：</b>
+                <span>{{term}}</span>
+            </div>
+        </div>
+    </div>
+</script>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"费用免除申请"}){}%>
+

@@ -1,0 +1,167 @@
+<%var jsPart = {%>
+<!--待审批模板-->
+<script type="text/mustach-template" id="listTemplate">
+    {{#data.applyList}}
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">业务单号</label>
+                <span class="weui-form-preview__value">{{code}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">产品类型</label>
+                <span class="weui-form-preview__value">{{productTypeName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">产品子类</label>
+                <span class="weui-form-preview__value">{{productName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">借款人</label>
+                <span class="weui-form-preview__value">{{borrowerName}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">金额（元）</label>
+                <span class="weui-form-preview__value">{{amount}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label bold f-black">期限</label>
+                <span class="weui-form-preview__value">{{termtypeInCN}}</span>
+            </div>
+        </div>
+        <div class="weui-form-preview__ft">
+            <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="apply/detail?id={{id}}"  >详情</a>
+        </div>
+    </div>
+    <br/>
+    {{/data.applyList}}
+    <br>
+    {{^data.applyList}}
+    <div class="weui-loadmore weui-loadmore_line">
+        <span class="weui-loadmore__tips">暂无数据</span>
+    </div>
+    {{/data.applyList}}
+</script>
+
+
+<script>
+    var length = 10;
+    var currentPage = 1;
+    var searchBusinessName = "";
+    var searchBorrowerName = "";
+    if (document.referrer && document.referrer.indexOf("/m/apply/detail")>=0) {
+        searchBusinessName = $.fn.cookie("BusinessQuerySearchBusinessName");
+        searchBorrowerName = $.fn.cookie("BusinessQuerySearchBorrowerName");
+        $("#searchBusinessName").val(searchBusinessName);
+        $("#searchBorrowerName").val(searchBorrowerName);
+    }
+    getData(1,searchBusinessName,searchBorrowerName,true);
+    function getMoreData() {
+       currentPage =  currentPage+1;
+       getData(currentPage,searchBusinessName,searchBorrowerName,false);
+    }
+    function search() {
+        $("#listContainer").empty();
+        currentPage = 1;
+        searchBusinessName = $("#searchBusinessName").val();
+        searchBorrowerName = $("#searchBorrowerName").val();
+        $.fn.cookie("BusinessQuerySearchBusinessName",searchBusinessName);
+        $.fn.cookie("BusinessQuerySearchBorrowerName",searchBorrowerName);
+        getData(currentPage,searchBusinessName,searchBorrowerName,true);
+    }
+    function getData(pageNumber,businessName,borrowerName,isInit) {
+        $("#showMoreDiv").hide();
+        $.ajax({
+            type: "get",
+            url: "/m/business_apply/get_apply_list",
+            data:{
+                pageNumber:pageNumber,
+                length:length,
+                businessName:businessName,
+                borrowerName:borrowerName
+            },
+            async: true,
+            success: function (response) {
+                var _data = response;
+                console.log(_data);
+                _data.termtypeInCN = function(){
+                    if("FIXED_DATE"==this.termType){
+                        return "至"+this.term;
+                    }else{
+                        if(this.termType!=undefined && enums.loanTermType[this.termType] != undefined){
+                            return this.term + enums.loanTermType[this.termType];
+                        }else{
+                            return "--";
+                        }
+                    }
+                }
+                if (isInit||_data.data.applyList.length>0) {
+                    _data.data.applyList = $.each(_data.data.applyList, function(index, item){
+                        item.amount = accounting.formatNumber(item.amount,2,",");
+                    });
+                    var $listTemplate = utils.render("#listTemplate", _data);
+                    $("#listContainer").append($listTemplate);
+                }
+                if (_data.data.applyList.length>=length) {
+                    $("#showMoreDiv").show();
+                }
+            }
+        });
+    }
+</script>
+
+<%};%>
+<style type="text/css">
+    .weui_cell{
+        padding: 10px 15px;
+        position: relative;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+        align-items: center
+    }
+</style>
+<%var htmlPart = {%>
+<div class="page tabbar js_show js-list">
+    <div class="page__hd clearfix">
+        <h1 class="page__title left">业务查询列表</h1>
+        <%
+        include("../backHome.html"){}
+        %>
+    </div>
+    <div class="page__hd">
+    <div class="weui-cells weui-cells_form">
+        <div class="weui_cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">业务员</label>
+            </div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" placeholder="请输入业务员姓名" id="searchBusinessName">
+            </div>
+        </div>
+        <div class="weui_cell">
+            <div class="weui-cell__hd">
+                <label class="weui-label">借款人</label>
+            </div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" placeholder="请输入借款人姓名" id="searchBorrowerName">
+            </div>
+        </div>
+        <div class="weui_cell right">
+            <a href="javascript:search()" class="weui-btn_mini weui-btn_plain-primary">查询</a>
+        </div>
+        </div>
+        <br>
+    <div class="page__bd" id="listContainer">
+
+    </div>
+    <div class="weui-form-preview__ft" id="showMoreDiv">
+        <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:getMoreData()">加载更多</a>
+    </div>
+</div>
+<!--/待审批列表-->
+
+
+<%}; include("/h5/common.html",{jsSection:jsPart,htmlSection:htmlPart,title:"业务查询列表"}){}%>

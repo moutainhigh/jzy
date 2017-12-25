@@ -1,0 +1,90 @@
+<script type="text/mustach-template" id="applyTemplate">
+    <div class="ui horizontal divider ">车贷信息</div>
+    <div class="ui grid">
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    车牌号码：
+                </b>
+                <span>{{car_number}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    车辆品牌：
+                </b>
+                <span>{{car_type}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    车辆估值（元）：
+                </b>
+                <span>{{carValue}}</span>
+            </div>
+        </div>
+        <div class="one column row">
+            <div class="column">
+                <b for="">
+                    备注：
+                </b>
+                <pre class="auto">{{car_content}}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!--借款用途-->
+    <div class="ui horizontal divider margin20t">借款用途</div>
+    <div class="ui grid">
+        <div class="three column row">
+            <div class="column">
+                <b for="">借款用途：</b>
+                <span>{{useOfLoan}}</span>
+            </div>
+        </div>
+    </div>
+    <!--/借款用途-->
+
+    <!-- 关联业务单 -->
+    <div id="hongbenRelation" class="seniorItem">
+
+    </div>
+</script>
+
+<script type="text/mustach-template" id="detailRelationTemplateCode">
+    <div class="ui hidden divider"></div>
+    <% include("../businessApply/relation_business_detail.html"){} %>
+</script>
+
+<script>
+    $(function(){
+        window.renderApplyTpml=function(callBack){
+            $(document).api({
+                on: "now",
+                method: 'get',
+                action: "get businessInfo",
+                data: {
+                    id:utils.getUrlParam("id")
+                },
+                onSuccess: function (data) {
+                    var _data = data.data;
+                    _data.carValue = function () {
+                        return accounting.formatNumber(this.car_value,2,",");
+                    };
+                    _data.useOfLoan = function(){
+                        return enums.use_of_loan[this.use_of_loan]
+                    }
+                    var $applyTemplate = utils.render("#applyTemplate", _data);
+                    $("#applyInfoContainer").append($applyTemplate);
+
+                    if(utils.getUrlParam('process') !='true'){
+                        var $relationTemplate = utils.render("#detailRelationTemplateCode",'');
+                        $("#hongbenRelation").html($relationTemplate);
+                    }
+
+                    if(typeof callBack =='function'){
+                        callBack();
+                    }
+                }
+            });
+        }
+    })
+</script>

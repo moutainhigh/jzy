@@ -1,0 +1,122 @@
+<%var jsPart = {%>
+
+<script>
+    weui.form.checkIfBlur('#loginForm');
+
+    var id = "EEEE-TTTTTTT-SFSK-SDSD-SDSA-XCSA-9";
+
+    function validateForm(){
+        weui.form.validate('#loginForm', function (error) {
+            if (!error) {
+                var loading = weui.loading('提交中...');
+                $.ajax({
+                    type: "post",
+                    url: "/user/checkLogin",
+                    data: {
+                        login:$("#login").val(),
+                        password:$("#password").val()
+                    },
+                    async: true,
+                    success: function (response) {
+                        loading.hide();
+                        if (response.ok == true) {
+                            if($('#weuiAgree').prop("checked")) {
+                                var userName = checkCookie(id);
+                                if(userName != $("#login").val()){
+                                    delCookie(id);
+                                    $.fn.cookie(id, $("#login").val());
+                                }
+                            }
+
+
+                            $("#loginForm").submit();
+                        } else {
+                            weui.alert(response.message, {title: '登录失败'});
+                        }
+
+                    }
+                });
+            }
+        });
+    }
+
+    $("#js_SubmitBtn").on("click",function(){
+        validateForm()
+    })
+
+    $(document).on("keyup","#loginForm",function(e){
+        if(event.keyCode ==13){
+            validateForm()
+        }
+    })
+
+
+    function delCookie(name){
+        var exp = new Date();
+        exp.setTime(exp.getTime() - 1);
+        var cval= $.fn.cookie(name);
+        if(cval!=null) {
+            document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+        }
+    }
+
+
+    function checkCookie(c_name) {
+        var username =  $.fn.cookie(c_name);
+        return username;
+    }
+
+    function setDefaultUser(){
+        var userName = checkCookie(id);
+        if("" !== userName) {
+            $("#login").val(userName);
+        }
+    }
+    setDefaultUser();
+
+
+</script>
+
+<%};%>
+<style type="text/css">
+    .logo{max-width: 50% !important;}
+</style>
+<%var htmlPart = {%>
+<div class="login">
+    <div class="weui-article"><img src="/image/logopuhui.png" class="logo" alt=""></div>
+    <form id="loginForm" action="/m/login" method="get">
+        <div class="weui-cells__title">用户登录</div>
+        <div class="weui-cells weui-cells_form">
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">用户名</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" type="text"  placeholder="请输入用户名" emptyTips="请输入用户名" name="user.login" required id="login">
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">密码</label></div>
+                <div class="weui-cell__bd">
+                    <input type="password"  class="weui-input" required="" placeholder="请输入密码" emptyTips="请输入密码" name="user.password" required id="password">
+                </div>
+            </div>
+        </div>
+        <label for="weuiAgree" class="weui-agree weui-label">
+            <input id="weuiAgree" type="checkbox" class="weui-agree__checkbox" checked="checked">
+            <span class="weui-agree__text">
+            记住用户
+            </span>
+        </label>
+        <!--<p class="weui-cells__tips">在微信里面其实可以调网页授权的</p>-->
+        <div class="weui-btn-area">
+            <button class="weui-btn weui-btn_primary" type="button" id="js_SubmitBtn">登录</button>
+        </div>
+        <div class="weui-footer ">
+            <p class="weui-footer__links">
+                <a href="/m/to_find_pw" class="weui-footer__link">找回密码</a>
+            </p>
+        </div>
+    </form>
+</div>
+
+
+<%}; include("/h5/common.html",{jsSection:jsPart,htmlSection:htmlPart,title:"登录"}){}%>

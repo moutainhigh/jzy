@@ -1,0 +1,192 @@
+<%var jsPart = {%>
+<!--js 获取数据引入-->
+<script src="/js/plugins/mustache.min.js"></script>
+<script type="text/mustach-template" id="tr">
+    {{#data}}
+    <div class="inline fields">
+        <div class="five wide field">
+            <label>{{itemName}}：</label>
+            <input type="hidden" name="name" value="{{itemName}}"/>
+            {{#displayFile}}
+            <input type="file" name="file"/>
+            {{/displayFile}}
+            {{^displayFile}}
+            <input type="hidden" value="{{itemName}}"/>
+            <a href="{{downloadUrl}}" id="" target='_blank'>{{attachName}}</a>
+            <a href="javascript:;" onclick="deleteByLoanIdAndItemName({{loanId}},'{{itemName}}')">删除</a>
+            {{/displayFile}}
+        </div>
+        <!--<div class="two wide field">-->
+        <!--<input type="radio" name="showInMobile"/>-->
+        <!--<label>手机端显示</label>-->
+        <!--</div>-->
+    </div>
+    {{/data}}
+</script>
+<script type="text/javascript">
+    $(function(){
+        $(".updateButton").click(function(){
+            $(document).api({
+                on:"now",
+                method:"get",
+                action:"list mediaTemplate",
+                data:{loanId:$("input[name='loanId']").val()},
+                onSuccess:function(data){
+                    var m = {data:data};
+                    m.displayFile = function(){
+                        return this.url==null;
+                    }
+                    m.downloadUrl = function(){
+                        var url = this.url;
+                        url = "../../../upload/"+url.substring(url.lastIndexOf("\\"));
+                        return url;
+                    }
+                    var htm = utils.render("#tr",m);
+                    $("#item_display").html(htm);
+                    // 调用弹框
+                    var $modal = $("#updateModel");
+                    var $form = $modal.find(".ui.form");
+                    $modal.modal({
+                        blurring: true,
+                        onShow: function () {
+                            $form.form({
+                                inline: true,
+                                fields: {
+                                    type: {
+                                        identifier:'type',
+                                        rules:[
+                                            {
+                                                type: 'empty',
+                                                prompt:'{name}不能为空'
+                                            }
+                                        ]
+                                    }
+                                }
+                            })
+                        },
+                        onApprove: function () {
+                            var additional = "";
+                            var line="";
+                            var index=0;
+                            $("#item_display .fields").find("input").each(function(){
+                                var tmp = $(this).val();
+                                line += (tmp==""?0:tmp)+"-";
+                                index++;
+                                if(index%2==0){
+                                    line=line.substring(0,line.lastIndexOf("-"));
+                                    additional+=(line+",");
+                                    line="";
+                                }
+                            });
+                            if(additional.lastIndexOf(",")>=0){
+                                additional = additional.substring(0,additional.lastIndexOf(","));
+                            }
+                            $("input[name='additional']").val(additional);
+                            $form.submit();
+                            return false;
+                        },
+                        onDeny: function () {
+                            location.href="/loan_subject/list";
+                        }
+                    }).modal('show');
+                }
+            });
+        });
+    });
+    function deleteByLoanIdAndItemName(loanId,itemName){
+        $.get("/media_upload/updateByLoanIdAndItemName",{loanId:loanId,itemName:itemName},function(data){
+            if(data){
+                $.uiAlert({
+                    type: "success",
+                    textHead: '操作成功',
+                    text: '操作成功',
+                    time: 1,
+                    onClosed:function () {
+                        $.get("/media_upload/listMediaTemplate",{loanId:$("input[name='loanId']").val()},function(data){
+                            var m = {data:data};
+                            m.displayFile = function(){
+                                return this.url==null;
+                            }
+                            m.downloadUrl = function(){
+                                var url = this.url;
+                                url = "../../../upload/"+url.substring(url.lastIndexOf("\\"));
+                                return url;
+                            }
+                            var htm = utils.render("#tr",m);
+                            $("#item_display").html(htm);
+                        })
+                    }
+                });
+
+            }
+        });
+    }
+</script>
+<%};%>
+<%var htmlPart = {%>
+<div>
+    <!--影像资料上传管理查询区域-->
+    <form class="ui form js-searchForm">
+        <h3 class="ui dividing header">影像资料上传管理</h3>
+        <div class="two fields">
+            <div class="field">
+                <label>借款编号</label>
+                <input type="text" placeholder="借款编号" name="code" id="code">
+            </div>
+            <div class="field">
+                <label>借款名称</label>
+                <input type="text" placeholder="借款名称" name="name" id="name">
+            </div>
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>借款时间</label>
+                <input type="text" placeholder="借款时间" name="loanTime" id="loanTime">
+            </div>
+            <div class="field">
+                <label>资料是否上传</label>
+                <select>
+                    <option>是</option>
+                    <option>否</option>
+                </select>
+            </div>
+        </div>
+        <div class="ui small right floated  gray   submit button searchButton"><i class="search icon"></i>查询</div>
+        <div class="ui small red  button resetButton"><i class="Reply icon"></i>重置</div>
+    </form>
+    <!--影像资料上传管理列表-->
+    <div class="row" id="mediaUpload">
+        <div class="column">
+            <table class="ui celled table" id="mediaUploadTable">
+                <thead>
+                <tr>
+                    <th>借款编号</th>
+                    <th>借款名称</th>
+                    <th>资料类别</th>
+                    <th>借款时间</th>
+                    <th>审批状态</th>
+                    <th>上传人</th>
+                    <th>是否审批</th>
+                    <th>资料是否上传</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <td>001</td>
+                <td>车贷n</td>
+                <td>业务所需资料</td>
+                <td>20151120</td>
+                <td>风控审批通过</td>
+                <td>张小五</td>
+                <td>业务未审批</td>
+                <td>未上传</td>
+                <td><button class="ui small primary  button updateButton"><i class="Edit icon"></i>上传</button></td>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <%
+    include("/media/update.html"){}
+    %>
+</div>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart}){}%>

@@ -1,0 +1,320 @@
+
+<script type="text/mustach-template" id="applyTemplate">
+    <!--房产信息-->
+    <div class="ui horizontal divider  ">房产信息</div>
+    <div class="ui grid">
+        {{#houseList}}
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    房产证号：
+                </b>
+                <span>{{code}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    权属人：
+                </b>
+                <span>{{ower}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    房产面积（m²）：
+                </b>
+                <span>{{area}}</span>
+            </div>
+        </div>
+
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    房产地址：
+                </b>
+                <span>{{address}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    房产估值（万元）：
+                </b>
+                <span>{{price}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    估值渠道：
+                </b>
+                <span>{{channel}}</span>
+            </div>
+        </div>
+
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    公司估值系数：
+                </b>
+                <span>{{budgetPercentage}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    房产估值（万元）：
+                </b>
+                <span>{{budgetPrice}}</span>
+            </div>
+        </div>
+        {{/houseList}}
+        {{^houseList}}
+        {{^isOldHouse}}
+        <div class="two column row">
+            <div class="column">
+                <b for="">
+                    暂无数据
+                </b>
+            </div>
+        </div>
+        {{/isOldHouse}}
+        {{#isOldHouse}}
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    房产证号：
+                </b>
+                <span>{{house_code}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    权属人：
+                </b>
+                <span>{{user}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    房产面积（m²）：
+                </b>
+                <span>{{area}}</span>
+            </div>
+        </div>
+
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    房产地址：
+                </b>
+                <span>{{address}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    房产估值（万元）：
+                </b>
+                <span>{{price}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    估值渠道：
+                </b>
+                <span>{{channel}}</span>
+            </div>
+        </div>
+        {{/isOldHouse}}
+        {{/houseList}}
+
+        <div class="three column row">
+            <div class="column">
+                <b>公司估值总金额（万元）:</b>
+                <span>{{budgetAllPrice}}</span>
+            </div>
+        </div>
+    </div>
+    <!--/房产信息-->
+    <!--审批银行信息-->
+    <div class="ui horizontal divider  ">审批银行信息</div>
+    <div class="ui grid">
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    审批银行：
+                </b>
+                <span>{{approval_bank}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    审批时间：
+                </b>
+                <span>{{approval_time}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    审批金额（万元）：
+                </b>
+                <span>{{approval_amount}}</span>
+            </div>
+        </div>
+
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    审批银行联系人：
+                </b>
+                <span>{{approval_contact}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    审批银行地址：
+                </b>
+                <span>{{approval_address}}</span>
+            </div>
+        </div>
+    </div>
+    <!--/审批银行信息-->
+    <!--赎楼银行信息-->
+    <div class="ui horizontal divider  ">赎楼银行信息</div>
+    <div class="ui grid">
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    赎楼银行：
+                </b>
+                <span>{{ransom_bank}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    赎楼银行联系人：
+                </b>
+                <span>{{ransom_contact}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    赎楼银行地址：
+                </b>
+                <span>{{ransom_bank_address}}</span>
+            </div>
+        </div>
+
+        <div class="three column row">
+            <div class="column">
+                <b for="">
+                    赎楼账户户名：
+                </b>
+                <span>{{ransom_user}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    赎楼账户账号：
+                </b>
+                {{#ransomAccountHasValue}}
+                    <span>{{ransom_account}}</span>
+                {{/ransomAccountHasValue}}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="column">
+                <b for="">
+                    约定赎楼时间：
+                </b>
+                <span>
+                    {{^isAnyTime}}
+                    {{ransom_time}}
+                    {{/isAnyTime}}
+                    {{#isAnyTime}}
+                     随时
+                    {{/isAnyTime}}
+                </span>
+            </div>
+        </div>
+
+
+    </div>
+    <!--/赎楼银行信息-->
+    <!--回款银行信息-->
+    <div class="ui horizontal divider  ">回款银行信息</div>
+    <div class="ui grid">
+        {{#bakAccountList}}
+        <div class="two column row">
+            <div class="column">
+                <b for="">
+                    回款账户户名：
+                </b>
+                <span>{{name}}</span>
+            </div>
+            <div class="column">
+                <b for="">
+                    回款账户开户行：
+                </b>
+                <span>{{bank}}</span>
+            </div>
+        </div>
+        <div class="two column row">
+            <div class="column">
+                <b for="">
+                    回款账户账号：
+                </b>
+                <span>{{account}}</span>
+            </div>
+        </div>
+        {{/bakAccountList}}
+        {{^bakAccountList}}
+        <div class="two column row">
+            <div class="column">
+                <b for="">
+                    暂无数据
+                </b>
+            </div>
+        </div>
+        {{/bakAccountList}}
+    </div>
+    <!--/回款银行信息-->
+
+    <!-- 关联业务单 -->
+    <div id="hongbenRelation" class="seniorItem">
+
+    </div>
+
+</script>
+
+<script type="text/mustach-template" id="detailRelationTemplateCode">
+    <div class="ui hidden divider"></div>
+    <% include("../businessApply/relation_business_detail.html"){} %>
+</script>
+
+<script>
+    $(function(){
+        window.renderApplyTpml=function(callBack){
+            $(document).api({
+                on: "now",
+                method: 'get',
+                action: "get businessInfo",
+                data: {
+                    id:utils.getUrlParam("id")
+                },
+                onSuccess: function (data) {
+                    var _data=data.data;
+                    _data.isAnyTime = function(){
+                        return this.ransom_anytime=="true"
+                    }
+                    _data.isOldHouse = function(){
+                        return this.hasOldHouse == true;
+                    }
+                    _data.ransomAccountHasValue = function () {
+                        var account = this.ransom_account;
+                        if (account !== null && account !== undefined && account !== ''){
+                            return true;
+                        }
+                        return false;
+                    };
+                    var $applyTemplate = utils.render("#applyTemplate", _data);
+                    $("#applyInfoContainer").append($applyTemplate);
+
+                    if(utils.getUrlParam('process') !='true'){
+                        var $relationTemplate = utils.render("#detailRelationTemplateCode",'');
+                        $("#hongbenRelation").html($relationTemplate);
+                    }
+
+                    if(typeof callBack =='function'){
+                        callBack();
+                    }
+                }
+            });
+
+
+        }
+    })
+</script>

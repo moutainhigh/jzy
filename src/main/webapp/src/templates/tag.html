@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script type="text/dt-template" id="addRoleTemplate">
+    <div class="ui teal button js-addRoleBtn"  data-promise="Role:addRole">
+        <i class="add icon"></i>新增角色
+    </div>
+</script>
+
+<#promise  hasPromise="Role:addRole">
+    <div class="ui teal button js-checkAuthBtn"  >
+        <i class="edit icon"></i>验证权限按钮
+    </div>
+</#promise>
+
+
+<script>
+
+    $(document).on("click", ".js-addRoleBtn", function () {
+        $.getJSON('/role/hasPromise',{"promise":$(this).data("promise")},function(data){
+            if(data){
+                var $modal = $("#addRoleModal");
+                $modal.modal({
+                    blurring: true,
+                    onShow: function () {
+                        $("#addRoleName").val('');
+                        $("#addMsgDiv").hide();
+                        menuSelectInit();
+                    },
+                    onApprove: function () {
+                        save_role('add');
+                        return false;
+                    },
+                    onDeny: function () {
+                    }
+                }).modal('show');
+            }else{
+                alert("你没有这个按钮权限");
+            }
+        })
+
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<style>
+    .padding0 {
+        margin-bottom: -20px !important;
+    }
+
+    .padding80 {
+        padding-left: 80px !important;
+        padding-right: 80px !important;
+        position: relative;
+    }
+
+    .margin80 {
+        margin-left: 80px !important;
+        margin-right: 80px !important;
+        position: relative;
+    }
+
+    .margin20t {
+        margin-top: 20px !important;
+    }
+
+    .margin80t {
+        margin-top: 80px !important;
+    }
+
+    .margin0b {
+        margin-bottom: 0 !important;
+    }
+
+    .padding13l {
+        padding-left: 13px !important;
+    }
+
+    .actions {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .hidden.transition {
+        display: none !important;
+    }
+
+    .floatBtn {
+        position: absolute;
+        right: -20px;
+        top: 25px;
+    }
+
+    .relative {
+        position: relative;
+    }
+
+    .padding50r {
+        padding-right: 50px;
+    }
+
+    .pull-right {
+        float: right;
+    }
+
+    .ui.dividing.header {
+        line-height: 30px;
+    }
+
+    .borrower-name, .borrower-certifNumber, .borrower-phone {
+        margin-right: 50px;
+    }
+
+    .font-20 {
+        font-size: 20px !important;
+    }
+
+    #mainBorrowerList .item {
+        width: 100%;
+    }
+
+    #commonBorrowerList .item {
+        width: 100%;
+    }
+
+    .header .borrower-name {
+        font-size: 14px;
+    }
+
+    td.js-medias {
+        min-width: 200px;
+    }
+    .js-canbedel{
+        margin-bottom: 5px;
+        padding: 5px;
+    }
+</style>
+<%var htmlPart = {%>
+<div id="stepData" data-prd_id="${prd.id}" data-loan_id=""></div>
+
+<div class="ui grid">
+    <div class="three column row left aligned padding0">
+        <div class="column">
+            业务单号:
+        </div>
+        <div class="column center aligned">
+            创建人:
+        </div>
+        <div class="column right aligned">
+            创建时间:
+        </div>
+    </div>
+    <div class="row">
+        <div class="column">
+            <form id="addForm" class="ui form">
+                <input type="hidden" name="masterBorrowerId">
+                <input type="hidden" name="saleId">
+                <div class="ui segment teal">
+                    <div class="two fields margin20t">
+                        <div class="field disabled">
+                            <label>产品大类</label>
+                            <input type="text" value="${prdType.name}">
+                        </div>
+                        <div class="field disabled">
+                            <label>产品子类</label>
+                            <input type="text" value="${prd.name}">
+                        </div>
+                    </div>
+                    <div class="two fields margin20t">
+                        <div class="field required">
+                            <label>资产来源</label>
+                            <div id="managerSearch" class="ui search">
+                                <div class="ui icon input">
+                                    <input value="" class="prompt" type="text" placeholder="选择业务人员"
+                                           name="org.managerName">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                        <% if(user.type == 'COMPANY_USER'){%>
+                        <div class="field required">
+                            <label>放款主体</label>
+                            <select class="ui fluid dropdown" name="loanSubjectId">
+                                <option value="">请选择</option>
+                                <% for(subject in loanSubjects) {%>
+                                <option value="${subject.id}">${subject.name}</option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <%}%>
+                    </div>
+
+                    <!--贴现人信息-->
+                    <h5 class="ui dividing header teal margin20t">
+                        <span class="padding50r">贴现人信息</span>
+                    </h5>
+                    <div class="four fields">
+                        <div class="seven wide field required">
+                            <label>贴现人</label>
+                            <div id="search-mainCertifNumber" class="ui search focus">
+                                <div class="ui icon input">
+                                    <input value="" name="masterBorrowerName" class="prompt" type="text" placeholder="选择借款人" autocomplete="off">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                        <div class="three wide field">
+                            <label>&emsp;</label>
+                            <div id="btn-addMainBorrower" class="ui button mini basic teal">新增</div>
+                        </div>
+                        <div class="seven wide field">
+                            <label>营业执照</label>
+                            <input type="text" name="certifNumber" placeholder="" readonly>
+                        </div>
+                    </div>
+                    <!-- 企业资料-->
+                    <div id="billMedia">
+
+                    </div>
+                </div>
+                <div class="actions">
+                    <div id="bill_setp1Form" class="ui button">
+                        保存
+                    </div>
+                </div>
+            </form>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<div id="modal-addBorrower" class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+        新建贴现人
+    </div>
+    <div class="content">
+        <form id="form-addBorrower" class="ui form padding80">
+            <input type="hidden" name="discountType" value="DISCOUNT_COMPANY">
+            <input type="hidden" name="status"  value="ABLE">
+            <div class="field required">
+                <label>贴现人</label>
+                <input name="name" type="text">
+            </div>
+            <div class="field required">
+                <label>证件类型</label>
+                <div class="three fields">
+                    <div class="field five wide">
+                        <select class="ui fluid search dropdown" name="certifType">
+                            <option value="BUSINESS_LICENSE">营业执照编号</option>
+                        </select>
+                    </div>
+                    <div class="field eleven wide">
+                        <input type="text" name="certifNumber">
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label>户名</label>
+                <input name="accountName" type="text">
+            </div>
+            <div class="field">
+                <label>账号</label>
+                <input name="account" type="text">
+            </div>
+            <div class="field">
+                <label>开户行</label>
+                <input name="bankName" type="text">
+            </div>
+
+            <div class="two fields">
+                <div class="field required">
+                    <label>法定代表人</label>
+                    <input name="legalRepresentative" type="text">
+                </div>
+                <div class="field required">
+                    <label>联系方式</label>
+                    <input name="legalRepresentativePhone" type="text">
+                </div>
+            </div>
+
+            <div class="two fields">
+                <div class="field required">
+                    <label>联系人</label>
+                    <input name="linkman" type="text">
+                </div>
+                <div class="field required">
+                    <label>联系方式</label>
+                    <input name="linkmanPhone" type="text">
+                </div>
+            </div>
+
+            <div class="field required">
+                <label>住所</label>
+                <input name="residence" type="text">
+            </div>
+
+            <div class="field required">
+                <div data-action="" id="btn-addBorrower" class="ui submit button default teal">保存</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="ui modal" id="checkFile">
+
+</div>
+
+<%};%>
+
+<%var jsPart = {%>
+<script type="text/mustach-template" id="billMediaTemplate">
+    <div class="row stepContent transition visible">
+        <label>企业资料</label>
+        <table class="ui celled center aligned table small" id="">
+            <thead>
+            <tr>
+                <th>资料名称</th>
+                <th>是否必填</th>
+                <th>资料文件</th>
+                <th>上传人</th>
+                <th>上传时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#media}}
+            <tr class="mediaItem">
+                <input type="hidden" name="name" value="{{itemName}}">
+                <input type="hidden" name="required" value="{{required}}">
+                <input type="hidden" name="mediaItemType" value="BILL">
+                <input type="hidden" name="mediaDetail" value="">
+                <input type="hidden" name="productMediaAttachId" value="{{id}}">
+                <input type="hidden" name="tmplId" value="{{tmplId}}">
+                <td>{{itemName}}</td>
+                <td>
+                    {{#required}}
+                    <span class="ui red label">必填</span>
+                    {{/required}}
+                    {{^required}}
+                    <span class="ui label">选填</span>
+                    {{/required}}
+                </td>
+                <td class="js-medias right aligned">
+                    {{#productMediaAttachDetails}}
+                    <div class="js-canBeDel">
+                        <span class="js-temp button ui mini" data-name="{{attachName}}" href="{{url}}">{{attachName}}</span>&emsp;
+                        <a href="javascript:;" class="js-remove ui basic red left label">删除</a>
+                    </div>
+                    {{/productMediaAttachDetails}}
+                </td>
+                <td>{{#url}}{{updateBy}}{{/url}}</td>
+                <td>{{#url}}{{updateTime}}{{/url}}</td>
+                <td class="single line media_container">
+                    <div class="ui basic  mini button js-uploadBtn" data-dir="{{code}}/BIll">上传</div>
+                </td>
+            </tr>
+            {{/media}}
+            </tbody>
+        </table>
+        <div class="ui error message">
+            <ul></ul>
+        </div>
+    </div>
+</script>
+
+<script type="text/mustach-template" id="applyFileTmp">
+    <i class="close icon"></i>
+    <div class="center" style="text-align:center;padding: 40px;">
+        <div class="ui shape" id="fileSide">
+            <div class="ui ignored icon direction buttons">
+                <div class="ui button" id="prev"><i class="left long arrow icon"></i></div>
+                <div class="ui icon button" id="next"><i class="right long arrow icon"></i></div>
+            </div>
+            <div class="ui ignored divider"></div>
+            <div class="sides">
+                {{#data_List}}
+                <div class="side js-side">
+                    <div class="ui shape image">
+                        <div class="image">
+                            {{#is_Image}}
+                            <img src="{{href}}">
+                            {{/is_Image}}
+                            {{^is_Image}}
+                            <i class="file icon"></i>{{fileType}}文件
+                            {{/is_Image}}
+                        </div>
+                        <div class="content">
+                            <div class="ui hidden diver"></div>
+                            <h3 class="header">{{name}}</h3>
+                        </div>
+                        <div class="extra content">
+                            <div class="ui ignored divider"></div>
+                            {{^is_Image}}
+                            <a target="_blank" href="{{href}}"><i class="download icon"></i>下载</a>
+                            {{/is_Image}}
+                            {{#is_Image}}
+                            <a class="ui button" target="_blank"  id="source_file" href="{{href}}"><i class="linkify icon"></i>查看原文件</a>
+                            {{/is_Image}}
+                        </div>
+                    </div>
+                </div>
+                {{/data_List}}
+            </div>
+        </div>
+    </div>
+</script>
+<script src="/js/plugins/laydate-1.1/laydate.js"></script>
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/common/bin-choices.js"></script>
+<script>
+    $(document).on('click','.laydate',function () {
+        laydate({});
+    });
+</script>
+<script src="/js/pages/businessApply/add_bill.js"></script>
+<script src="/js/pages/businessApply/edit/edit_bill_1.js"></script>
+<script src="/js/pages/businessApply/edit/edit_bill_2.js"></script>
+<script src="/js/common/upload.js"></script>
+<script src="/js/common/checkfile.js"></script>
+<%};%>
+
+<% include("/common/menu.html", {jsSection:jsPart, htmlSection:htmlPart,title:"录入信息"}){} %>

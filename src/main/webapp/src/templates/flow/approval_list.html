@@ -1,0 +1,245 @@
+<%var jsPart = {%>
+<!--业务审批流程模板-->
+<style>
+    .word-wrap{word-break:break-all;}
+    .content.last{min-width: 300px;}
+</style>
+<script type="text/mustach-template" id="flowTemplate">
+<div class="ui centered  grid">
+    <div class="column">
+        <div class="ui fluid vertical steps">
+            <div class="active step">
+                <i class="payment icon"></i>
+                <div class="content">
+                    <div class="title">审批节点</div>
+                </div>
+                <div class="content">
+                    <div class="title">状态</div>
+                </div>
+                <div class="content">
+                    <div class="title">开始时间</div>
+                </div>
+                <div class="content">
+                    <div class="title">结束时间</div>
+                </div>
+                <div class="content">
+                    <div class="title">审批时效</div>
+                </div>
+                <div class="content last">
+                    <div class="title">备注</div>
+                </div>
+            </div>
+            {{#data}}
+            {{#isApproval}}
+            <div class="completed step">
+                <i class="truck icon"></i>
+                <div class="content">
+                    <div class="title">
+                        {{nodeCode}}-{{nodeName}}
+                    </div>
+                    <div class="description word-wrap">
+                        <span class="">{{nodeCode}}-{{approval_code_code}}-{{approval_code_desc}}</span>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="title">
+                        <span>{{nodeName}}</span>
+                    </div>
+                    <div class="description"></div>
+                </div>
+                <div class="content">
+                    <div class="title">
+                        <span>{{userName}}</span>
+                    </div>
+                    <div class="description">{{start_Time}}</div>
+                </div>
+                <div class="content">
+                    <div class="title">
+                        <span>&emsp;</span>
+                    </div>
+                    <div class="description word-wrap">
+                        <span>{{approvalTime}}</span>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="title">{{duration}}</div>
+                    <div class="description"></div>
+                </div>
+                <div class="content last">
+                    <div class="description word-wrap">
+                        <pre class="auto">{{content}}</pre>
+                        <!--<a href="javascript:;"><i class="icon Unhide"></i>审批信息</a>-->
+                    </div>
+                </div>
+            </div>
+            {{/isApproval}}
+            {{^isApproval}}
+            {{^isEditing}}
+            {{#isCancel}}
+            <div class="active  step edit">
+                <i class="edit icon"></i>
+                <div class="content">
+                    <div class="title">
+                        {{nodeCode}}-{{nodeName}}
+                    </div>
+                    <div class="description word-wrap">
+                        <span class="">已取消</span>
+                    </div>
+                </div>
+            </div>
+            {{/isCancel}}
+            {{^isCancel}}
+            <div class="active  step">
+                <i class="info icon"></i>
+                <div class="content">
+                    <div class="title">
+                        {{nodeCode}}-{{nodeName}}
+                    </div>
+                    <div class="description word-wrap">
+                        <span class="">{{nodeCode}}-00-等待审批</span>
+                    </div>
+                </div>
+            </div>
+            {{/isCancel}}
+            {{/isEditing}}
+            {{#isEditing}}
+            {{#isCancel}}
+            <div class="active  step edit">
+                <i class="edit icon"></i>
+                <div class="content">
+                    <div class="title">
+                        {{nodeCode}}-{{nodeName}}
+                    </div>
+                    <div class="description word-wrap">
+                        <span class="">已取消</span>
+                    </div>
+                </div>
+            </div>
+            {{/isCancel}}
+            {{^isCancel}}
+            <div class="active  step edit">
+                <i class="edit icon"></i>
+                <div class="content">
+                    <div class="title">
+                        {{nodeCode}}-{{nodeName}}
+                    </div>
+                    <div class="description word-wrap">
+                        <span class="">{{nodeCode}}</span>
+                    </div>
+                </div>
+            </div>
+            {{/isCancel}}
+            {{/isEditing}}
+            {{/isApproval}}
+            {{/data}}
+        </div>
+    </div>
+</div>
+</script>
+
+
+<script>
+
+
+    //渲染特殊审批流程
+
+    function renderBusinessFlow(url,data) {
+        $(document).api({
+            on: "now",
+            method: 'get',
+            action: url,
+            data: data,
+            onSuccess: function (data) {
+                var _data = data;
+                _data.approval_code_code = function () {
+                    return enums.approval_code_code[this.approvalCode]
+                }
+                _data.approval_code_desc = function () {
+                    return enums.approval_code_desc[this.approvalCode]
+                }
+                _data.isEditing = function () {
+                    return this.nodeCode === "Y0" ;
+                }
+                _data.isCancel = function () {
+                    return (this.nodeCode === "Y0" && this.isCancel === "true");
+                }
+                _data.start_Time = function(){
+                    if(this.startTime){
+                        return this.startTime
+                    }else{
+                        return '--'
+                    }
+                }
+                _data.flowStatus = function(){
+                    return enums.flowType[this.approvalType];
+                }
+                _data.timeRange = function(){
+                    if(this.duration == 0){
+                        return '--'
+                    }else{
+                        return this.duration
+                    }
+                }
+                var $businessFlowTemplate = utils.render("#flowTemplate", _data);
+                $("#flowContainer").append($businessFlowTemplate);
+            }
+        });
+    }
+
+    function initPage() {
+        renderBusinessFlow('query approval',{
+            'loanId':utils.getUrlParam('id'),
+            'flowConfigureType':utils.getUrlParam('flowConfigureType')
+        })
+    }
+
+    initPage();
+
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+<style>
+    .ui.steps .step > .icon ~ .content {
+        flex: 1;
+    }
+    .ui.steps .edit.step .edit.icon{
+        color:#FF851B ;
+    }
+    .ui.steps .active.step.edit{
+        background-color: white;
+    }
+    .ui.steps .active.step.edit .title{
+        color: #FF851B;
+    }
+    .ui.steps .active.step:after, .ui.steps .step:after{
+        display: none!important;
+    }
+</style>
+<div class="ui grid">
+
+
+    <!--列表-->
+    <div class="row" id="loanFlowDetail">
+        <div class="column">
+            <!--业务审批流程-->
+            <div class="ui bottom teal segment">
+                <a class="ui teal left ribbon label">流程审批记录</a>
+                <div class="ui hidden divider"></div>
+                <div class="ui centered  grid">
+                    <div class="column">
+                        <div class="ui fluid vertical steps" id="flowContainer">
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--/业务审批流程-->
+        </div>
+    </div>
+
+
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"流程审批记录"}){}%>

@@ -1,0 +1,57 @@
+<% if(user.type == 'COMPANY_USER'){%>
+<div class="ui grid">
+    <div class="column">
+        <h5 class="ui dividing header margin20t">
+            <span class="padding50r">关联业务单</span>
+        </h5>
+        <form class="ui form">
+            <div class="two fields inline">
+                <div class="field">
+                    <label>业务单号：</label>
+                    <input type="text" id="businessCode">
+                    <div class="ui button teal small" id="relationBtn">关联</div>
+                </div>
+            </div>
+        </form>
+
+        <div class="ui grid">
+            <div class="column eight wide">
+                <a  class="ui red tag label">历史借款列表</a>
+                <table class="ui celled striped table small" id="unRelationTable">
+                    <thead>
+                    <tr>
+                        <th>业务单号</th>
+                        <th>关联借款人/营业执照/贴现人</th>
+                        <th>业务单状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="column eight wide">
+                <a  class="ui red tag label">已关联列表</a>
+                <table class="ui celled striped table small" id="relationTable">
+                    <thead>
+                    <tr>
+                        <th>业务单号</th>
+                        <th>关联借款人/营业执照/贴现人</th>
+                        <th>业务单状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="ui divider hidden"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/pages/businessApply/edit/relation_order.js"></script>
+<% } %>

@@ -1,0 +1,51 @@
+<%var jsPart = {%>
+<script src="/js/pages/push/attach_download.js"></script>
+<script type="text/mustach-template" id="fileTmp">
+    {{#attachList}}
+        <tr>
+            <td>{{itemName}}</td>
+            <td>
+                {{#files}}
+                <a class="ui button mini" href="{{fileUrl}}" download>{{fileName}}</a><br/>
+                {{/files}}
+                {{^files}}
+                    {{#hasFile}}
+                    <a class="ui button mini" href="{{urls}}" download>{{attachNames}}</a>
+                    {{/hasFile}}
+                {{/files}}
+            </td>
+        </tr>
+    {{/attachList}}
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="row">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">资料清单 </a>
+            <span>tip：点击即可下载</span>
+            <table class="ui  celled table compact  small">
+                <thead>
+                <tr>
+                    <th>资料名称</th>
+                    <th>资料文件</th>
+                </tr>
+                </thead>
+                <tbody id="fileList">
+
+                </tbody>
+            </table>
+
+            <div class="column">
+                <div class="actions">
+                    <a class="ui button red" href="javascript:window.history.go(-1)">返回</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"附件下载"}){}%>

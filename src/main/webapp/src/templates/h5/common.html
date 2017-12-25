@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="/css/weui.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/example.css">
+    <title>
+        ${(title!'')+' - 佳兆业金融业务管理系统'}
+
+    </title>
+    <style>
+        .weui-loadmore_line .weui-loadmore__tips{
+            background-color:inherit ;
+        }
+        .weui-animate-end{
+            animation-fill-mode: inherit;
+        }
+    </style>
+
+    <script src="/js/plugins/mustache.min.js"></script>
+    <script src="/js/plugins/zepto.min.js"></script>
+    <script src="/js/plugins/weui.min.js"></script>
+    <!--<script src="/js/plugins/vconsole.min.js"></script>-->
+    <script src="/js/plugins/director.min.js"></script>
+    <script src="/js/plugins/accounting.min.js"></script>
+    <script src="/js/plugins/moment.min.js"></script>
+    <script src="/js/common/enums.js"></script>
+    <script src="/js/plugins/zepto.cookie.min.js"></script>
+    <script>
+        var utils = {
+            /**
+             * 封装Mustache渲染模板
+             * @param {type} selector
+             * @param {type} data
+             * @returns {unresolved}
+             */
+            render: function (selector, data, partial) {
+                var template = $(selector).html();
+                var partialTemplate = $(partial).html();
+                var partials = {
+                    partial: partialTemplate
+                };
+                Mustache.parse(template);
+                return Mustache.render(template, data, partials);
+            },
+            /**
+             * 是否为字符串
+             */
+            isString: function isString(str) {
+                return (typeof str == 'string') && str.constructor == String;
+            },
+            /**
+             * 获取url参数
+             * @param name
+             * @returns {*}
+             */
+            getUrlParam: function (name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]);
+                return null;
+            }
+        }
+        function add(a, b) {
+            var c, d, e;
+            try {
+                c = a.toString().split(".")[1].length;
+            } catch (f) {
+                c = 0;
+            }
+            try {
+                d = b.toString().split(".")[1].length;
+            } catch (f) {
+                d = 0;
+            }
+            return e = Math.pow(10, Math.max(c, d)), (mul(a, e) + mul(b, e)) / e;
+        }
+
+        function sub(a, b) {
+            var c, d, e;
+            try {
+                c = a.toString().split(".")[1].length;
+            } catch (f) {
+                c = 0;
+            }
+            try {
+                d = b.toString().split(".")[1].length;
+            } catch (f) {
+                d = 0;
+            }
+            return e = Math.pow(10, Math.max(c, d)), (mul(a, e) - mul(b, e)) / e;
+        }
+
+        function mul(a, b) {
+            var c = 0,
+                    d = a.toString(),
+                    e = b.toString();
+            try {
+                c += d.split(".")[1].length;
+            } catch (f) {}
+            try {
+                c += e.split(".")[1].length;
+            } catch (f) {}
+            return Number(d.replace(".", "")) * Number(e.replace(".", "")) / Math.pow(10, c);
+        }
+
+        function divFloat(a, b) {
+            var c, d, e = 0,
+                    f = 0;
+            try {
+                e = a.toString().split(".")[1].length;
+            } catch (g) {}
+            try {
+                f = b.toString().split(".")[1].length;
+            } catch (g) {}
+            return c = Number(a.toString().replace(".", "")), d = Number(b.toString().replace(".", "")), mul(c / d, Math.pow(10, f - e));
+        }
+
+        $(document).on("click",'.js-goBack',function(){
+            window.history.back();
+        })
+    </script>
+</head>
+<body>
+<div class="container" id="container">
+    ${htmlSection}
+
+
+
+</div>
+
+
+${jsSection}
+</body>
+</html>

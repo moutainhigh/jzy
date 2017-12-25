@@ -1,0 +1,168 @@
+<%var jsPart = {%>
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/common/one_fileUpload.js"></script>
+<script src="/js/pages/specialApply/intermediaryApply/list_apply.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+
+<div class="ui segment teal">
+    <div class="ui tabular menu" id="tab_menu">
+        <a data-status="apply" class="item active teal">待申请 </a>
+        <a data-status="applied" class="item teal">已申请</a>
+    </div>
+
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>业务单号</label>
+                <input type="text" name="businessCode" id="businessCode">
+            </div>
+            <div class="field">
+                <label>提单日期</label>
+                <input type="text" name="submitDate" id="submitDate">
+            </div>
+            <div class="field disabled" id="disableLoanTime">
+                <label>居间费放款日</label>
+                <input type="text" name="loanTime" id="loanTime">
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <div class="ui tiny button teal" onclick="init.search()">查询</div>
+                <div class="ui tiny button clear" onclick="init.reset()">重置</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" id="part_one">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">待申请</a>
+            <table class="ui  celled table compact  small" id="applyTale">
+                <thead>
+                <tr>
+                    <th>业务单号</th>
+                    <th>放款申请编号</th>
+                    <th>产品子类</th>
+                    <th>借款人</th>
+                    <th>提单日期</th>
+                    <!--<th>放款日期</th>-->
+                    <th>居间人</th>
+                    <th>居间费（元）</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row ks-hidden" id="part_two">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">已申请</a>
+            <table class="ui  celled table compact  small" id="appliedTale">
+                <thead>
+                <tr>
+                    <th>业务单号</th>
+                    <th>放款申请编号</th>
+                    <th>产品子类</th>
+                    <th>借款人</th>
+                    <th>提单日期</th>
+                    <th>放款日期</th>
+                    <th>居间人</th>
+                    <th>居间费（元）</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="ui modal" id="intermediaryInfo">
+    <i class="close icon"></i>
+    <div class="header">
+        居间人信息补录
+    </div>
+
+    <div class="content">
+        <form class="ui form" id="intermediaryForm">
+            <input type="hidden" name="loanId" class="item">
+            <input type="hidden" name="id">
+            <input type="hidden" name="intermediaryApplyId">
+            <div class="two fields">
+                <div class="field required">
+                    <label>居间人</label>
+                    <input type="text" name="name" class="item">
+                </div>
+                <div class="field required">
+                    <label>身份证号</label>
+                    <input type="text" name="idNumber" class="item">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field required">
+                    <label>居间总费用（元）</label>
+                    <input type="text" name="intermediaryFee" id="intermediaryFee" class="item">
+                </div>
+                <div class="field required">
+                    <label>联系电话</label>
+                    <input type="text" name="phone" class="item">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field required">
+                    <label>开户行</label>
+                    <input type="text" name="bank" class="item">
+                </div>
+                <div class="field required">
+                    <label>账号</label>
+                    <input type="text" name="account" class="item">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>地址</label>
+                    <input type="text" name="address" class="item">
+                </div>
+                <div class="field">
+                    <label>代扣代缴税费(元)</label>
+                    <input type="text" name="withHoldingTaxFee" class="item">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>税后居间费(元)</label>
+                    <input type="text" name="afterTaxIntermediaryFee" class="item">
+                </div>
+            </div>
+            <div class="field required">
+                <label>居间服务协议</label>
+                <span class="js-uploadBtn button ui mini" data-file="more" data-catalog="extension"><i class="upload icon"></i>选择上传文件</span>
+                <div class="js_fileBox">
+
+                </div>
+                <input type="hidden" name="contractFileName" disabled>
+                <input type="hidden" name="contractFileUrl" disabled>
+                <input type="hidden" name="serviceContractFileUrls">
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <button class="ui button" onclick="init.save()">保存</button>
+        <button class="ui teal button" onclick="init.saveAndSubmit()">保存并提交</button>
+    </div>
+</div>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"居间费付费申请"}){}%>
+

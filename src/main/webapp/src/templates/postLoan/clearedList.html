@@ -1,0 +1,106 @@
+<%var jsPart = {%>
+<script type="text/javascript" src="/js/common/two-cascade.js"></script>
+<script src="/js/pages/postLoan/cleared.js"></script>
+<%};%>
+
+
+<%var htmlPart = {%>
+<!--已结清贷款列表-->
+<form class="ui segment teal js-searchForm small">
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>机构</label>
+                <div class="ui search js-agcSearch">
+                    <div class="ui icon input">
+                        <input type="hidden" name="agencyId">
+                        <input class="prompt js-input" type="text" placeholder="输入机构名称或代码查询">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+            </div>
+            <div class="field">
+                <label>条线</label>
+                <select name="businessLine" id="businessLine" class="ui dropdown">
+                    <option value="">全部</option>
+                    <% for(businessType in businessTypeList){%>
+                    <option value="${businessType}">${businessType.description}</option>
+                    <%}%>
+                </select>
+            </div>
+            <div class="field">
+                <label>借款人</label>
+                <input type="text" id="borrower" name="borrower">
+            </div>
+            <div class="field">
+                <label>结清日期</label>
+                <input type="text" id="repayDate" name="repayDate">
+            </div>
+        </div>
+    </div>
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>产品大类</label>
+                <select name="productType" class="ui dropdown" id="productType">
+                </select>
+            </div>
+            <div class="field">
+                <label>产品子类</label>
+                <select name="product" class="ui dropdown" id="product">
+                </select>
+            </div>
+            <div class="field">
+                <label>渠道</label>
+                <div id="managerChannelSearch" class="ui search">
+                    <div class="ui icon input">
+                        <input value="" class="prompt" type="text" placeholder="输入渠道名/渠道简称">
+                        <i class="js_search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+                <input type="hidden" id="channelId" name="channelId">
+            </div>
+            <div class="field">
+                <label>&nbsp;</label>
+                <div class="aligned center">
+                    <div class="ui teal submit button mini">查询</div>
+                    <div  class="ui clear button mini" id="resetBnt">重置</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+
+<div class="ui hidden divider"></div>
+
+<div class="row" >
+    <div class="column">
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label">已结清贷款列表</a>
+            <table class="ui center aligned celled table compact  small" id="postLoanTable">
+                <thead >
+                <tr>
+                    <th>业务单号</th>
+                    <th>产品大类</th>
+                    <th>产品子类</th>
+                    <th>机构</th>
+                    <th>业务来源</th>
+                    <th>借款人</th>
+                    <th>结清日期</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"已结清贷款"}){}%>
+

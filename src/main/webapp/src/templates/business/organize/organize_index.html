@@ -1,0 +1,164 @@
+<%var jsPart = {%>
+
+
+<script type="text/dt-template" id="addOrgTemplate">
+    <!--<div class="ui floating teal  dropdown button js-addOrgAction">-->
+    <!--<i class="add icon"></i>-->
+    <!--<span class="text">新增组织</span>-->
+    <!--<div class="menu">-->
+    <!--<div class="item">-->
+    <!--新增组-->
+    <!--</div>-->
+    <!--<div class="item">-->
+    <!--新增部-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+
+    <div class="ui teal small button js-addOrgBtn">
+        <i class="add icon"></i>新增组织
+    </div>
+</script>
+
+
+<script type="text/mustach-template" id="businessLineTemplate">
+    {{#data}}
+    <div class="item" data-value="{{value}}">{{text}}</div>
+    {{/data}}
+</script>
+
+
+<script type="text/mustach-template" id="orgDetailsTemplate">
+    <div class="ui small modal js-viewOrgModal">
+        <i class="close icon"></i>
+        <div class="header">
+            组织详情
+        </div>
+        <div class=" content">
+            <%
+            include("./organizition_details.html"){}
+            %>
+        </div>
+    </div>
+</script>
+
+
+<script src="/js/pages/business/organizition/index.js"></script>
+
+<%};%>
+
+<%var htmlPart = {%>
+
+
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui small segment teal">
+                <form class="ui fluid  form js-searchForm">
+                    <div class="fields">
+
+                        <div class="four wide field">
+                            <label>机构</label>
+                            <div class="ui search js-agcSearch">
+                                <div class="ui icon input">
+                                    <input type="hidden" name="agencyId">
+                                    <input class="prompt js-input" type="text" name="agencyName" placeholder="输入机构名称或代码查询">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+
+                        <div class="four wide field">
+                            <label>组织</label>
+                            <div class="ui search js-orgSearch">
+                                <div class="ui icon input">
+                                    <input type="hidden" name="orgId">
+                                    <input class="prompt js-input" type="text" name="orgName"  placeholder="输入组织名称或代码查询">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+
+                        <div class="four wide field js-SearchForm__lineField">
+                            <label>所属条线</label>
+                            <div class="ui selection dropdown js-lineDropdown">
+                                <div class="default text">选择所属条线</div>
+                                <i class="dropdown icon"></i>
+                                <input type="hidden" name="businessLine">
+                                <div class="menu">
+                                    <div class="item" data-value="">选择所属条线</div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="four wide field">
+                            <label>组织类别</label>
+                            <div class="ui selection dropdown js-groupDropdown">
+                                <div class="default text">组织类别</div>
+                                <i class="dropdown icon"></i>
+                                <input type="hidden" name="organizeType">
+                                <div class="menu">
+                                    <div class="item" data-value="">组织类别</div>
+                                    <div class="item" data-value="AGENCY">部</div>
+                                    <div class="item" data-value="ORGANIZE">组</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fields">
+                        <div class="four wide field">
+                            <label>成立时间</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" placeholder="成立时间" id="setupTime" name="date">
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ui teal mini submit button">查询</div>
+                    <div class="ui clear mini button">重置</div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!--组织列表-->
+    <div class="row" id="personList">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">组织列表</a>
+                <table class="ui celled small  table" id="personTable">
+                    <thead>
+                    <tr>
+                        <th>机构代码</th>
+                        <th>机构名称</th>
+                        <th>组织代码</th>
+                        <th>组织名称</th>
+                        <th>所属条线</th>
+                        <th>负责人</th>
+                        <th>状态</th>
+                        <th>成立时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <%
+    include("./organizition_save.html"){}
+    %>
+
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"组织管理"}){}%>

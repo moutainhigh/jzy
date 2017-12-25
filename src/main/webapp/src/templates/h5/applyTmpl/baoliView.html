@@ -1,0 +1,78 @@
+<!--详情模板-详细信息（业务补充部分）-->
+<script type="text/mustach-template" id="applyTemplate">
+    <h3 class="weui-cells__title f-black">项目信息</h3>
+    <div class="weui-form-preview">
+        <div class="weui-article">
+            <h3 class="f-black f9">项目信息说明：</h3>
+            <pre class="auto">{{item_content}}</pre>
+        </div>
+    </div>
+    <!--保理信息-->
+    <h3 class="weui-cells__title f-black">保理信息</h3>
+    <div class="weui-form-preview">
+        <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">交易买方名称</label>
+                <span class="weui-form-preview__value">{{name}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">交易买方营业执照</label>
+                <span class="weui-form-preview__value">{{license}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">交易买方法人代表</label>
+                <span class="weui-form-preview__value">{{agent_name}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">应收账款金额（元）</label>
+                <span class="weui-form-preview__value">{{reAmount}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">应收账款合同编号</label>
+                <span class="weui-form-preview__value">{{agree_number}}</span>
+            </div>
+            <div class="weui-form-preview__item">
+                <label class="weui-form-preview__label f-black">融资比例</label>
+                <span class="weui-form-preview__value">{{amountScale}}</span>
+            </div>
+        </div>
+        <div class="weui-article">
+            <h3 class="f-black f9">买方企业简介</h3>
+            <pre class="auto">{{qy_content}}</pre>
+        </div>
+    </div>
+
+
+    <!--/房产信息-->
+</script>
+
+
+<script>
+    $(function(){
+        window.renderApplyTpml=function(){
+            $.ajax({
+                type: "get",
+                url: "/m/business_apply/query_business_info",
+                data: {
+                    id: id
+                },
+                async: true,
+                success: function (response) {
+                    var _data = response.data;
+                    _data.reAmount = function () {
+                        return accounting.formatNumber(this.re_amount,2,",");
+                    };
+                    _data.amountScale = function(){
+                        if(this.amount_scale){
+                            return accounting.formatNumber(mul(this.amount_scale,100),2,",") +'%';
+                        }
+                    };
+                    var $applyTemplate = utils.render("#applyTemplate", _data);
+                    $("#applyInfoContainer").prepend($applyTemplate);
+                }
+            });
+
+        }
+    })
+
+</script>

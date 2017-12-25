@@ -1,0 +1,71 @@
+<script type="text/mustach-template" id="SHULOU_template">
+    <div class="four fields">
+        <div class="field inline">
+            <label>项目类别:</label>
+            <span class="ui header red small">赎楼项目</span>
+        </div>
+    </div>
+    <div class="three fields">
+        <div class="field">
+            <label>基本信息</label>
+            <input class="item"  type="text" name="basic">
+        </div>
+    </div>
+    <div class="three fields">
+        <div class="field">
+            <label>房产信息</label>
+            <input class="item"  type="text" name="houseinfo">
+        </div>
+    </div>
+    <div class="three fields">
+        <div class="field">
+            <label>借款用途</label>
+            <input class="item"  type="text" name="loanuse" value="还清银行贷款，解除房产抵押">
+        </div>
+    </div>
+    <div class="three fields">
+        <div class="field">
+            <label>信用信息</label>
+            <input class="item"  type="text" name="archives" value="个人征信情况良好，查档正常，已作公证">
+        </div>
+    </div>
+    <div class="three fields">
+        <div class="field">
+            <label>项目说明</label>
+            <textarea class="item"  name="projectdesc" cols="30" rows="5"></textarea>
+        </div>
+    </div>
+    <div class="four fields">
+        <div class="field">
+            <label>资金流向</label>
+            <textarea class="item"  name="fund" cols="30" rows="5"></textarea>
+        </div>
+    </div>
+    <div class="one fields">
+        <div class="field">
+            <label>审核项目</label>
+            <div class="ui checkbox">
+                <input type="checkbox" data-key="1" name="audittype">
+                <label>个人身份认证</label>
+            </div>
+            <div class="ui checkbox">
+                <input type="checkbox" data-key="2" name="audittype">
+                <label>个人信用报告</label>
+            </div>
+            <div class="ui checkbox">
+                <input type="checkbox" data-key="3" name="audittype">
+                <label>房产证认证</label>
+            </div>
+            <div class="ui checkbox">
+                <input type="checkbox" data-key="4" name="audittype">
+                <label>银行批复文件认证</label>
+            </div>
+        </div>
+    </div>
+    <div class="three fields">
+        <div class="field">
+            <label>风控措施</label>
+            <textarea class="item"  name="riskrule" id="" cols="30" rows="5"></textarea>
+        </div>
+    </div>
+</script>

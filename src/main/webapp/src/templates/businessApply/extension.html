@@ -1,0 +1,67 @@
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui form">
+        <div class="two fields">
+            <div class="field">
+                <label>借款人</label>
+                <input type="text" id="borrserName" placeholder="请填写借款人">
+            </div>
+            <div class="field">
+                <label>到期日</label>
+                <input type="text" name="dueDate" id="dueDate" placeholder="">
+            </div>
+        </div>
+        <div class="two fields">
+            <div class="field">
+                <label>展期</label>
+                <select id="isExtension">
+                    <option value="">请选择</option>
+                    <option value="Y">已展期</option>
+                    <option value="N">未展期</option>
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <span class="ui tiny submit button teal" id="search">查询</span>
+                <span class="ui tiny submit button" id="reset">重置</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+
+<!--业务列表-->
+<div class="row" id="">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">业务列表</a>
+            <table class="ui  celled table compact  small" id="slBusinessList">
+                <thead>
+                <tr>
+                    <th>业务单号</th>
+                    <th>产品大类</th>
+                    <th>业务来源</th>
+                    <th>借款人</th>
+                    <th>放款金额（元）</th>
+                    <th>放款日</th>
+                    <th>到期日</th>
+                    <th>状态</th>
+                    <th>最新展期单状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%}; %>
+
+<%var jsPart = {%>
+<script src="/js/pages/businessApply/extension/extension_list.js"></script>
+<%};%>
+
+<% include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"业务展期"}){}%>

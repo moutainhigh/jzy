@@ -1,0 +1,475 @@
+<%var jsPart = {%>
+<script src="/js/pages/product/view.js"></script>
+<%};%>
+
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+            <form class="ui form segment teal attached " id="updateForm">
+                <a class="ui teal left ribbon label">产品信息查看</a>
+                <div class="ui header"></div>
+                <input type="hidden" value="${id}" id="updateProductId" name="product.id">
+                <input type="hidden" id="productTypeId" name="product.typeId">
+                <input type="hidden" id="productCode" name="product.code">
+                <div class="two fields">
+                    <div class="fields inline left-required">
+                        <label>产品大类：</label>
+                        <div class="field twelve wide">
+                            <select class="ui fluid dropdown" id="typeId" disabled="true">
+                                <option value="">请选择</option>
+                                <% for(productType in productTypeList){%>
+                                <option value="${productType.id}" data-code="${productType.code}">${productType.name}
+                                </option>
+                                <%}%>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="fields inline left-required">
+                        <label>产品编号：</label>
+                        <div class="field twelve wide">
+                            <input type="text" id="code" disabled="true">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two fields">
+                    <div class="fields inline left-required">
+                        <label>产品名称：</label>
+                        <div class="field twelve wide">
+                            <input type="text" name="product.name" id="name" readonly>
+                        </div>
+                    </div>
+                    <div class="fields inline">
+                        <label>品牌名：</label>
+                        <div class="field twelve wide">
+                            <input type="text" name="product.alias" id="alias" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="fields inline">
+                    <label>产品描述：</label>
+                    <div class="field fourteen wide">
+                        <textarea name="product.description" maxlength="300"
+                                  rows="3" id="description" readonly></textarea>
+                    </div>
+                </div>
+                                <div class="two fields">
+                    <div class="left-required field">
+                        <label>产品借款期限</label>
+                        <div class="grouped  fields">
+                            <br>
+                            <div class="fields inline">
+                                <div class="ui checkbox ">
+                                    <input type="checkbox" class="loanTermType_item" id="loanTermType_day"
+                                           name="loanTermType_day" disabled>
+                                    <label>按天计算：</label>
+                                </div>
+                                <div class="field five wide">
+                                    <input name="product.minDays" type="text" disabled="true" id="minDays">
+                                </div>
+                                -&emsp;<div class="field five wide"><input
+                                    name="product.maxDays" disabled="true" type="text" id="maxDays"></div>
+                                天
+                            </div>
+
+                            <br>
+                            <div class="ui divider"></div>
+                            <div class="ui divider hidden"></div>
+
+                            <div class="fields inline">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="loanTermType_item"
+                                           id="loanTermType_month" name="loanTermType_month" disabled>
+                                    <label>按月计算：</label>
+                                </div>
+                                <div class="field five wide">
+                                    <input name="product.minMonths" disabled="true" type="text" id="minMonths"></div>
+                                -&emsp;
+                                <div class="field five wide"><input
+                                        name="product.maxMonths" disabled="true" type="text" id="maxMonths"></div>
+                                月
+                            </div>
+
+                            <br>
+                            <div class="ui divider"></div>
+                            <br>
+
+                            <div class="fields inline">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" class="loanTermType_item" disabled id="loanTermType_season" name="loanTermType_season">
+                                    <label>按季计算：</label>
+                                </div>
+                                <div class="field five wide">
+                                    <input name="product.minMonths"  disabled="true" type="text" id="minSeason">
+                                </div>-&emsp;
+                                <div class="field five wide">
+                                    <input name="product.maxMonths"  disabled="true" type="text" id="maxSeason">
+                                </div>季
+                            </div>
+
+                            <br>
+                            <div class="ui divider"></div>
+                            <br>
+
+                            <div class="ui checkbox">
+                                <input type="checkbox" class="loanTermType_item" id="loanTermType_date" disabled>
+                                <label>固定时间还款</label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="product.loanTermType" id="loanTermType" value="">
+                    </div>
+
+                    <div class="left-required field">
+                        <label>计息方式</label>
+                        <div class="field">
+                            <div class="grouped  fields">
+                                <div class="fields inline">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" class="interestType_item dayInterestTypeCheckbox" id="dayInterestType_1" disabled="true"
+                                               name="dayInterestType_1">
+                                        <label>金额计息/天 </label>
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.dayInterestAmount" disabled="true" type="text" id="dayInterestAmount"
+                                               placeholder="默认金额">
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.dayMinInterestAmount" disabled="true" type="text"
+                                               placeholder="最低金额" id="dayMinInterestAmount">
+                                    </div>
+                                    金额(元)
+                                </div>
+                                <div class="fields inline">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" class="interestType_item dayInterestTypeCheckbox" id="dayInterestType_2" disabled="true"
+                                               name="dayInterestType_2">
+                                        <label>比例计息/天 </label>
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.dayInterestRate" disabled="true" type="text" id="dayInterestRate"
+                                               placeholder="默认利率">
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.dayMinInterestRate" disabled="true" type="text" id="dayMinInterestRate"
+                                               placeholder="最低利率">
+                                    </div>
+                                    比例(%)
+                                </div>
+                            </div>
+                            <input type="hidden" name="product.dayInterestType" id="dayInterestType" value=""/>
+                        </div>
+                        <div class="ui divider"></div>
+                        <div class="field">
+                            <div class="grouped  fields">
+                                <div class="fields inline">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" class="interestType_item monthInterestTypeCheckbox" id="monthInterestType_1" disabled="true"
+                                               name="monthInterestType_1">
+                                        <label>金额计息/月 </label>
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.monthInterestAmount" disabled="true" type="text" id="monthInterestAmount"
+                                               placeholder="默认金额">
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.monthMinInterestAmount" disabled="true" type="text" id="monthMinInterestAmount"
+                                               placeholder="最低金额">
+                                    </div>
+                                    金额(元)
+                                </div>
+                                <div class="fields inline">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" class="interestType_item monthInterestTypeCheckbox" id="monthInterestType_2" disabled="true"
+                                               name="monthInterestType_2">
+                                        <label>比例计息/月 </label>
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.monthInterestRate" disabled="true" type="text" id="monthInterestRate"
+                                               placeholder="默认利率">
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.monthMinInterestRate" disabled="true" type="text" id="monthMinInterestRate"
+                                               placeholder="最低利率">
+                                    </div>
+                                    比例(%)
+                                </div>
+                            </div>
+                            <input type="hidden" name="product.monthInterestType" id="monthInterestType" value=""/>
+                        </div>
+
+                        <div class="ui divider"></div>
+                        <div class="field">
+                            <div class="grouped  fields">
+                                <div class="fields inline">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" class="interestType_item seasonInterestTypeCheckbox" id="seasonInterestType_1" disabled="true"
+                                               name="monthInterestType_1">
+                                        <label>金额计息/季&ensp;</label>
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.seasonInterestAmount" disabled="true" type="text" id="seasonInterestAmount"
+                                               placeholder="默认金额">
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.seasonMinInterestAmount" disabled="true" type="text"
+                                               placeholder="最低金额" id="seasonMinInterestAmount">
+                                    </div>
+                                    金额(元)
+                                </div>
+                                <div class="fields inline">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" class="interestType_item seasonInterestTypeCheckbox" id="seasonInterestType_2" disabled="true"
+                                               name="monthInterestType_2">
+                                        <label>比例计息/季&ensp;</label>
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.seasonInterestRate" disabled="true" type="text" id="seasonInterestRate"
+                                               placeholder="默认利率">
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.seasonMinInterestRate" disabled="true" type="text"
+                                               placeholder="最低利率" id="seasonMinInterestRate">
+                                    </div>
+                                    比例(%)
+                                </div>
+                            </div>
+                            <input type="hidden" name="product.seasonInterestType" id="seasonInterestType" value=""/>
+                        </div>
+
+                        <div class="ui divider"></div>
+                        <div class="field">
+                            <div class="grouped  fields">
+                                <div class="fields inline">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" class="interestType_item interestTypeCheckbox" id="interestType_1" disabled="true"
+                                               name="interestType_1">
+                                        <label>金额计息/天 </label>
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.interestAmount" disabled="true" type="text"
+                                               placeholder="默认金额" id="interestAmount">
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.minInterestAmount" disabled="true" type="text"
+                                               placeholder="最低金额" id="minInterestAmount">
+                                    </div>
+                                    金额(元)
+                                </div>
+                                <div class="fields inline">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" class="interestType_item interestTypeCheckbox" id="interestType_2" disabled="true" name="interestType_2">
+                                        <label>比例计息/天 </label>
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.interestRate" disabled="true" type="text"
+                                               placeholder="默认利率" id="interestRate">
+                                    </div>
+                                    <div class="field four wide">
+                                        <input name="product.minInterestRate" disabled="true" type="text" id="minInterestRate"
+                                               placeholder="最低利率">
+                                    </div>
+                                    比例(%)
+                                </div>
+                            </div>
+                            <input type="hidden" name="product.interestType" id="interestType" value=""/>
+                        </div>
+                    </div>     
+                </div>
+
+                <div class="two fields">
+                    <div class="left-required field">
+                        <label>还款方式</label>
+                        <div class="grouped  fields">
+                            <div class="field">
+                                <div class="ui checkbox">
+                                    <input class="repayMethod_item" id="repayMethod_1" type="checkbox" disabled
+                                           name="repayMethod1">
+                                    <label>先息后本（按月）</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui checkbox">
+                                    <input class="repayMethod_item" id="repayMethod_2" type="checkbox" disabled>
+                                    <label>先息后本（按天）</label>
+                                </div>
+                            </div>
+                            <div class="field">
+
+                                <div class="ui  checkbox">
+                                    <input class="repayMethod_item" id="repayMethod_3" type="checkbox" disabled>
+                                    <label>等额本息</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui  checkbox">
+                                    <input class="repayMethod_item" id="repayMethod_4" type="checkbox" disabled>
+                                    <label>一次性还本付息</label>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="ui  checkbox">
+                                    <input class="repayMethod_item" id="repayMethod_5" type="checkbox" disabled>
+                                    <label>按季付息，到期还本</label>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="product.repayMethod" id="repayMethod" value=""/>
+                    </div>
+                    <div class=" left-required field">
+                        <label>还款时间</label>
+                        <div class="grouped  fields">
+                            <div class="field inline">
+                                <div class="ui checkbox">
+                                    <input class="repayDateType_item" id="repayDateType_1" type="checkbox" disabled>
+                                    <label>期初收息</label>
+                                </div>
+                            </div>
+                            <div class="field inline">
+                                <div class="ui  checkbox">
+                                    <input class="repayDateType_item" id="repayDateType_2" type="checkbox" disabled>
+                                    <label>期末收息</label>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="product.repayDateType" id="repayDateType" value=""/>
+                    </div>
+
+
+                </div>
+
+                <div class="two fields">
+                    <div class=" left-required field">
+                        <label>逾期宽限期</label>
+                        <input type="text" id="overdueDays" readonly>
+                    </div>
+
+                    <div class="left-required field">
+                        <label>产品额度限制（元）</label>
+                        <div class="inline fields">
+                            <div class="field seven wide">
+                                <input type="text" name="product.minAmount" id="minAmount" readonly>
+                            </div>
+                            -&emsp;
+                            <div class="field seven wide">
+                                <input type="text" name="product.maxAmount" id="maxAmount" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="two fields">
+                    <div class=" left-required field">
+                        <label>产品详情模板</label>
+                        <select name="product.infoTmpId" id="infoTmp" class="ui dropdown" disabled>
+                            <option value="">请选择</option>
+                            <% for(productInfoTmp in productInfoTmplList){%>
+                            <option value="${productInfoTmp.id}">${productInfoTmp.name}</option>
+                            <%}%>
+                        </select>
+                    </div>
+                    <div class=" left-required field">
+                        <label>影像资料模板</label>
+                        <select name="product.mediaTmpId" id="mediaTmp" class="ui dropdown" disabled>
+                            <option value="">请选择</option>
+                            <% for(mediaTmp in productMediaTmplList){%>
+                            <option value="${mediaTmp.id}">${mediaTmp.name}</option>
+                            <%}%>
+                        </select>
+                    </div>
+                </div>
+                <div class="two fields">
+
+                    <div class=" left-required field ks-hidden">
+                        <label>还款提前通知天数（默认发给借款人）</label>
+                        <div class="inline fields">
+                            <div class="three wide field">
+                                <input type="text" name="product.repayNotifyEarlyDays" id="repayNotifyEarlyDays"
+                                       readonly>
+                            </div>
+
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="product.isSendSms" value="true" disabled>
+                                <label>发送</label>
+                            </div>&emsp;&emsp;
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="product.isSendSms" value="false" disabled>
+                                <label>不发送</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class=" left-required field">
+                        <label>是否生效</label>
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="product.status" value="ABLE" disabled>
+                            <label>是</label>
+                        </div>
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="product.status" value="DISABLED" disabled>
+                            <label>否</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="actions" align="center">
+                    <div class="ui button teal mini" id="goBack">返回列表</div>
+                </div>
+                <div class="ui error message">
+                </div>
+            </form>
+            <!--基本信息 end-->
+
+            <div class="ui segment" id="productFeeBox">
+                <a class="ui teal left ribbon label">产品费用列表</a>
+                <table class="ui celled table small" id="productFeeTable">
+                    <thead>
+                    <tr>
+                        <th>费用编号</th>
+                        <th>费用名称</th>
+                        <th>收费频率</th>
+                        <th>收取方式</th>
+                        <th>收费节点</th>
+                        <th>金额（元）或比例（%）</th>
+                        <th>还款方式</th>
+                        <th>业务来源</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="ui segment" id="productOrganizeBox">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="three wide column"><h4 class="ui header">机构组织关联</h4></div>
+                        <div class="eight wide column"></div>
+                        <div class="five wide column right aligned">
+                            <div class="ui button mini" id="viewOrganizeBtn"><i class="icon info circle"></i>查看</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui grid">
+                </div>
+            </div>
+            <div class="ui segment" id="productFlowBox">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="three wide column"><h4 class="ui header">复制流程配置</h4></div>
+                        <div class="eight wide column"></div>
+                        <div class="five wide column right aligned">
+                            <div class="ui button mini" id="viewFlowBtn"><i class="icon info circle"></i>查看</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<%include("/product/common_organize.html"){}%>
+<%include("/product/common_flow.html"){}%>
+<%};include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"维护产品"}){}%>
+

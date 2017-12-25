@@ -1,0 +1,107 @@
+<%var jsPart = {%>
+<script src="/js/pages/business/user/index.js"></script>
+
+<script type="text/dt-template" id="addOrgTemplate">
+
+    <div class="ui teal small  button js-addOrgBtn">
+        <i class="add icon"></i>新增人员
+    </div>
+</script>
+
+<script type="text/mustach-template" id="userTemplate">
+    {{#data}}
+    <div class="item" data-value="{{value}}">{{text}}</div>
+    {{/data}}
+</script>
+
+
+<script type="text/mustach-template" id="userDetailsTemplate">
+    <div class="ui small modal js-viewUserModal">
+        <i class="close icon"></i>
+        <div class="header">
+            人员信息详情
+        </div>
+        <div class=" content">
+            <%
+            include("./user_details.html"){}
+            %>
+        </div>
+    </div>
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <form class="ui fluid  form js-searchForm">
+                    <div class=" two fields">
+                        <div class=" field">
+                            <label>查询类别</label>
+                            <div class="ui selection dropdown js-SearchTypeDropdown">
+                                <div class="default text">查询类别</div>
+                                <i class="dropdown icon"></i>
+                                <input type="hidden" name="searchType" id="searchType">
+                                <div class="menu">
+                                    <div class="item" data-value="">请选择查询类别</div>
+                                    <div class="item" data-value="agencyType">按机构查询</div>
+                                    <div class="item" data-value="orgType">按组织查询</div>
+                                    <div class="item" data-value="userType">按人员查询</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" field js_field__contextSearch"  style="display:none;">
+                            <label>查询内容</label>
+                            <div class="ui search js_modal__contextSearch">
+                                <div class="ui icon input">
+                                    <input type="hidden" name="sId" id="sId">
+                                    <input class="prompt js-input" type="text" name="searchContext" placeholder="输入查询名称或代码查询" id="js-input-search">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui teal mini submit button js-button-search">查询</div>
+                    <button type="reset" class="ui mini reset button js-button-reset">重置</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!--人员列表-->
+    <div class="row" id="personList">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">人员列表</a>
+                <table class="ui celled small table" id="personTable">
+                    <thead>
+                    <tr>
+                        <th>业务员代码</th>
+                        <th>姓名</th>
+                        <th>机构代码</th>
+                        <th>机构名称</th>
+                        <th>组织代码</th>
+                        <th>组织名称</th>
+                        <th>职级</th>
+                        <th>入司日期</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <%
+    include("./user_save.html"){}
+    %>
+
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"业务人员管理"}){}%>

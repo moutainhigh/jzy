@@ -1,0 +1,523 @@
+<%var jsPart = {%>
+<script>
+    var search = {
+        timeRange:function(){
+            $('#reportTime').dateRangePicker({
+                separator : '~',
+            });
+        },
+        timeRange1:function(){
+
+            $('#clearedDate').dateRangePicker({
+                separator : '~',
+            });
+        },
+        timeRange2:function(){
+            $('#submitDate').dateRangePicker({
+                separator : '~',
+            });
+        },
+
+        /*
+        * 查询重置
+        * */
+        reset:function(){
+            $("#agencyId").val("");
+            $("#submitDate").val("");
+            $("#clearedDate").val("");
+            $("#channelId").val("");
+            $("#organizeId").val("");
+            $("#submitter").val("");
+            $('#status').val("");
+            $('#loanSubjectId').val("");
+            $('#saleName').val("");
+            $('#reportTime').val("");
+            $('.js-input').val("");
+            $('#source').val("");
+        },
+
+        /*
+        * 查询导出
+        * */
+        export:function(){
+            //todo
+            var str = '';
+            var d =['submitter','organizeId','agencyId','loanSubjectId','saleName','status','reportTime','submitDate','clearedDate','channelId'];
+            var d_val = [];
+            for(i in d){
+                d_val.push($('#'+d[i]).val())
+            }
+            for(var i =0;i<d.length;i++){
+               if(i!=d.length-1){
+                   str += d[i]+'='+d_val[i]+'&';
+               }else{
+                   str += d[i]+'='+d_val[i];
+               }
+            }
+            window.open('/business_report/business_chedai_export?'+str,'_blank');
+        },
+
+        /*
+        * 组织查询
+        * */
+        initOrgSearch:function(){
+            $('.js-orgSearch').search({
+                apiSettings: {
+                    method: "post",
+                    url: $(document).api.settings.api['search organizition'] + '?search={query}'
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },
+                // minCharacters : 3
+                onSelect: function (result, response) {
+                    $(this).find('input[name="organizeId"]').val(result.id)
+                },
+
+            })
+
+            $('.js-orgSearch  .js-input').on('input propertychange', function () {
+                $(this).prev('input').val($(this).val());
+            })
+        },
+
+        /*
+        * 机构查询
+        * */
+        initAgencySearch:function () {
+            $('.js-agencySearch').search({
+                apiSettings: {
+                    method: "post",
+                    url: $(document).api.settings.api['search agency'] + '?search={query}'
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },
+                // minCharacters : 3
+                onSelect: function (result, response) {
+                    $(this).find('input[name="agencyId"]').val(result.id)
+                },
+            })
+
+            $('.js-agencySearch  .js-input').on('input propertychange', function () {
+                $(this).prev('input').val($(this).val());
+            })
+        },
+        /*
+         * 渠道查询
+         * */
+        initChannelSearch:function () {
+            $('.js-channeSearch').search({
+                apiSettings: {
+                    method: "post",
+                    url: '/channel/list_channel_name' + '?channelName={query}&channelType=1'
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },
+                // minCharacters : 3
+                onSelect: function (result, response) {
+                    $(this).find('input[name="channelId"]').val(result.id)
+                },
+            })
+
+            $('.js-channeSearch  .js-input').on('input propertychange', function () {
+                $(this).prev('input').val($(this).val());
+            })
+        }
+
+    };
+
+    //列表初始化
+    function initLoanList() {
+        dtTable = $("#cdTable").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['query b_cd report'],
+                "data": function (d) {
+                    var data ={};
+                    data.submitter =$('#submitter').val();
+                    data.organizeId = $('#organizeId').val();
+                    data.agencyId =$('#agencyId').val();
+                    data.source = $('#source').val();
+                    data.loanSubjectId = $('#loanSubjectId').val();
+                    data.saleName = $('#saleName').val();
+                    data.status = $('#status').val();
+                    data.reportTime = $('#reportTime').val();
+                    data.submitDate = $('#submitDate').val();
+                    data.clearedDate = $('#clearedDate').val();
+                    data.channelId = $('#channelId').val();
+                    var _d = $.extend(data,{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "POST",
+            },
+            columns: [
+                {data: 'businessOrderNo'},
+                {data: 'productName'},
+                {data: 'loanSubject'},
+                {data: 'submitter'},
+                {data: 'borrower'},
+                {data: 'idNumber'},
+                {data: 'status'},
+                {data: 'channel'},
+                {data: 'businessProvider'},
+                {data: 'agencyName'},
+
+                {data: 'organizeName'},
+                {data: 'businessSource'},
+                {data: 'loanPrincipal'},
+                {data: 'actualAmount'},
+                {data: 'loanTerm'},
+                {data: 'borrowRate'},
+                {data: 'interestMode'},
+                {data: 'prePaymentFeeAmount'},
+                {data: 'actualPrePaymentFeeAmount'},
+                {data: 'actualOverdueFeeAmount'},
+
+                {data: 'totalServiceFeeAmount'},
+                {data: 'actualServiceTotalFeeAmount'},
+                {data: 'actualTotalFeeAmount'},
+                {data: 'receivableInterest'},
+                {data: 'actualInterest'},
+                {data: 'receivableTotal'},
+                {data: 'actualTotalAmount'},
+                {data: 'actualLoanDate'},
+                {data: 'dueDate'},
+                {data: 'actualClearedDate'},
+
+                {data: 'interestBearingDate'},
+                {data: 'repaymentNumber'},
+                {data: 'carNumber'},
+                {data: 'carBrand'},
+                {data: 'carValuation'},
+                {data: 'repayMethod'},
+                {data: 'submitTime'},
+                {data: 'profit'}
+            ],
+            columnDefs: [{
+                targets:[0,1,2,3,4,5,7,8,9,10,11,16,31,32,33],
+                className:"single line",
+                render: function (data, type, row, meta) {
+                    return (data=='' | !data) ?'--' : data;
+                }
+            },{
+                targets:[6],
+                className:"single line",
+                render: function (data, type, row, meta) {
+                    return enums.loan_status[data];
+                }
+            },{
+                targets:[14],
+                className:"single line",
+                render: function (data, type, row, meta) {
+                    if("FIXED_DATE"==row.termType){
+                        return "至"+data;
+                    }else{
+                        if(row.termType!=undefined && enums.loanTermType[row.termType] != undefined){
+                            return data + enums.loanTermType[row.termType];
+                        }else{
+                            return "--";
+                        }
+                    }
+                }
+            },{
+                targets:[15],
+                className:'right aligned single line',
+                render: function (data, type, row, meta) {
+                    return accounting.formatMoney(data,'',6,',','.');
+                }
+            },{
+                targets:[35],
+                className:"single line",
+                render: function (data, type, row, meta) {
+                    return (data == '' | !data) ? '--' : enums.loanRepayMethod[data];
+                }
+            },{
+                targets:[12,13,17,18,19,20,21,22,23,24,25,26,34],
+                className:'right aligned single line',
+                render:function(data, type, row, meta){
+                    return (data == '' | !data) ? '0.00' : accounting.formatMoney(data,'',2,',','.');
+                }
+            },{
+                targets:[37],
+                className:'right aligned single line',
+                render:function(data, type, row, meta){
+                    return (data == '' | !data) ? '--' : accounting.formatMoney(data,'',2,',','.');
+                }
+            },{
+                targets:[27,28,29,30,36],
+                className:'single line',
+                render:function(data, type, row, meta){
+                    return (data == '' | !data) ? '--' : moment(data).format('YYYY-MM-DD');
+                }
+            }],
+
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+            }
+        })
+    }
+
+    function initAll(){
+        search.timeRange();
+        search.timeRange1();
+        search.timeRange2();
+        search.initAgencySearch();
+        search.initOrgSearch();
+        search.initChannelSearch();
+        initLoanList();
+    }
+    initAll();
+
+    var times = function(){
+        var timesRange = $('#reportTime').val(),
+            time_1 = timesRange.split('~')[0],
+            time_2 = timesRange.split('~')[1],
+            timeSub = moment(time_2).subtract(1, "years");
+        var timeReg = /\d{4}(\-|\/|.)\d{1,2}\1\d{1,2}/;
+
+        if(timesRange.indexOf('~') < 0 || !timeReg.test(time_1) || !timeReg.test(time_2)){
+            $.uiAlert({type: "danger", textHead: '', text: '请选择正确的放款日期', time: 4});
+            return false;
+        }else{
+            return  time_one = time_1,
+                    time_Sub = timeSub;
+        }
+    };
+
+    $("#search").click(function () {
+        if($('#reportTime').val() == ''){
+            dtTable.ajax.reload();//查询
+        }else{
+            if(times() == false){
+                return false;
+            }else if(moment(time_one) < moment(time_Sub)){
+                $.uiAlert({type: "danger", textHead: '提示', text: '报表时间最大区间为1年', time: 3});
+                return false;
+            }else{
+                dtTable.ajax.reload();//查询
+            }
+        }
+    });
+
+    $("#reset").click(function(){
+        search.reset();//重置
+    });
+
+    $('#export_btn').click(function(){
+        if(times() == false) {
+            return false;
+        }else{
+            if (moment(time_one) < moment(time_Sub)){
+                $.uiAlert({type: "danger", textHead: '提示', text: '报表时间最大区间为1年', time: 3});
+                return false;
+            }else {
+                search.export();//导出
+            }
+        }
+    });
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui grid">
+    <div class="row ">
+        <div class="column">
+            <div class=" ui segment teal">
+                <form class="ui fluid  form">
+                    <div class="four fields">
+                        <div class="field">
+                            <label>机构</label>
+                            <div class="ui search js-agencySearch">
+                                <div class="ui icon input">
+                                    <input type="hidden" name="agencyId" id="agencyId">
+                                    <input class="prompt js-input" type="text" placeholder="输入机构名称或代码查询">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div  >
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>组织</label>
+                            <div class="ui search js-orgSearch">
+                                <div class="ui icon input">
+                                    <input type="hidden" name="organizeId" id="organizeId">
+                                    <input class="prompt js-input" type="text" placeholder="输入组织名称或代码查询">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                        <div class=" field">
+                            <label>提单人</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" id="submitter" name="submitter">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>状态</label>
+                            <select name="status" id="status" class="ui dropdown">
+                                <option value="">全部</option>
+                                <% for(status in statusList){%>
+                                <option value="${status}">${status.description}</option>
+                                <%}%>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="four fields">
+                        <div class="field">
+                            <label>放款主体</label>
+                            <select name="loanSubjectId" id="loanSubjectId" class="ui dropdown">
+                                <option value="">请选择</option>
+                                <% for(subject in loanSubjects) {%>
+                                <option value="${subject.id}" >${subject.name}</option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class=" field">
+                            <label>业务来源</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" id="saleName" name="saleName">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class=" field">
+                            <label>放款日期</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" id="reportTime" name="reportTime">
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" field">
+                            <label>提单日期</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" id="submitDate" name="submitDate">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="four fields">
+                        <div class=" field">
+                            <label>结清日期</label>
+                            <div class="ui search">
+                                <div class="ui icon input">
+                                    <input class="prompt" type="text" id="clearedDate" name="clearedDate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>类型</label>
+                            <select name="source" id="source">
+                                <option value="">全部</option>
+                                <option value="0">自营</option>
+                                <option value="1">渠道</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>渠道</label>
+                            <div class="ui search js-channeSearch">
+                                <div class="ui icon input">
+                                    <input type="hidden" name="channelId" id="channelId">
+                                    <input class="prompt js-input" type="text" placeholder="输入渠道名/渠道简称">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="search" class="ui teal mini button">查询</div>
+                    <div id="reset" class="ui clear mini button">重置</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--列表-->
+    <div class="row">
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">报表列表</a>
+                <div class="overflow">
+                    <div class="chevron right">
+                        <a class="ui teal small button" id="export_btn" href="javascript:;">
+                            <i class="external share icon"></i>导出
+                        </a>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;overflow-y: hidden;">
+                    <table class="ui celled small table" id="cdTable">
+                        <thead>
+                        <tr>
+                            <th>业务单号</th>
+                            <th>产品名</th>
+                            <th>放款主体</th>
+                            <th>提单人</th>
+                            <th>借款人</th>
+                            <th>证件号码</th>
+                            <th>状态</th>
+                            <th>渠道</th>
+                            <th>业务提供方</th>
+                            <th>机构</th>
+
+                            <th>组织</th>
+                            <th>业务来源</th>
+                            <th>借款金额（元）</th>
+                            <th>实还本金（元）</th>
+                            <th>借款期限</th>
+                            <th>借款利息</th>
+                            <th>计息方式</th>
+                            <th>应收一次性服务费（元）</th>
+                            <th>实收一次性服务费（元）</th>
+                            <th>实收罚息（元）</th>
+
+                            <th>应收总服务费（元）</th>
+                            <th>实收总服务费（元）</th>
+                            <th>实收总费用（元）</th>
+                            <th>应收利息（元）</th>
+                            <th>实收利息（元）</th>
+                            <th>应收本息（元）</th>
+                            <th>实收本息（元）</th>
+                            <th>实际放款日期</th>
+                            <th>应还日期</th>
+                            <th>实际结清日期</th>
+
+                            <th>最近还款日</th>
+                            <th>已还期数</th>
+                            <th>车牌号码</th>
+                            <th>车辆品牌</th>
+                            <th>车辆估值（元）</th>
+                            <th>还款方式</th>
+                            <th>提单日期</th>
+                            <th>净利润（元）</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"车贷报表"}){}%>

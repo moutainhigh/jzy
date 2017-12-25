@@ -1,0 +1,54 @@
+<%var jsPart = {%>
+
+
+
+<%};%>
+<style type="text/css">
+    .weui-tabbar__icon{width: 45px !important;height: 45px !important;}
+    .weui-tabbar__label{font-size: 14px !important;}
+    .logoimg img{max-width: 70% !important;margin-top: 30%;}
+    .menutxt{color: #000 !important;}
+</style>
+<%var htmlPart = {%>
+<div class="page tabbar js_show">
+    <div class="page__bd" style="height: 100%;">
+        <div class="weui-tab">
+            <div class="weui-tab__panel">
+                <div class="weui-msg">
+                    <div class="weui-article logoimg"><img src="/image/logopuhui.png" alt=""></div>
+                    <div class="weui-msg__text-area">
+                        <h2 class="weui-msg__title">欢迎登录业务管理系统</h2>
+                        <p class="weui-msg__desc">Welcome to Business Management System</p>
+                    </div>
+                    <%
+                    include("./logout.html"){}
+                    %>
+                </div>
+            </div>
+            <div class="weui-tabbar">
+                <% for(menu in session.menus){ %>
+                    <% if("H5"==menu.self.platform) {%>
+                        <% if(menu.sons==null){ %>
+
+                        <%}else{%>
+                                <% for(item in menu.sons){ %>
+                                    <% if("H5"==item.platform) {%>
+                                    <a href="${item.url}" class="weui-tabbar__item weui-bar__item_on">
+                                        <span style="display: inline-block;position: relative;">
+                                            <img src="/image/icon_tabbar.png" alt="" class="weui-tabbar__icon">
+                                        </span>
+                                        <p class="weui-tabbar__label menutxt">${item.name} </p>
+                                    </a>
+                                    <%}%>
+                                <%}%>
+                        <%}%>
+                    <%}%>
+                <%}%>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<%}; include("/h5/common.html",{jsSection:jsPart,htmlSection:htmlPart,title:"首页"}){}%>

@@ -1,0 +1,543 @@
+<!--修改、新增人员弹出modal-->
+
+<div class="ui modal js-editUserModal">
+    <i class="close icon"></i>
+    <div class="header js-editUser__header">
+        编辑
+    </div>
+    <div class=" content">
+        <form class="ui form js-userForm">
+            <h4>组织信息</h4>
+            <div class="ui segment">
+                <div class="ui required   field js-ageSearchField">
+                    <label>所属组织</label>
+                    <div class="ui search js-orgSearch">
+                        <div class="ui icon input">
+                            <input type="hidden" name="user.organizeId" id="organizeId">
+                            <input class="prompt js-input" type="text" placeholder="输入组织名称或代码查询" name="user.organizeName">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </div>
+                <div class="ui  disabled  field">
+                    <label>所属机构</label>
+                    <input type="hidden" name="user.agencyId" id="agencyId">
+                    <input type="text" name="user.agencyName" placeholder="所属机构" readonly="readonly" id="agencyName">
+                </div>
+
+                <div class="ui  disabled  field">
+                    <label>所属条线</label>
+                    <input type="text" name="businessLineName" placeholder="所属条线" readonly="readonly"
+                           id="businessLineName">
+                </div>
+                <div class="three fields">
+                    <div class="ui  required field js-saveOrUpdate__positionField">
+                        <label>职级</label>
+                        <div class="ui dropdown selection js-dropdown__position">
+                            <input type="hidden" name="user.position">
+                            <div class="default text">职级</div>
+                            <i class="dropdown icon"></i>
+                            <div class="menu">
+                                <div class="item" data-value="">请选择职级</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ui required   field">
+                        <label>入司日期</label>
+                        <input type="date" name="user.entryDate" class="js-modal_entryDate" placeholder="入司日期" id="entryDate">
+                    </div>
+
+                    <div class="ui    field">
+                        <label>离职日期</label>
+                        <input type="date"  name="user.quitDate" class="js-modal_quitDate" placeholder="离职日期" id="quitDate">
+                    </div>
+                </div>
+                <br/>
+                <div class="inline fields">
+                    <label>工作状态：</label>
+                    <div class="field">
+                        <div class="ui radio checkbox js-modal__workStateCheckbox">
+                            <input type="radio" name="user.workState" checked="" value="0">
+                            <label>在职</label>
+                        </div>
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="user.workState" value="1">
+                            <label>离职</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h4>基本信息</h4>
+            <div class="ui segment">
+                <div class="three fields">
+                    <div class="ui    field">
+                        <label>业务员代码</label>
+                        <input type="text" name="user.code" placeholder="业务员代码" readonly="readonly" id="code">
+                    </div>
+                    <div class="ui required   field">
+                        <label>姓名</label>
+                        <input type="text" name="user.name" placeholder="姓名">
+                    </div>
+                    <div class="ui required field">
+                        <label>出生日期</label>
+                        <input type="date" name="user.birthday" class="js-modal_birthday" placeholder="出生日期" id="birthday">
+                    </div>
+                </div>
+                <div class="three fields">
+                    <div class="ui  required field">
+                        <label>移动电话</label>
+                        <input type="text" name="user.mobile" placeholder="移动电话">
+                    </div>
+                    <div class="ui  required field">
+                        <label>联系地址</label>
+                        <input type="text" name="user.address" placeholder="联系地址">
+                    </div>
+                    <div class="ui   field">
+                        <label>电子邮箱</label>
+                        <input type="text" name="user.email" placeholder="电子邮箱">
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="ui six wide required field js-saveOrUpdate__credentialsField">
+                        <label>证件类型</label>
+                        <div class="ui dropdown selection js-dropdown__credentials">
+                            <input type="hidden" name="user.credentialsType">
+                            <div class="default text">证件类型</div>
+                            <i class="dropdown icon"></i>
+                            <div class="menu">
+                                <div class="item" data-value="">选择证件类型</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui ten wide field">
+                        <label>证件号码</label>
+                        <input type="text" name="user.idNumber" placeholder="证件号码">
+                    </div>
+                </div>
+
+                <div class="inline fields">
+                    <div class="ui  required field">
+                        <label>性别:</label>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox js-modal__sexCheckbox">
+                            <input type="radio" name="user.sex" checked="" value="1">
+                            <label>男</label>
+                        </div>
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="user.sex" value="0">
+                            <label>女</label>
+                        </div>
+                    </div>
+
+                </div>
+                <br/>
+                <div class="inline  fields">
+                    <div class="ui  required field">
+                    <label>状态</label>
+                    </div>
+                    <div class="field ">
+                        <div class="ui radio checkbox js-modal__checkbox">
+                            <input type="radio" name="user.status" value="ABLE">
+                            <label>有效</label>
+                        </div>
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="user.status" value="DISABLED">
+                            <label>无效</label>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+            <!--<h4>账号信息</h4>-->
+            <!--<div class="ui segment">-->
+                <!--<div class="inline  fields">-->
+                    <!--<div class="ui    field">-->
+                        <!--<label>用户名</label>-->
+                        <!--<input type="text" name="loginName" placeholder="暂无账号" readonly="readonly" >-->
+                        <!--<div type="button"  class="ui mini teal button js-sc_LoginName"  style="display: none"  >生成账号</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black  deny button">
+            取消
+        </div>
+        <div class="ui teal ok button">确定</div>
+    </div>
+</div>
+<link rel="stylesheet" href="/js/plugins/laydate-1.1/need/laydate.css" />
+<script src="/js/plugins/laydate-1.1/laydate.js"></script>
+<script>
+    $(function () {
+
+        var $js_orgSearch = $('.js-orgSearch')//所属组织 查询
+        $js_dropdown__position = $('.js-dropdown__position');//职级
+
+        $.extend(User, {
+            /**
+             * 新增和修改
+             * @param type 操作类型：add/update
+             * @param id 节点id
+             */
+            save: function (type, data) {
+               // var id = data.id;
+                var data=data;
+                var text = "";
+                var actions = "";
+                var _data = {};
+                var autofocus = true;
+                if (type == "add") {
+                    text = "新增";
+                    actions = "add b_user";
+                    // 获取业务员code
+                    $(document).api({
+                        on: "now",
+                        method: 'post',
+                        action: "get b_user code",
+                        onSuccess: function (data) {
+                            $("#code").val(data.data);
+                        }
+                    });
+//                    $(".js-sc_LoginName").show();
+                } else if (type == "update") {
+                    autofocus = false;
+                    text = "修改";
+                    actions = "update b_user";
+                    _data = {
+                        "user.id": data.id,
+                    }
+                }
+                $(".js-editUser__header").text(text);
+
+                var $modal = $(".js-editUserModal");
+                var $form = $modal.find(".ui.form");
+                $modal.modal({
+                    observeChanges:true,
+                    blurring: true,
+                    autofocus:autofocus,
+                    onShow: function () {
+                        $form.form('clear').form({
+                            inline: true,
+                            fields: {
+                                name: {
+                                    identifier: 'user.name',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                code: {
+                                    identifier: 'user.code',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                organizeId: {
+                                    identifier: 'user.organizeId',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                entryDate: {
+                                    identifier: 'user.entryDate',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                workState: {
+                                    identifier: 'user.workState',
+                                    rules: [
+                                        {
+                                            type: 'checked',
+                                            prompt: '请选择工作状态'
+                                        }
+                                    ]
+                                },
+                                sex: {
+                                    identifier: 'user.sex',
+                                    rules: [
+                                        {
+                                            type: 'checked',
+                                            prompt: '请选性别'
+                                        }
+                                    ]
+                                },
+                                position: {
+                                    identifier: 'user.position',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '请选择职级'
+                                        }
+                                    ]
+                                },
+                                credentialsType: {
+                                    identifier: 'user.credentialsType',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '请选择证件类型'
+                                        }
+                                    ]
+                                },
+                                idNumber: {
+                                    identifier: 'user.idNumber',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }, {
+                                            type: 'identityCodeValid',
+                                            prompt: '{name}格式不正确'
+                                        }
+                                    ]
+                                },
+                                mobile: {
+                                    identifier: 'user.mobile',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        },
+                                        {
+                                            type: 'mobile',
+                                            prompt: '{name}格式不正确'
+                                        },
+                                    ]
+                                },
+                                address: {
+                                    identifier: 'user.address',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                birthday: {
+                                    identifier: 'user.birthday',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                status: {
+                                    identifier: 'user.status',
+                                    rules: [
+                                        {
+                                            type: 'checked',
+                                            prompt: '请选择状态'
+                                        }
+                                    ]
+                                }
+                            },
+                            onSuccess: function (e, fidlds) {
+                                e.preventDefault();
+                            }
+                        }).api({
+                            action: actions,
+                            method: 'POST',
+                            serializeForm: true,
+                            data: _data,
+                            beforeSend:function(settings){
+                                for(i in settings.data){
+                                    var val = settings.data[i];
+                                    settings.data[i] = $.trim(val);
+                                }
+                                return settings
+                            },
+                            onSuccess: function (response) {
+                                            $.uiAlert({
+                                                type: "success",
+                                                textHead: text + '成功',
+                                                text: '成功' + text + '人员',
+                                                time: 1,
+                                                onClosed: function () {
+                                                    window.location.reload()
+                                                }
+                                            });
+                            },
+                            onFailure: function (response, element) {
+                                $.uiAlert({
+                                    type: "danger",
+                                    textHead: text + '失败',
+                                    text: response.msg,
+                                    time: 1,
+                                });
+                            }
+                        })
+                        if(type == "add"){
+                            $form.form('set values', {
+                                'user.status':"ABLE"
+                            })
+                        }
+                        if (type == "update") {
+                            $form.form('set values', {
+                                'user.name':data.name,
+                                'user.position':data.position,
+                                'user.code': data.code,
+                                'user.workState': data.workState,
+                                'user.mobile': data.mobile,
+                                'user.address': data.address,
+                                'user.email': data.email,
+                                'user.credentialsType': data.credentialsType,
+                                'user.idNumber': data.idNumber,
+                                'user.sex': data.sex,
+                                'user.status': data.status,
+                                'businessLineName':enums.business_line[data.organize.businessLine],
+                                'user.agencyId':data.agencyId,
+                                'user.agencyName':data.organize.agency.name,
+                                'user.organizeId':data.organizeId,
+                                'user.organizeName':data.organize.name,
+//                               'loginName':loginName
+
+                            })
+
+                            if(data.entryDate!=null){
+                                $("#entryDate").val(moment(data.entryDate).format("YYYY-MM-DD"));
+                            }
+                            if(data.quitDate!=null){
+                                $("#quitDate").val(moment(data.quitDate).format("YYYY-MM-DD"));
+                            }
+                            if(data.birthday!=null){
+                                $("#birthday").val(moment(data.birthday).format("YYYY-MM-DD"));
+                            }
+//                            if(loginName==""){
+//                                $(".js-sc_LoginName").show();
+//                            }else {
+//                                $(".js-sc_LoginName").hide();
+//                            }
+                        }
+                    },
+                    onApprove: function () {
+                        $(this).find(".form").submit();
+                        return false;
+                    },
+                    onHidden:function(){
+                        $(this).removeClass("hidden")
+                    },
+                    transition:"fade"
+
+                }).modal('show');
+            }
+        })
+
+        //搜索组织查询
+        function initModalOrgSearch() {
+            $js_orgSearch.search({
+                cache:false,
+                apiSettings: {
+                    method: "post",
+                    url: $(document).api.settings.api['search organizition'] + '?search={query}&organizeType='
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },
+                onSelect: function (result, response) {
+                    console.log("id="+result.id);
+                        $('input[name="user.organizeId"]').val(result.id)
+                        // 赋值隐藏机构id
+                        $('input[name="user.agencyId"]').val(result.agencyId);
+                        // 赋值机构名称
+                        $('input[name="user.agencyName"]').val(result.agency.name);
+                        // 赋值所属条线
+                        $("#businessLineName").val(enums.business_line[result.businessLine]);
+                }
+            })
+
+            $js_orgSearch.on('input propertychange', '.js-input', function () {
+                $(this).prev('input').val("");
+                $(this).prev('input[name="user.agencyId"]').val("");
+            })
+        }
+
+        initModalOrgSearch();
+
+        //下拉列表-选择职级
+        function initModalPosition() {
+            $(document).api({
+                on: "now",
+                method: 'post',
+                action: "get b_user position",
+                onSuccess: function (data) {
+                    data.text = function () {
+                        return enums.position[this.value]
+                    }
+                    var $userPositionTemplate = utils.render("#userTemplate", data);
+                    $(".js-saveOrUpdate__positionField .menu").append($userPositionTemplate);
+                    $(".js-dropdown__position").dropdown()
+                }
+            });
+        }
+        //下拉列表-选择证件类型
+        function initModalCredentials() {
+            $(document).api({
+                on: "now",
+                method: 'post',
+                action: "get b_user credentials",
+                onSuccess: function (data) {
+                    data.text = function () {
+                        return enums.businessCredentialsType[this.value]
+                    }
+                    var $userCredentialsTemplate = utils.render("#userTemplate", data);
+                    $(".js-saveOrUpdate__credentialsField .menu").append($userCredentialsTemplate);
+                    $(".js-dropdown__credentials").dropdown()
+                }
+            });
+        }
+        //生成账号按钮事件
+//        function  scLoginName() {
+//            $("body").on("click", ".js-sc_LoginName", function () {
+//                //判断是否填写了手机号
+//                var mobile= $('input[name="user.mobile"]').val();
+//                if(mobile==""){
+//                    $.uiAlert({
+//                        type: "danger",
+//                        textHead: '失败',
+//                        text: "请先填写手机号，再点击生成账号",
+//                        time: 1,
+//                    });
+//                }else {
+//                    var reg=/^1[3|4|5|8][0-9]\d{4,8}$/;
+//                    // 判断手机号格式
+//                    if(!reg.test(mobile)){
+//                        $.uiAlert({
+//                            type: "danger",
+//                            textHead: '失败',
+//                            text: "请填写正确的手机号格式.",
+//                            time: 1,
+//                        });   
+//                    }else {
+//                        $('input[name="loginName"]').val('zc_' + mobile);
+//                    }
+//                }
+//            })
+//        }
+//        scLoginName();
+        initModalPosition();
+        initModalCredentials();
+
+    })
+</script>

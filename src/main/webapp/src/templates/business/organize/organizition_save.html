@@ -1,0 +1,613 @@
+<!--修改、新增组织弹出modal-->
+<div class="ui long  modal js-addOrgModal">
+    <i class="close icon"></i>
+    <div class="header js-editOrg__header">
+        编辑
+    </div>
+    <div class=" content">
+        <div class="ui top  secondary menu js-savaOrgModal__menu">
+            <b class="item">组织类别：</b>
+            <a class="active item js-item" data-tab="AGENCY">部</a>
+            <a class="item js-item" data-tab="ORGANIZE">组</a>
+            <input type="hidden" name="org.organizeType" value="AGENCY" id="organizeType">
+        </div>
+        <!--部-->
+        <div class="ui bottom  active tab segment" data-tab="AGENCY">
+            <form class="ui form js-agcForm">
+
+                <div class="ui  required field js-hideOnUpdate">
+                    <label>所属机构</label>
+                    <div class="ui search js-modal__agcSearch ">
+                        <div class="ui icon input">
+                            <input type="hidden" name="org.agencyPath">
+                            <input type="hidden" name="org.agencyId">
+                            <input class="prompt js-input" type="text" placeholder="输入机构名称或代码查询">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </div>
+
+                <div class="ui  required field js-saveModal__lineField js-hideOnUpdate">
+                    <label>所属条线</label>
+                    <div class="ui selection dropdown js-modal__lineDropdown">
+                        <div class="default text">选择所属条线</div>
+                        <i class="dropdown icon"></i>
+                        <input type="hidden" name="org.businessLine">
+                        <div class="menu">
+                            <div class="item" data-value="">选择所属条线</div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ui  disabled  field js-hideOnUpdate">
+                    <input type="hidden" name="org.id">
+                    <label>组织代码</label>
+                    <input type="text" name="org.code" placeholder="组织代码" readonly="readonly" id="code1">
+                </div>
+                <!--部和组通用-->
+                <%
+                include("./organizition_save_common.html"){}
+                %>
+            </form>
+        </div>
+        <!--组-->
+        <div class="ui bottom attached tab segment" data-tab="ORGANIZE">
+            <form class="ui form js-orgForm">
+
+                <div class="ui required disabled  field js-hideOnUpdate">
+                    <label>所属机构</label>
+                    <input type="text" placeholder="所属机构" readonly="readonly" id="agencyName">
+                    <input type="hidden" name="org.agencyId" id="agencyId">
+                </div>
+
+                <div class="ui  required field js-hideOnUpdate">
+                    <label>所属部</label>
+                    <div class="ui search js-modal__orgSearch">
+                        <div class="ui icon input">
+                            <input type="hidden" name="org.path" id="orgPath">
+                            <input type="hidden" name="org.agencyPath" id="orgAgencyPath">
+                            <input type="hidden" name="org.parentId">
+                            <input class="prompt js-input" type="text" placeholder="输入组织名称或代码查询">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </div>
+
+                <div class="ui disabled required field js-hideOnUpdate">
+                    <label>所属条线</label>
+                    <input type="text" placeholder="所属机构" readonly="readonly" id="org_businessLineName">
+                    <input type="hidden" name="org.businessLine" id="org_businessLine">
+                </div>
+
+                <div class="ui  disabled  field js-hideOnUpdate">
+                    <input type="hidden" name="org.id">
+                    <label>组织代码</label>
+                    <input type="text" name="org.code" placeholder="组织代码" readonly="readonly" id="code2">
+                </div>
+
+                <!--部和组通用-->
+                <%
+                include("./organizition_save_common.html"){}
+                %>
+            </form>
+        </div>
+
+
+    </div>
+    <div class="actions">
+        <div class="ui black  deny button">
+            取消
+        </div>
+        <div class="ui teal ok button">确定</div>
+    </div>
+</div>
+
+<script>
+    $.fn.form.settings.rules.relationNotEmpty = function (value, id) {
+        var managerId = $(this).next("input[name='"+id+"']").val();
+        return (value != "" && managerId!="") || (value == "" && managerId=="");
+    };
+    $(function () {
+        var $js_saveOrgModalTab = $('.js-savaOrgModal__menu .item'), //部门/组织 选项卡
+                $js_modal__agcSearch = $('.js-modal__agcSearch'),//部-所属机构 查询
+                $js_modal__orgSearch = $('.js-modal__orgSearch'),//组-所属部 查询
+                $js_modal__lineDropdown = $(".js-modal__lineDropdown"),//部-条线 下拉列表
+                $js_modal__managerSearch = $(".js-modal__managerSearch");//主管查询
+
+        //当前modal的状态
+        var MODAL = {
+            on: ""
+        }
+
+        function blur(){
+            var $agcForm = $(".js-agcForm");
+            var $orgForm = $(".js-orgForm");
+            $agcForm.find("#name").blur(function(){
+                if($agcForm.find("#name").val()!=""){
+                    $agcForm.find("#aliasName").val( $agcForm.find("#name").val());
+                }
+            });
+            $orgForm.find("#name").blur(function(){
+                if($orgForm.find("#name").val()!=""){
+                    $orgForm.find("#aliasName").val( $orgForm.find("#name").val());
+                }
+            });
+        }
+        //组织名称失焦事件处理.
+        blur();
+        //部门/组织 选项卡
+        $js_saveOrgModalTab.tab({
+            onVisible: function (tabPath) {
+
+                $("#organizeType").val(tabPath);
+            }
+        });
+
+        //主管查询
+        function initModalmanagerSearch() {
+            $js_modal__managerSearch.search({
+                apiSettings: {
+                    method: "post",
+                    url: $(document).api.settings.api['search b_user'] + '?search={query}'
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },onSelect: function (result) {
+                    $(this).find('input[name="org.managerName"]').val(result.name);
+                    $(this).find('input[name="org.managerId"]').val(result.id);
+                },onResultsOpen:function() {
+                    $(this).parent().find('input[name="org.managerName"]').val("");
+                    $(this).parent().find('input[name="org.managerId"]').val("");
+                }
+            })
+            $js_modal__managerSearch.on('input propertychange', '.js-input', function () {
+                $(this).prev('input').val("");
+            })
+        }
+        initModalmanagerSearch();
+
+        //部-所属机构 查询
+        function initModalAgcSearch() {
+            $js_modal__agcSearch.search({
+                apiSettings: {
+                    method: "post",
+                    url: $(document).api.settings.api['search agency'] + '?search={query}'
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },
+                onSelect: function (result, response) {
+                    $(this).find('input[name="org.agencyId"]').val(result.id);
+                    $(this).find('input[name="org.agencyPath"]').val(result.path);
+//                    $(".js-agcForm").form("validate form")
+                }
+            })
+
+            $js_modal__agcSearch.on('input propertychange', '.js-input', function () {
+                $(this).prev('input').val("");
+                $(this).prev('input[name="org.agencyPath"]').val("");
+            })
+        }
+
+        initModalAgcSearch();
+
+
+        //组-所属部 查询
+        function initModalOrgSearch() {
+            $js_modal__orgSearch.search({
+                apiSettings: {
+                    method: "post",
+                    url: $(document).api.settings.api['search organizition'] + '?search={query}&organizeType=AGENCY'
+                },
+                fields: {
+                    results: 'data',
+                    title: 'name',
+                    description: 'code'
+                },
+                // minCharacters : 3
+                onSelect: function (result, response) {
+                    $(this).find('input[name="org.parentId"]').val(result.id)
+                    //todo path agencypath
+                    $("#orgPath").val(result.path);
+                    $("#orgAgencyPath").val(result.agencyPath);
+                    //条线
+                    $("#org_businessLineName").val(enums.business_line[result.businessLine]);
+                    $("#org_businessLine").val(result.businessLine);
+                    //上级机构
+                    $("#agencyName").val(result.agency.name);
+                    $("#agencyId").val(result.agency.id);
+                    //todo 根据部门id、type、条线去查code
+                    $(document).api({
+                        on: "now",
+                        method: 'post',
+                        action: "get organizition code",
+                        beforeSend: function (settings) {
+                            settings.data["organizeType"] = $("#organizeType").val();
+                            settings.data["lines"] = result.businessLine;
+                            settings.data["id"] = result.id;
+                            return settings;
+                        },
+                        onSuccess: function (data) {
+                            $("#code2").val(data.data);
+                        }
+                    });
+                },
+
+            })
+
+            $js_modal__orgSearch.on('input propertychange', '.js-input', function () {
+                $(this).prev('input').val("");
+            })
+        }
+
+        initModalOrgSearch();
+
+
+        //部-条线 下拉列表
+        $js_modal__lineDropdown.dropdown({
+            onChange: function (value, text, $selectedItem) {
+                var $this = $(this);
+                if (value == "") {
+                    $("#code1").val("");
+                } else {
+                    //todo 根据type、条线去查code
+                    $(document).api({
+                        on: "now",
+                        method: 'post',
+                        action: "get organizition code",
+                        beforeSend: function (settings) {
+                            settings.data["organizeType"] = $("#organizeType").val();
+                            settings.data["lines"] = value;
+
+                            return settings;
+                        },
+                        onSuccess: function (data) {
+                            if (MODAL.on == "add") {
+                                $("#code1").val(data.data);
+                            } else if (MODAL.on == "updata") {
+                                //do nothing
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+
+        $.extend(Organizition, {
+            /**
+             * 新增和修改
+             * @param type 操作类型：add/update
+             * @param data 组织数据
+             */
+            save: function (type, data) {
+                MODAL.on = type;
+                var data = data;
+                var text = "";
+                var actions = "";
+                var _data = {};
+                if (type == "add") {
+                    text = "新增";
+                    actions = "add organizition";
+                    $(".js-hideOnUpdate").show()
+                } else if (type == "update") {
+                    text = "修改";
+                    actions = "update organizition";
+                    $(".js-hideOnUpdate").hide()
+                }
+                $(".js-editOrg__header").text(text);
+
+                var $modal = $(".js-addOrgModal");
+                var $agcForm = $modal.find(".js-agcForm");
+                var $orgForm = $modal.find(".js-orgForm");
+                $modal.modal({
+                    observeChanges:true,
+                    blurring: true,
+                    onShow: function () {
+                        /**
+                         * 部 表单
+                         */
+                        $agcForm.form('clear').form({
+                            inline: true,
+                            fields: {
+                                agencyId: {
+                                    identifier: 'org.agencyId',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                businessLine: {
+                                    identifier: 'org.businessLine',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                name: {
+                                    identifier: 'org.name',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                status: {
+                                    identifier: 'org.status',
+                                    rules: [
+                                        {
+                                            type: 'checked',
+                                            prompt: '请选择一个状态'
+                                        }
+                                    ]
+                                },aliasName: {
+                                    identifier: 'org.aliasName',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },searchManager: {
+                                    identifier: 'searchManager',
+                                    rules: [
+                                        {
+                                            type: 'relationNotEmpty[org.managerId]',
+                                            prompt: '请选择主管'
+                                        }
+                                    ]
+                                }
+
+                            },
+                            onSuccess: function (e, fidlds) {
+                                e.preventDefault();
+                            }
+                        }).api({
+                            action: actions,
+                            method: 'POST',
+                            serializeForm: true,
+                            data: _data,
+                            beforeSend: function (settings) {
+//                                settings.data["org.status"] = settings.data["org.status"] == "on" ? "ABLE" : "DISABLED";
+                                settings.data["org.organizeType"] = $("#organizeType").val();
+
+                                for(i in settings.data){
+                                    var val = settings.data[i];
+                                    settings.data[i] = $.trim(val);
+                                }
+                                return settings
+                            },
+                            onSuccess: function (response) {
+                                $.uiAlert({
+                                    type: "success",
+                                    textHead: text + '成功',
+                                    text: '成功' + text + '组织',
+                                    time: 1,
+                                    onClosed: function () {
+                                        window.location.reload()
+                                    }
+                                });
+
+                            },
+                            onFailure: function (response, element) {
+                                $.uiAlert({
+                                    type: "danger",
+                                    textHead: text + '失败',
+                                    text: response.msg,
+                                    time: 3,
+                                });
+                            }
+                        })
+
+                        /**
+                         * 组 表单
+                         */
+                        $orgForm.form('clear').form({
+                            inline: true,
+                            fields: {
+                                agencyId: {
+                                    identifier: 'org.agencyId',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                parentId: {
+                                    identifier: 'org.parentId',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                businessLine: {
+                                    identifier: 'org.businessLine',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                name: {
+                                    identifier: 'org.name',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },
+                                status: {
+                                    identifier: 'org.status',
+                                    rules: [
+                                        {
+                                            type: 'checked',
+                                            prompt: '请选择一个状态'
+                                        }
+                                    ]
+                                },aliasName: {
+                                    identifier: 'org.aliasName',
+                                    rules: [
+                                        {
+                                            type: 'empty',
+                                            prompt: '{name}不能为空'
+                                        }
+                                    ]
+                                },searchManager: {
+                                    identifier: 'searchManager',
+                                    rules: [
+                                        {
+                                            type: 'relationNotEmpty[org.managerId]',
+                                            prompt: '请选择主管'
+                                        }
+                                    ]
+                                }
+
+                            },
+                            onSuccess: function (e, fidlds) {
+                                e.preventDefault();
+                            }
+                        }).api({
+                            action: actions,
+                            method: 'POST',
+                            serializeForm: true,
+//                            data: _data,
+                            beforeSend: function (settings) {
+                                settings.data["org.organizeType"] = $("#organizeType").val();
+                                return settings
+                            },
+                            onSuccess: function (response) {
+
+                                $.uiAlert({
+                                    type: "success",
+                                    textHead: text + '成功',
+                                    text: '成功' + text + '组织',
+                                    time: 1,
+                                    onClosed: function () {
+                                        window.location.reload()
+                                    }
+                                });
+
+                            },
+                            onFailure: function (response, element) {
+                                $.uiAlert({
+                                    type: "danger",
+                                    textHead: text + '失败',
+                                    text: response.msg,
+                                    time: 3,
+                                });
+                            }
+                        })
+
+                        if (type == "add") {
+                           //设置选中值
+                            $(".js-savaOrgModal__menu .item").show();
+                            $agcForm.form('set values', {
+                                'org.status':"ABLE"
+                            })
+                            $orgForm.form('set values', {
+                                'org.status':"ABLE"
+                            })
+
+                        } else if (type == "update") {
+                            //todo 设置选中值
+                            $js_saveOrgModalTab.tab("change tab", data.organizeType);
+                            if (data.organizeType == "AGENCY") {
+                                $(".js-savaOrgModal__menu .item[data-tab='AGENCY']").show();
+                                $(".js-savaOrgModal__menu .item[data-tab='ORGANIZE']").hide();
+
+                                $js_modal__agcSearch.search("set value", data.agency.name);
+                                $js_modal__lineDropdown.dropdown("set selected", data.businessLine)
+
+
+                                $agcForm.form('set values', {
+                                    'org.id':data.id,
+                                    'org.code':data.code,
+                                    'org.agencyId': data.agencyId,
+                                    'org.name': data.name,
+                                    'org.aliasName': data.aliasName,
+                                    'org.address': data.address,
+                                    'org.telNumber': data.telNumber,
+                                    'org.status': data.status,
+                                })
+                                if(data.establishDate!=undefined){
+                                    var e_date=moment(data.establishDate).format("YYYY-MM-DD");
+                                    ($agcForm.find("#establishDate")).val(e_date);
+                                }
+                                if(data.revokeDate!=undefined){
+                                    var r_date=moment(data.revokeDate).format("YYYY-MM-DD");
+                                    ($agcForm.find("#revokeDate")).val(r_date);
+                                }
+                            } else if (data.organizeType == "ORGANIZE") {
+                                $(".js-savaOrgModal__menu .item[data-tab='AGENCY']").hide();
+                                $(".js-savaOrgModal__menu .item[data-tab='ORGANIZE']").show();
+
+                                $js_modal__orgSearch.search("set value", data.name);
+
+
+                                $orgForm.form('set values', {
+                                    'org.id':data.id,
+                                    'org.businessLine':data.businessLine,
+                                    'org.code':data.code,
+                                    'org.agencyId': data.agencyId,
+                                    'org.name': data.name,
+                                    'org.parentId':data.parentId,
+                                    'org.aliasName': data.aliasName,
+                                    'org.address': data.address,
+                                    'org.telNumber': data.telNumber,
+                                    'org.status': data.status,
+                                })
+                                if(data.establishDate!=undefined){
+                                    var e_date=moment(data.establishDate).format("YYYY-MM-DD");
+                                    ($orgForm.find("#establishDate")).val(e_date);
+                                }
+                                if(data.revokeDate!=undefined){
+                                    var r_date=moment(data.revokeDate).format("YYYY-MM-DD");
+                                    ($orgForm.find("#revokeDate")).val(r_date);
+                                }
+
+
+                            }
+                            //转换成立和撤销时间
+                            //todo 主管姓名设置
+                            $js_modal__managerSearch.search("set value", data.managerName);
+                            $("#managerName").val(data.managerName);
+                            $("#managerId").val(data.managerId);
+                        }
+                    },
+                    onApprove: function () {
+                        //不同组织类别提交不同表单
+                        var chosedOrgtype = $("#organizeType").val();
+                        if (chosedOrgtype == "AGENCY") {
+                            $(this).find(".js-agcForm").submit();
+                        } else if (chosedOrgtype == "ORGANIZE") {
+                            $(this).find(".js-orgForm").submit();
+                        }
+
+                        return false;
+                    },
+                    onHidden:function(){
+                        $(this).removeClass("hidden")
+                    },
+                    transition:"fade"
+                }).modal('show');
+            }
+        })
+    })
+</script>

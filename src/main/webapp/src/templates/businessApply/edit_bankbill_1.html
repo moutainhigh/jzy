@@ -1,0 +1,241 @@
+<div class="js-add_bill_info ui button teal">
+    + 添加
+</div>
+<form class="ui form" id="bill_info_form">
+    <div class="js-bill_demo bill_info margin20t ui teal segment">
+        <div class="ui top left attached label">1</div>
+        <div class="diver hidden"></div>
+        <div class="circular ui icon button floatBtn mini js_removeHouse ks-hidden">
+            <i class="icon remove"></i>
+        </div>
+        <input type="hidden" name="minCost">
+        <div class="three fields">
+            <div class="field required">
+                <label>票号</label>
+                <input name="billNo" type="text">
+            </div>
+            <div class="field required">
+                <label>出票日期</label>
+                <input name="drawTime" class="laydate" type="text">
+            </div>
+            <div class="field required">
+                <label>出票金额（元）</label>
+                <input name="amount" type="text">
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field required">
+                <label>到期日</label>
+                <input name="dueDate" class="laydate" type="text">
+            </div>
+            <div class="field required">
+                <label>调整天数（自然日）</label>
+                <input name="overdueDays" type="text">
+            </div>
+            <div class="field required">
+                <label>实际到期日</label>
+                <input name="actualDueDate" type="text" readonly="readonly" placeholder="保存后自动计算">
+            </div>
+        </div>
+        <div class="four fields">
+            <div class="field required">
+                <label>贴现日期</label>
+                <input type="text" id="discountTime" class="laydate" name="disDate" readonly="readonly">
+            </div>
+            <div class="field required">
+                <label>实际贴现天数</label>
+                <input name="disDays" type="text" readonly="readonly" placeholder="保存后自动计算">
+            </div>
+            <div class="field required">
+                <label>
+                    <div class="ui inline combo dropdown">
+                        <input type="hidden" name="depositFlag" value="1">
+                        <div class="text js-textName">打款利息（元）</div>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="item" data-value="1">打款利息（元）</div>
+                            <div class="item" data-value="0">打款利率</div>
+                        </div>
+                    </div>
+                </label>
+                <input name="interest" class="js-mustChange1" type="text">
+            </div>
+            <div class="field required">
+                <label class="js-text">打款利率</label>
+                <input name="depositRate" class="js-mustChange2" type="text" readonly>
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field required">
+                <label>出票人</label>
+                <input name="payer" type="text">
+            </div>
+            <div class="field required">
+                <label>付款行全称</label>
+                <input name="bankName" type="text">
+            </div>
+            <div class="field required">
+                <label>资信等级</label>
+                <select name="riskRank" type="text">
+                    <option value="">请选择</option>
+                    <option value="A">AAA</option>
+                    <option value="B">AA</option>
+                    <option value="C">A</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>付款人账号</label>
+                <input name="payerAccount" class="js-bankCard" type="text">
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field required">
+                <label>收款人</label>
+                <input name="payee" type="text">
+            </div>
+            <div class="field">
+                <label>收款人账号</label>
+                <input name="payeeAccount" class="js-bankCard" type="text">
+            </div>
+            <div class="field">
+                <label>收款人开户行</label>
+                <input name="payeeBankName" type="text">
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field required">
+                <label>成本报价（年化利率）%</label>
+                <input name="costRate" type="text" data-min_rate="">
+            </div>
+            <div class="field required">
+                <label>居间费（元）</label>
+                <input name="intermediaryFee" type="text" readonly="readonly" placeholder="保存后自动计算">
+            </div>
+        </div>
+    </div>
+    <div class="js-canBeAdd">
+
+    </div>
+</form>
+
+<div class="actions">
+    <div  class="ui button" id="bill_setp2Form">
+        保存
+    </div>
+</div>
+
+<div id="demo">
+    <div class="js-bill_demo margin20t ui teal segment ks-hidden">
+        <div class="ui top left attached label js-billNum"></div>
+        <div class="diver hidden"></div>
+        <div class="circular ui icon button floatBtn mini js_removeHouse ks-hidden">
+            <i class="icon remove"></i>
+        </div>
+        <input type="hidden" name="minCost">
+        <div class="three fields">
+            <div class="field required">
+                <label>票号</label>
+                <input name="billNo" type="text">
+            </div>
+            <div class="field required">
+                <label>出票日期</label>
+                <input name="drawTime" class="laydate" type="text">
+            </div>
+            <div class="field required">
+                <label>出票金额（元）</label>
+                <input name="amount" type="text">
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field required ">
+                <label>到期日</label>
+                <input name="dueDate" class="laydate" type="text">
+            </div>
+            <div class="field required">
+                <label>调整天数（自然日）</label>
+                <input name="overdueDays" type="text">
+            </div>
+            <div class="field required">
+                <label>实际到期日</label>
+                <input name="actualDueDate" type="text" readonly="readonly" placeholder="保存后自动计算">
+            </div>
+        </div>
+        <div class="four fields">
+            <div class="field required">
+                <label>贴现日期</label>
+                <input type="text" name="disDate" readonly="readonly">
+            </div>
+            <div class="field required">
+                <label>实际贴现天数</label>
+                <input name="disDays" type="text" readonly="readonly" placeholder="保存后自动计算">
+            </div>
+            <div class="field required">
+                <label>
+                    <div class="ui inline combo dropdown">
+                        <input type="hidden" name="depositFlag" value="1">
+                        <div class="text js-textName">打款利息（元）</div>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="item" data-value="1">打款利息（元）</div>
+                            <div class="item" data-value="0">打款利率</div>
+                        </div>
+                    </div>
+                </label>
+                <input name="interest" class="js-mustChange1" type="text">
+            </div>
+            <div class="field required">
+                <label class="js-text">打款利率</label>
+                <input name="depositRate" class="js-mustChange2" type="text" readonly placeholder="计算得出">
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field required">
+                <label>出票人</label>
+                <input name="payer" type="text">
+            </div>
+            <div class="field required">
+                <label>付款行全称</label>
+                <input name="bankName" type="text">
+            </div>
+            <div class="field required">
+                <label>资信等级</label>
+                <select name="riskRank" type="text">
+                    <option value="">请选择</option>
+                    <option value="A">AAA</option>
+                    <option value="B">AA</option>
+                    <option value="C">A</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>付款人账号</label>
+                <input name="payerAccount" class="js-bankCard" type="text">
+            </div>
+        </div>
+
+        <div class="three fields ">
+            <div class="field required">
+                <label>收款人</label>
+                <input name="payee" type="text">
+            </div>
+            <div class="field">
+                <label>收款人账号</label>
+                <input name="payeeAccount" class="js-bankCard" type="text">
+            </div>
+            <div class="field">
+                <label>收款人开户行</label>
+                <input name="payeeBankName" type="text">
+            </div>
+        </div>
+
+        <div class="three fields">
+            <div class="field required">
+                <label>成本报价（年化利率）%</label>
+                <input name="costRate" type="text" data-min_rate="">
+            </div>
+            <div class="field required">
+                <label>居间费（元）</label>
+                <input name="intermediaryFee" type="text" readonly="readonly" placeholder="保存后自动计算">
+            </div>
+        </div>
+    </div>
+</div>

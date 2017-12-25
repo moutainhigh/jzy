@@ -1,0 +1,101 @@
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>借款人</label>
+                <input type="text" id="borrower" placeholder="请填写借款人">
+            </div>
+            <div class="field">
+                <div class="two fields">
+                    <div class="field">
+                        <label>产品大类</label>
+                        <select name="productType" class="ui dropdown" id="productType">
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>产品子类</label>
+                        <select name="product" class="ui dropdown" id="product">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="four fields">
+            <div class="field">
+                <label>金额</label>
+                <input type="text" id="minAmount" placeholder="最小金额">
+            </div>
+            <div class="field">
+                <label>&emsp;</label>
+                <input type="text" id="maxAmount" placeholder="最大金额">
+            </div>
+            <div class="field">
+                <label>状态</label>
+                <select name="status" id="status" class="ui dropdown">
+                    <option value="">全部</option>
+                    <% for(status in statusList){%>
+                    <option value="${status}">${status.description}</option>
+                    <%}%>
+                </select>
+            </div>
+            <div class="field">
+                <label>渠道</label>
+                <div id="managerChannelSearch" class="ui search">
+                    <div class="ui icon input">
+                        <input value="" class="prompt" type="text" placeholder="输入渠道名/渠道简称"
+                               name="channelSearchName">
+                        <i class="js_search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                </div>
+                <input type="hidden" id="channelId" name="channelId">
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <button class="ui tiny submit button teal" onclick="queryList();">查询</button>
+                <button class="ui tiny button clear" onclick="queryFormReset();" type="reset">重置</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+
+<!--流程列表-->
+<!--列表-->
+<div class="row" id="">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">业务申请列表</a>
+            <table class="ui  celled table compact  small" id="loanList">
+                <thead>
+                <tr>
+                    <th>业务单号</th>
+                    <th>产品大类</th>
+                    <th>产品子类</th>
+                    <th>业务来源</th>
+                    <th>借款人</th>
+                    <th>申请金额（元）</th>
+                    <th>期限</th>
+                    <th>状态</th>
+                    <th>审批状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<%};%>
+
+
+<%var jsPart = {%>
+<script type="text/javascript" src="/js/common/two-cascade.js"></script>
+<script type="text/javascript" src="/js/pages/businessApply/list/finance_approval_complete.js"></script>
+<%};%>
+
+
+<% include("/common/menu.html", {jsSection:jsPart, htmlSection:htmlPart,title:"财务审批查询"}){} %>

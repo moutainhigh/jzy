@@ -1,0 +1,226 @@
+<script type="text/mustach-template" id="riskFormTemplate">
+    <!--风控审批信息：表单-->
+    <form class="ui bottom teal segment form" id="riskMediaForm">
+        <a class="ui teal left ribbon label">风控展期审批信息</a>
+        <div class="ui hidden divider"></div>
+        <input type="hidden" name="extensionId" value="{{id}}">
+        {{#infoList}}
+        <div class="ui required field">
+            {{^isExtension}}
+                <label>授信方案</label>
+            {{/isExtension}}
+            {{#isExtension}}
+                <label>展期授信方案</label>
+            {{/isExtension}}
+            <textarea readonly style="word-wrap: break-word;">{{content}}</textarea>
+        </div>
+        {{/infoList}}
+
+        {{#lastList}}
+        <div class="ui required field">
+            {{^isExtension}}
+            <label>授信方案</label>
+            {{/isExtension}}
+            {{#isExtension}}
+            <label>展期授信方案</label>
+            {{/isExtension}}
+            <textarea name="content" style="word-wrap: break-word;">{{content}}</textarea>
+        </div>
+        {{/lastList}}
+        {{^lastList}}
+        <div class="ui required field">
+            <label>展期授信方案</label>
+            <textarea name="content" style="word-wrap: break-word;"></textarea>
+        </div>
+        {{/lastList}}
+
+        <div id="risk_info">
+            <div class="required field ">
+                <label>资料清单</label>
+                <table class="ui celled center aligned table small">
+                    <thead>
+                    <tr>
+                        <th>资料名称</th>
+                        <th>是否必填</th>
+                        <th>资料文件</th>
+                        <th>上传人</th>
+                        <th>上传时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#media}}
+                    {{#productMediaAttachs}}
+                    <tr class="mediaItem">
+                        <input type="hidden" name="itemName" value="{{itemName}}">
+                        <input type="hidden" name="required" value="{{required}}">
+                        <input type="hidden" name="mediaItemType" value="RISK">
+                        <input type="hidden" name="mediaDetail" value="">
+                        <input type="hidden" name="productMediaAttachId" value="{{id}}">
+                        <td>{{itemName}}</td>
+                        <td>
+                            {{#required}}
+                            <span class="ui red label">必填</span>
+                            {{/required}}
+                            {{^required}}
+                            <span class="ui label">选填</span>
+                            {{/required}}
+                        </td>
+                        <td class="js-medias">
+                            {{#productMediaAttachDetails}}
+                            <div class="js-canBeDel right aligned">
+                                <span class="js-temp button ui mini" data-name="{{attachName}}" target="_blank" href="{{url}}">{{attachName}}</span>&emsp;
+                                <a href="javascript:;" class="js-remove ui basic red left label">删除</a>
+                            </div>
+                            {{/productMediaAttachDetails}}
+                        </td>
+                        <td>{{#url}}{{updateBy}}{{/url}}</td>
+                        <td>{{#url}}{{updateTime}}{{/url}}</td>
+                        <td class="single line media_container">
+                            <div class="ui basic  mini button js-uploadBtn" data-dir="{{code}}/RISK">上传</div>
+                        </td>
+                    </tr>
+                    {{/productMediaAttachs}}
+                    {{/media}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br>
+        <div id="riskBill_info">
+
+        </div>
+        <div class="ui error message"><ul class="list"></ul></div>
+        <br>
+        <div class="ui button teal submit">保存</div>
+    </form>
+    <!--/风控审批信息：表单-->
+
+</script>
+
+<script type="text/mustach-template" id="riskTemplate">
+    <div class="ui bottom teal segment">
+        <a class="ui teal left ribbon label">风控展期审批信息</a>
+        <div class="ui  padded small segment ">
+            <div class="ui grid">
+                {{#infoList}}
+                <div class="row">
+                    <div class="column">
+                        {{^isExtension}}
+                        <b>授信方案</b>
+                        {{/isExtension}}
+                        {{#isExtension}}
+                        <b>展期授信方案</b>
+                        {{/isExtension}}
+                        <pre class="auto">{{content}}</pre>
+                    </div>
+                </div>
+                {{/infoList}}
+
+                {{#lastList}}
+                <div class="row">
+                    <div class="column">
+                        {{^isExtension}}
+                        <b>授信方案</b>
+                        {{/isExtension}}
+                        {{#isExtension}}
+                        <b>展期授信方案</b>
+                        {{/isExtension}}
+                        <pre class="auto">{{content}}</pre>
+                    </div>
+                </div>
+                {{/lastList}}
+                <div class="row">
+                    <div class="column">
+                        <b for="">
+                            资料清单：
+                        </b>
+                        <table class="ui celled  center aligned small table" id="">
+                            <thead>
+                            <tr>
+                                <th>资料名称</th>
+                                <th>是否必填</th>
+                                <th>资料文件</th>
+                                <th>上传人</th>
+                                <th>上传时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#media}}
+                            {{#productMediaAttachs}}
+                            <tr>
+                                <td>{{itemName}}</td>
+                                <td>
+                                    {{#required}}
+                                    <span class="ui red label">必填</span>
+                                    {{/required}}
+                                    {{^required}}
+                                    <span class="ui label">选填</span>
+                                    {{/required}}
+                                </td>
+                                <td>
+                                    {{#productMediaAttachDetails}}
+                                    <div class="js-canBeDel right aligned">
+                                        <span class="js-temp button mini ui" data-name="{{attachName}}" href="{{url}}">{{attachName}}</span>
+                                    </div>
+                                    {{/productMediaAttachDetails}}
+                                </td>
+                                <td>{{#url}}{{updateBy}}{{/url}}</td>
+                                <td>{{#url}}{{updateTime}}{{/url}}</td>
+                            </tr>
+                            {{/productMediaAttachs}}
+                            {{/media}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</script>
+
+<!--查看图片模板-->
+<script type="text/mustach-template" id="applyFileTmp">
+    <i class="close icon"></i>
+    <div class="center" style="text-align:center;padding: 40px;">
+        <div class="ui shape" id="fileSide">
+            <div class="ui ignored icon direction buttons">
+                <div class="ui button" id="prev"><i class="left long arrow icon"></i></div>
+                <div class="ui icon button" id="next"><i class="right long arrow icon"></i></div>
+            </div>
+            <div class="ui ignored divider"></div>
+            <div class="sides">
+                {{#data_List}}
+                <div class="side js-side">
+                    <div class="ui shape image">
+                        <div class="image">
+                            {{#is_Image}}
+                            <img src="{{href}}">
+                            {{/is_Image}}
+                            {{^is_Image}}
+                            <i class="file icon"></i>{{fileType}}文件
+                            {{/is_Image}}
+                        </div>
+                        <div class="content">
+                            <div class="ui hidden diver"></div>
+                            <h3 class="header">{{name}}</h3>
+                        </div>
+                        <div class="extra content">
+                            <div class="ui ignored divider"></div>
+                            {{^is_Image}}
+                            <a target="_blank" href="{{href}}"><i class="download icon"></i>下载</a>
+                            {{/is_Image}}
+                            {{#is_Image}}
+                            <a class="ui button" target="_blank" id="source_file" href="{{href}}"><i class="linkify icon"></i>查看原文件</a>
+                            {{/is_Image}}
+                        </div>
+                    </div>
+                </div>
+                {{/data_List}}
+            </div>
+        </div>
+    </div>
+</script>

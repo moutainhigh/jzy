@@ -1,0 +1,259 @@
+<%var jsPart = {%>
+
+<script type="text/mustach-template" id="approveList">
+    {{#data}}
+    {{#isApproval}}
+        <div class="whiteBoxFu">
+                    <div class="whiteBox">
+                        <div class="weui-form-preview">
+                            <div class="weui-form-preview__bd">
+                                <div class="weui-form-preview__item">
+                                    <label class="weui-form-preview__label f-black">
+                                        审批节点
+                                    </label>
+                                    <span class="weui-form-preview__value">{{nodeCode}}-{{nodeName}}</span>
+                                </div>
+                                <div class="weui-form-preview__item">
+                                    <label class="weui-form-preview__label f-black">审批结果</label>
+                                    <span class="weui-form-preview__value">{{nodeCode}}-{{approval_code_code}}-{{approval_code_desc}}</span>
+                                </div>
+                                <div class="weui-form-preview__item">
+                                    <label class="weui-form-preview__label f-black">
+                                        审批人
+                                    </label>
+                                    <span class="weui-form-preview__value">{{userName}}</span>
+                                </div>
+                                <div class="weui-form-preview__item">
+                                    <label class="weui-form-preview__label f-black">审批开始时间</label>
+                                    <span class="weui-form-preview__value">{{start_Time}}</span>
+                                </div>
+                                <div class="weui-form-preview__item">
+                                    <label class="weui-form-preview__label f-black">审批结束时间</label>
+                                    <span class="weui-form-preview__value">{{approvalTime}}</span>
+                                </div>
+                                <div class="weui-form-preview__item">
+                                    <label class="weui-form-preview__label f-black">审批时效</label>
+                                    <span class="weui-form-preview__value">{{duration}}</span>
+                                </div>
+                                <div class="weui-form-preview__item">
+                                    <label class="weui-form-preview__label f-black">
+                                        审批意见
+                                    </label>
+                                    <pre class="weui-form-preview__value auto left-text-align">{{content}}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{^isLast}}
+                    <div class="downArrowfu">
+                        <span class="downArrow"></span>
+                    </div>
+                {{/isLast}}
+            </div>
+    {{/isApproval}}
+    {{^isApproval}}
+        <div class="darkBoxFu">
+            <div class="darkBox">
+                <div class="weui-form-preview darkBg">
+                    <div class="weui-form-preview__bd">
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label f-black">
+                                审批节点
+                            </label>
+                            <span class="weui-form-preview__value">{{nodeCode}}-{{nodeName}}</span>
+                        </div>
+
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label f-black">审批结果</label>
+                            {{^isEditing}}
+                            {{#isCancel}}
+                            <span class="weui-form-preview__value">已取消</span>
+                            {{/isCancel}}
+                            {{^isCancel}}
+                            <span class="weui-form-preview__value">{{nodeCode}}-00-等待审批</span>
+                            {{/isCancel}}
+                            {{/isEditing}}
+
+                            {{#isEditing}}
+                            {{#isCancel}}
+                            <span class="weui-form-preview__value">已取消</span>
+                            {{/isCancel}}
+                            {{^isCancel}}
+                            <span class="weui-form-preview__value">{{nodeCode}}</span>
+                            {{/isCancel}}
+                            {{/isEditing}}
+                        </div>
+
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label f-black">
+                                审批人
+                            </label>
+                            <span class="weui-form-preview__value"></span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label f-black">审批开始时间</label>
+                            <span class="weui-form-preview__value"></span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label f-black">审批结束时间</label>
+                            <span class="weui-form-preview__value"></span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label f-black">审批时效（分钟）</label>
+                            <span class="weui-form-preview__value"></span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label f-black">
+                                审批意见
+                            </label>
+                            <pre class="weui-form-preview__value auto left-text-align"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{^isLast}}
+            <div class="downArrowfu">
+                <span class="downArrow"></span>
+            </div>
+            {{/isLast}}
+        </div>
+    {{/isApproval}}
+    {{/data}}
+</script>
+<script>
+    $.ajax({
+       type: "get",
+       url: "/m/flow/query_approval_list",
+       data:{
+           loanId: $("#loanId").val()
+       },
+       async: true,
+       success: function (response) {
+           var _data = response;
+           var count = 0;
+           _data.approval_code_code = function () {
+               return enums.approval_code_code[this.approvalCode]
+           }
+           _data.approval_code_desc = function () {
+               return enums.approval_code_desc[this.approvalCode]
+           }
+           _data.isEditing = function () {
+               return this.nodeCode === "Y0";
+           }
+           _data.isCancel = function () {
+               return (this.nodeCode === "Y0" && this.isCancel === "true");
+           }
+           _data.isLast = function () {
+               count+=1;
+               return count>=_data.data.length;
+           }
+           _data.timeRange = function(){
+               if(this.duration == 0){
+                    return '--'
+               }else{
+                   return this.duration
+               }
+           }
+           _data.start_Time = function(){
+               if(this.startTime){
+                   return this.startTime
+               }else{
+                   return '--'
+               }
+           }
+           var $loanApproveInfo = utils.render("#approveList", _data);
+           $("#loanApproveInfo").append($loanApproveInfo);
+       }
+    });
+    $(document).on('click', '#goBackBnt', function(){
+        var historyUrl = document.referrer;
+        if(historyUrl != ''){
+            var url = historyUrl.replace(/&linkId=[\d\D]+$/,'');
+            window.location.href = url;
+        }else{
+            window.history.go(-1);
+        }
+    });
+</script>
+
+<%};%>
+
+<%var htmlPart = {%>
+<style>
+    #container{
+        overflow-y: scroll;
+    }
+    body{
+        background: white;
+    }
+    .spBox{
+        padding: 15px 20px;
+    }
+    .spHead{
+        margin-bottom: 10px;
+    }
+    .spHead:after{
+        content: '';
+        display: block;
+        clear: both;
+    }
+    .spHead h3{
+        float: left;
+    }
+    .spHead div{
+        float: right;
+        width: 80px;
+        height: 24px;
+        line-height: 24px;
+        border: 1px solid #787878;
+        text-align: center;
+    }
+    .whiteBox{
+        width: 100%;
+        height: auto;
+        border: 1px solid #787878;
+    }
+    .downArrowfu{
+        position: relative;
+        margin: 10px 0px;
+    }
+    .downArrow{
+        display: block;
+        position: relative;
+        left: 50%;
+        margin-left: -13px;
+        width: 26px;
+        height: 22px;
+        text-align: center;
+        background: url("../../image/arrow.png");
+    }
+    .darkBox{
+        width: 100%;
+        height: auto;
+        border: 1px solid #787878;
+    }
+    .darkBg{
+        background: #cdcdcd;
+    }
+    .weui-form-preview__item{
+        color: #323232;
+    }
+    .f-black{
+        color: #323232!important;
+    }
+    .left-text-align {
+        text-align:left;
+    }
+</style>
+<div class="spBox">
+    <div class="spHead">
+        <h3>审批流程</h3>
+        <a id="goBackBnt" href="javascript:;" class="weui-btn_mini weui-btn_plain-primary right">返 回</a>
+    </div>
+    <div id="loanApproveInfo">
+
+    </div>
+</div>
+<input type="hidden" value="${obj.loanId}" id="loanId">
+<input type="hidden" value="${obj.approvalType}" id="approvalType">
+<%}; include("/h5/common.html",{jsSection:jsPart,htmlSection:htmlPart,title:"审批流程"}){}%>

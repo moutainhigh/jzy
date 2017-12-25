@@ -1,0 +1,87 @@
+<%var jsPart = {%>
+<script src="/js/pages/specialApply/extension/list_approval.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui tabular menu" id="tab_menu">
+        <a data-status="approval" class="item active teal">待审批 </a>
+        <a data-status="approved" class="item teal">已审批</a>
+    </div>
+
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>业务单号</label>
+                <input type="text" name="code" id="code">
+            </div>
+            <div class="field">
+                <label>展期申请编号</label>
+                <input type="text" name="extensionCode" id="extensionCode">
+            </div>
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <div class="ui tiny button teal" onclick="init.search()">查询</div>
+                <div class="ui tiny button clear" onclick="init.reset()">重置</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" id="part_one">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">待审批</a>
+            <table class="ui  celled table compact  small" id="approvalTable">
+                <thead>
+                <tr>
+                    <th>业务单号</th>
+                    <th>展期申请编号</th>
+                    <th>产品大类</th>
+                    <th>业务来源</th>
+                    <th>借款人</th>
+                    <th>展期金额（元）</th>
+                    <th>期限</th>
+                    <th>业务单状态</th>
+                    <th>状态</th>
+                    <th>展期审批状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row ks-hidden" id="part_two">
+    <div class="column">
+        <div class=" ui segment teal">
+            <a class="ui teal left ribbon label">已审批</a>
+            <table class="ui  celled table compact  small" id="approvedTable">
+                <thead>
+                <tr>
+                    <th>业务单号</th>
+                    <th>展期申请编号</th>
+                    <th>产品大类</th>
+                    <th>业务来源</th>
+                    <th>借款人</th>
+                    <th>展期金额（元）</th>
+                    <th>期限</th>
+                    <th>业务单状态</th>
+                    <th>状态</th>
+                    <th>展期审批状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"展期财务审批"}){}%>

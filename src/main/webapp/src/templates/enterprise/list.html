@@ -1,0 +1,331 @@
+<%var jsPart = {%>
+<script src="/js/plugins/mustache.min.js"></script>
+<script src="/js/common/utils.js"></script>
+<script src="/js/pages/enterprise/index.js"></script>
+<%};%>
+
+
+<%var htmlPart = {%>
+<style>
+    textarea{height: 100px;}
+</style>
+<!--企业管理列表-->
+<div class="row ">
+    <div class="column">
+        <div class=" ui segment small teal">
+            <form class="ui fluid  form js-searchForm">
+                <div class="two fields">
+                    <div class="field">
+                        <label>企业名称</label>
+                        <input type="text" id="s_name" name="s_name">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui teal submit button mini">查询</div>
+                    <div  class="ui clear button mini">重置</div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="ui hidden divider"></div>
+
+<div class="row" >
+    <div class="column">
+        <div class="ui segment teal">
+            <a class="ui teal left ribbon label"> 企业列表</a>
+            <table class="ui aligned celled table compact  small" id="enterpriseTable">
+                <thead >
+                <tr>
+                    <th>开票企业名称</th>
+                    <th>资信等级</th>
+                    <th>底价（年化利率）%</th>
+                    <th>维护人</th>
+                    <th>维护时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="ui modal" id="add_enterprise_modal">
+    <i class="close icon"></i>
+    <div class="header">新增企业</div>
+    <div class=" content  ">
+        <form class="ui form" id="add_enterprise_form">
+            <div class="two fields">
+                <div class="field required">
+                    <label>公司类型</label>
+                    <select name="type" class="js_companyType">
+                        <option value="CREDITCOMPANY">授信公司</option>
+                        <option value="SUBCOMPANY">子公司</option>
+                    </select>
+                </div>
+                <div class="field required">
+                    <label>公司名称</label>
+                    <input type="text" name="name">
+                </div>
+            </div>
+
+            <div class="two fields">
+                <div class="field required">
+                    <label>成立时间</label>
+                    <input type="date" name="establishDate" id="establishDate">
+                </div>
+                <div class="field required">
+                    <label>底价(%)</label>
+                    <input type="number" name="price">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field required">
+                    <label>所有制性质</label>
+                    <input type="text" name="nature">
+                </div>
+                <div class="field required">
+                    <label>公司性质</label>
+                    <input type="text" name="computerNature">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field required js_creditQuota">
+                    <label>授信额度</label>
+                    <input type="text" name="creditQuota">
+                </div>
+                <div class="field required ks-hidden disabled js_libraryAmount">
+                    <label>在库额度</label>
+                    <input type="text" name="libraryAmount" value="0" readonly>
+                </div>
+                <div class="field required">
+                    <label>资信等级</label>
+                    <select name="level">
+                        <option value="">请选择</option>
+                        <% for(level in levelList){ %>
+                        <option value="${level}">${level.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field required js_remainderAmount">
+                    <label>剩余额度</label>
+                    <input type="text" name="remainderAmount" readonly>
+                </div>
+            </div>
+            <div class="one fields">
+                <div class="field required js_companyId">
+                    <label>关联授信公司</label>
+                    <div class="ui search js_companySearch">
+                        <div class="ui icon input">
+                            <input type="hidden" name="companyId">
+                            <input class="prompt" type="text" placeholder="公司名称"
+                                   name="companyName">
+                            <i class="js_search search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </div>
+            </div>
+
+            <h6>公司财务数据</h6>
+            <div class="two fields">
+                <div class="field required">
+                    <label>年度</label>
+                    <input type="text" name="year">
+                </div>
+                <div class="field">
+                    <label>营业收入（亿）</label>
+                    <input type="text" name="businessIncome">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>扣非净利润（万）</label>
+                    <input type="text" name="notNetProfit">
+                </div>
+                <div class="field">
+                    <label>经营性现金流净额（亿）</label>
+                    <input type="text" name="cashFlowNet">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>资产负债率（%）</label>
+                    <input type="number" name="assetsDebtRatio">
+                </div>
+            </div>
+            <div class="field required">
+                <label>公司基本情况</label>
+                <textarea name="computerBasic" cols="10" rows="10"></textarea>
+            </div>
+            <div class="field required">
+                <label>失信执行人情况</label>
+                <textarea name="executorSituation" cols="10" rows="10"></textarea>
+            </div>
+            <div class="field required">
+                <label>重大诉讼/民间纠纷/票据纠纷</label>
+                <textarea name="dispute" cols="10" rows="10"></textarea>
+            </div>
+            <div class="field required">
+                <label>其他情况</label>
+                <textarea name="otherSituation" cols="10" rows="10"></textarea>
+            </div>
+            <div class="field required">
+                <label>经办人意见</label>
+                <textarea name="managerOpinion" cols="10" rows="10"></textarea>
+            </div>
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui mini black button" id="addCancelBnt">取消</div>
+        <div class="ui mini teal button " id="addBnt" onclick="addCompany()">保存</div>
+    </div>
+</div>
+
+<div class="ui modal" id="edit_enterprise_modal">
+    <i class="close icon"></i>
+    <div class="header">企业维护</div>
+    <div class=" content">
+        <form class="ui form" id="edit_enterprise_form">
+            <input class="item" type="hidden" name="id" id="id">
+            <div class="two fields">
+                <div class="field required disabled">
+                    <label>公司类型</label>
+                    <select name="type" class="item js_companyType">
+                        <option value="CREDITCOMPANY">授信公司</option>
+                        <option value="SUBCOMPANY">子公司</option>
+                    </select>
+                </div>
+                <div class="field required">
+                    <label>公司名称</label>
+                    <input class="item" type="text" name="name">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field required">
+                    <label>成立时间</label>
+                    <input class="item" type="date" name="establishDate" id="establishDate">
+                </div>
+                <div class="field required">
+                    <label>底价(%)</label>
+                    <input class="item" type="number" name="price">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field required">
+                    <label>所有制性质</label>
+                    <input class="item" type="text" name="nature">
+                </div>
+                <div class="field required">
+                    <label>公司性质</label>
+                    <input class="item" type="text" name="computerNature">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field required js_creditQuota">
+                    <label>授信额度</label>
+                    <input class="item" type="text" name="creditQuota">
+                </div>
+                <div class="field required ks-hidden disabled js_libraryAmount">
+                    <label>在库额度</label>
+                    <input class="item" type="text" name="libraryAmount" readonly>
+                </div>
+                <div class="field required">
+                    <label>资信等级</label>
+                    <select class="item" name="level">
+                        <option value="">请选择</option>
+                        <% for(level in levelList){ %>
+                        <option value="${level}">${level.description}</option>
+                        <%}%>
+                    </select>
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field required js_remainderAmount">
+                    <label>剩余额度</label>
+                    <input class="item" type="text" name="remainderAmount" readonly>
+                </div>
+            </div>
+            <div class="one fields">
+                <div class="field required js_companyId">
+                    <label>关联授信公司</label>
+                    <div class="ui search js_companySearch">
+                        <div class="ui icon input">
+                            <input class="prompt item" type="text" placeholder="公司名称"
+                                   name="companyName">
+                            <input type="hidden" class="item" name="companyId">
+                            <i class="js_search search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                </div>
+                <div class="field required js_companies">
+                    <label>已关联子公司：</label>
+                    <span class="ui header blue small" id="companies"></span>
+                </div>
+            </div>
+
+            <h6>公司财务数据</h6>
+            <div class="two fields">
+                <div class="field required">
+                    <label>年度</label>
+                    <input class="item" type="text" name="year">
+                </div>
+                <div class="field">
+                    <label>营业收入（亿）</label>
+                    <input class="item" type="text" name="businessIncome">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>扣非净利润（万）</label>
+                    <input class="item" type="text" name="notNetProfit">
+                </div>
+                <div class="field">
+                    <label>经营性现金流净额（亿）</label>
+                    <input class="item" type="text" name="cashFlowNet">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>资产负债率（%）</label>
+                    <input class="item" type="number" name="assetsDebtRatio">
+                </div>
+            </div>
+            <div class="field required">
+                <label>公司基本情况</label>
+                <textarea class="item" name="computerBasic" cols="10" rows="10"></textarea>
+            </div>
+            <div class="field required">
+                <label>失信执行人情况</label>
+                <textarea class="item" name="executorSituation" cols="10" rows="10"></textarea>
+            </div>
+            <div class="field required">
+                <label>重大诉讼/民间纠纷/票据纠纷</label>
+                <textarea class="item" name="dispute" cols="10" rows="10"></textarea>
+            </div>
+            <div class="field required">
+                <label>其他情况</label>
+                <textarea class="item" name="otherSituation" cols="10" rows="10"></textarea>
+            </div>
+            <div class="field required">
+                <label>经办人意见</label>
+                <textarea class="item" name="managerOpinion" cols="10" rows="10"></textarea>
+            </div>
+        </form>
+    </div>
+    <div class="actions" align="center">
+        <div class="ui black button" id="editCancelBnt">取消</div>
+        <div class="ui  teal button" id="editBnt">保存</div>
+
+    </div>
+</div>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"企业管理"}){}%>
+

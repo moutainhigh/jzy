@@ -1,0 +1,135 @@
+
+
+
+<%var htmlPart = {%>
+<div class="ui segment teal">
+    <div class="ui equal width form">
+        <div class="fields">
+            <div class="field">
+                <label>借款人姓名</label>
+                <input type="text" id="query_name" placeholder="请填写借款人姓名">
+            </div>
+            <div class="field">
+                <label>证件号码</label>
+                <input type="text" id="query_certifNumber" placeholder="请填写借款人证件号码">
+            </div>
+
+        </div>
+        <div class="field">
+            <div class="aligned center">
+                <button class="ui tiny submit button teal" onclick="queryList();">查询</button>
+                <button class="ui tiny button clear" onclick="queryFormReset();" type="reset">重置</button>
+                <button class="ui tiny button clear" onclick="showAdd();" type="reset">新增</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui hidden divider"></div>
+
+<!--流程列表-->
+<div class="row" >
+    <div class="column">
+        <table class="ui structured celled table compact teal small" id="loanList">
+            <thead>
+            <tr>
+                <th>业务单号</th>
+                <th>产品大类</th>
+                <th>机构</th>
+                <th>组织</th>
+                <th>业务员</th>
+                <th>借款人</th>
+                <th>提交时间</th>
+                <th>申请金额（元）</th>
+                <th>期限</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+<%};%>
+
+
+<%var jsPart = {%>
+<script type="text/javascript" src="/js/plugins/moment.min.js"></script>
+<script type="text/javascript" src="/js/plugins/jquery.daterangepicker.js"></script>
+
+<script>
+
+    function showAdd(){
+        $('#addModal').height(screen.height*0.8);
+        $('#addModal').modal({
+            allowMultiple: true,
+            closable:false,
+            onHidden:function(){
+                point=1;
+                addFormReset();
+            }
+        }).modal("show");
+    }
+
+    /**
+     * 重置表单
+     */
+    function queryFormReset(){
+        $("#query_name").val("");
+        $("#query_certifNumber").val("");
+    }
+
+    /**
+     * 查询列表
+     */
+    function queryList() {
+        return;
+        var dtTable = $("#loanList").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            bDestroy:true,
+            "ajax": {
+                "url":"/business_apply/query_list",
+                "data": {"apply":$("#apply").val(),"borrower":$("#borrower").val(),"submitTime":$("#submitTime").val()},
+                "dataSrc": function (json) {
+                    for (var i = 0; i < json.data.length; i++) {
+                        json.data[i].term = json.data[i].term+(json.data[i].termType==='YEAS'?'年':json.data[i].termType==='MOTHS'?"月":json.data[i].termType==='DAYS'?"天":"");
+                    }
+                    return json.data
+                },
+                "type": "POST"
+            },
+            columns: [
+                {data: 'code'},
+                {data: "productTypeName"},
+                {data: "agencyName"},
+                {data: "organizeName"},
+                {data: "applyName"},
+                {data:"borrserName"},
+                {data:"applyTime"},
+                {data:"amount"},
+                {data:"term"},
+                {data:"approveStatus"},
+                {data:null}
+            ],
+            columnDefs:[{
+                targets:10,
+                render: function (data, type, row, meta) {
+                    return '<a  href="#">查看</a>';
+                }
+            }
+            ],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+        });
+    }
+
+</script>
+<%};%>
+<% includeFileTemplate("add.html"){} %>
+
+<% include("/common/menu.html", {jsSection:jsPart, htmlSection:htmlPart}){} %>

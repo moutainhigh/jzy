@@ -1,0 +1,199 @@
+body,h1,h2,h3,h4,h5,h6,form,p,fieldset,ul,li {
+    margin: 0;
+    padding: 0
+}
+
+body {
+    font: 12px/1.5 "\u5b8b\u4f53",simsun;
+    background: #fff
+}
+
+em,i,var {
+    font-style: normal
+}
+
+.wrapper {
+    width: 980px;
+    margin: 0 auto
+}
+
+.header {
+    margin-top: 26px;
+    margin-bottom: 18px;
+    height: 42px;
+    overflow: hidden
+}
+
+.header .logo {
+    display: block;
+    width: 197px;
+    height: 42px;
+    overflow: hidden;
+    text-indent: -999px;
+    /*background: url(http://z5.tuanimg.com/v2/core/img/new_logo4_71687.png) no-repeat 0 0*/
+}
+
+.unavailable {
+    width: 940px;
+    height: 414px;
+    padding: 20px;
+    overflow: hidden;
+    /*background: url(http://z5.tuanimg.com/v1/global/img/border-404.png) no-repeat 0 0*/
+}
+
+.unavailable .status-code {
+    float: left;
+    width: 540px;
+    height: 100%;
+    overflow: hidden;
+    text-indent: -999px;
+    background: url(/image/p404.jpg) no-repeat 0 0
+}
+
+.unavailable .status-code-404 {
+    background-position: -43px -11px
+}
+
+.unavailable .status-code-502 {
+    background-position: -43px -527px
+}
+
+.unavailable .description {
+    float: right;
+    width: 382px;
+    padding-top: 69px;
+    /*background: url(http://z5.tuanimg.com/v1/global/img/clound.png) no-repeat 100% 0*/
+}
+
+.unavailable .heading {
+    display: block;
+    color: #333;
+    font: 400 24px/36px "Microsoft Yahei","\5fae\8f6f\96c5\9ed1",Arial
+}
+
+.unavailable .title {
+    display: block;
+    margin: 11px 0;
+    color: #666;
+    font: 400 18px/28px "Microsoft Yahei","\5fae\8f6f\96c5\9ed1",Arial
+}
+
+.unavailable .reason {
+    margin: 12px 0 14px 0
+}
+
+.unavailable .reason li {
+    color: #666;
+    font-size: 14px;
+    line-height: 24px;
+    list-style-position: inside
+}
+
+.unavailable .links {
+    display: block;
+    height: 19px;
+    margin: 16px 0;
+    overflow: hidden
+}
+
+.unavailable .links a {
+    vertical-align: top;
+    font: 400 16px/18px "Microsoft Yahei","\5fae\8f6f\96c5\9ed1",Arial
+}
+
+.unavailable .links a,.unavailable .links a:visited {
+    color: #09c;
+    text-decoration: underline
+}
+
+.unavailable .links .separator {
+    display: inline-block;
+    margin: 0 9px;
+    vertical-align: top;
+    height: 16px;
+    width: 1px;
+    margin-top: 1px;
+    overflow: hidden;
+    text-indent: -9px;
+    background: #e5d4cc;
+    border-left: 1px solid #fffff6;
+    border-right: 1px solid #d4e5f6
+}
+
+.unavailable .app-qr {
+    height: 102px;
+    overflow: hidden
+}
+
+.unavailable .qr {
+    display: block;
+    float: left;
+    margin-right: 18px
+}
+
+.unavailable .app-qr .slogan {
+    display: block;
+    float: left;
+    width: 7em;
+    text-align: center;
+    margin-top: 28px;
+    color: #666;
+    font: 400 18px/24px "Microsoft Yahei","\5fae\8f6f\96c5\9ed1",Arial;
+    text-align: left
+}
+
+.footer {
+    margin-top: 28px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    text-align: center
+}
+
+.footer .copyright {
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: #666
+}
+
+.footer .icp,.footer .icp:visited,.footer .police,.footer .police:visited {
+    color: #333;
+    text-decoration: none
+}
+
+.footer .icp:hover,.footer .police:hover {
+    color: #c00;
+    text-decoration: underline
+}
+
+.footer .cert {
+    display: inline-block;
+    width: 70px;
+    height: 26px;
+    margin: 0 10px;
+    overflow: hidden;
+    border: 1px solid #c3bfbe
+}
+
+.footer .cert,.footer .cert:visited {
+    text-decoration: none
+}
+
+.footer .cert img {
+    border: 0 none
+}
+
+.unavailable .status-code-error {
+    float: left;
+    width: 540px;
+    height: 100%;
+    overflow: hidden;
+    text-indent: -999px;
+    /*background: url(http://z5.tuanimg.com/v1/global/img/error.png) no-repeat 0 0*/
+}
+
+.description-error {
+    float: right;
+    width: 382px;
+    padding-top: 144px;
+    /*background: url(http://z5.tuanimg.com/v1/global/img/clound.png) no-repeat 100% 0*/
+}

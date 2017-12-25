@@ -1,0 +1,50 @@
+<script type="text/mustach-template" id="businessFormTemplate">
+    <form class="ui form" id="approvalForm">
+        {{#workItem}}
+        <a class="ui teal left ribbon label">{{type_val}}审批流程</a>
+        <h3 class="ui header">审批流程节点：<span id="risk_arrorval">{{taskKey}}-{{taskName}}</span></h3>
+        <input type="hidden" name="type" value="{{type}}">
+        <input type="hidden" name="needRepeatFlow" value="false">
+        <div class="ui grouped required  fields">
+            <label>审批结果</label>
+            <div class="field ">
+                {{#resultEnums}}
+                <div class="ui radio checkbox ">
+                    <input type="radio" name="approvalCode" value="{{value}}">
+                    <label>{{name}}</label>
+                </div>
+                {{/resultEnums}}
+            </div>
+        </div>
+        <div class="required field ">
+            <label>审批意见</label>
+            <textarea name="content"></textarea>
+        </div>
+        <div class="ui button teal" id="businessFormBtn">提交</div>
+        <div class="ui error message"></div>
+        {{/workItem}}
+    </form>
+
+    <div class="ui modal" id="needRepeatFlowModal">
+        <i class="close icon"></i>
+        <div class="header">
+            是否重走流程？
+        </div>
+        <div class="content">
+            <div class="two fields">
+                <div class="ui radio checkbox checked">
+                    <input type="radio" checked="checked" name="needRepeatFlowRadio" value="true">
+                    <label>是</label>
+                </div>
+                <div class="ui radio checkbox checked">
+                    <input type="radio" name="needRepeatFlowRadio" value="false">
+                    <label>否</label>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui green button approve">提交</div>
+            <div class="ui button deny">取消</div>
+        </div>
+    </div>
+</script>

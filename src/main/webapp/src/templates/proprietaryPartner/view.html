@@ -1,0 +1,82 @@
+<%var jsPart = {%>
+<script src="/js/plugins/plupload-2.1.2/js/plupload.full.min.js"></script>
+<script src="/js/pages/multiple_upload_file.js"></script>
+<script src="/js/pages/partner/view.js"></script>
+<%};%>
+
+<%var htmlPart = {%>
+<style type="text/css">
+    .fbox{margin-bottom: 5px;}
+</style>
+<div class="ui guid">
+    <div class="row">
+        <div class="column">
+            <h5 class="ui dividing header teal margin20t">
+                <span class="padding50r">查看自营合作方</span>
+            </h5>
+            <div class=" ui segment">
+                <form id="form-channel" class="ui form padding80">
+                    <div class="field required">
+                        <label>合作方名称</label>
+                        <input type="text" name="fullName" readonly>
+                    </div>
+                    <div class="field required">
+                        <label>合作方简称</label>
+                        <input type="text" name="name" readonly>
+                    </div>
+                    <div class="two fields">
+                        <div class="field required">
+                            <label>业务员姓名</label>
+                            <div class="ui search managerSearch">
+                                <div class="ui icon input">
+                                    <input value="" class="prompt" type="text" placeholder="输入业务员代码/姓名查询" name="manager" readonly>
+                                    <input name="managerId" class="manager" type="hidden">
+                                    <i class="search icon"></i>
+                                </div>
+                                <div class="results"></div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>联系电话</label>
+                            <input type="text" name="contactWay" readonly>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>生效日期</label>
+                            <input type="date" name="effectiveDate" id="effectiveDate" readonly>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>合作协议</label>
+                        <!--多文件上传-->
+                        <span id="percent"></span>
+                        <div id="fileBox"></div>
+                    </div>
+                    <div class="inline fields">
+                        <div class="field required">
+                            <label>状态</label>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="status" value="ABLE" disabled>
+                                <label>生效</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="status" value="DISABLED" disabled>
+                                <label>失效</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field required">
+                        <a class="ui button default" href="/channel/partnerList">返回</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<%};include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"查看自营合作方"}){}%>

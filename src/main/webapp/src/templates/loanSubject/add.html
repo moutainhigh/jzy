@@ -1,0 +1,64 @@
+<div class="ui modal" id="addSubjectModal">
+    <i class="close icon"></i>
+    <div class="header">
+        <span id="varTxt">新增</span>放款主体
+    </div>
+    <div class="content">
+        <form class="ui form">
+            <input id="id" type="hidden" name="loanSubject.id"/>
+            <input id="accontInfo" type="hidden" name="accountInfo"/>
+            <h4>基础信息</h4>
+            <div class="ui segment">
+                <div class="inline fields">
+                    <div class="field required">
+                        <label>类型</label>
+                        <input id="enterprise" type="radio" data-value="ENTERPRISE" name="loanSubject.type" checked/>企业
+                        <input id="personal" type="radio" data-value="PERSONAL" name="loanSubject.type"/>个人
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class=" field required">
+                        <label>主体名称</label>
+                        <input type="text" id="name" name="loanSubject.name" placeholder="主体名称">
+                    </div>
+                    <div class=" field required">
+                        <label id="idNumberUpdate">营业执照</label>
+                        <input type="text" id="idNumber" name="loanSubject.idNumber" placeholder="营业执照">
+                    </div>
+                </div>
+                <div class="two fields">
+                    <div class=" field required">
+                        <label class="three wide">联系电话</label>
+                        <input id="phoneNumber" type="text" name="loanSubject.phoneNumber" placeholder="联系电话"/>
+                    </div>
+                    <div class=" field required">
+                        <label>住址</label>
+                        <input type="text" id="lineCredit" name="loanSubject.address" placeholder="住址">
+                    </div>
+                </div>
+            </div>
+            <h4 id="accountInfoTxt">帐号信息</h4>
+            <div class="ui segment accountInfoDiv">
+                <div class="inline fields">
+                    <div class="ui button teal js-addAccount"><i class="plus  icon"></i>增加帐号</div>
+                </div>
+                <div id="account">
+                </div>
+            </div>
+            <div class=" grouped fields">
+                <label class="four wide">有效性：</label>
+                <input id="using" type="radio" data-value="ABLE" name="loanSubject.status" checked/>使用中
+                <input id="stop" type="radio" data-value="DISABLED" name="loanSubject.status"/>已停用
+            </div>
+            <div class="actions">
+                <div class="ui gray deny button">
+                    取消
+                </div>
+                <div class="ui   teal submit button">
+                    提交
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>

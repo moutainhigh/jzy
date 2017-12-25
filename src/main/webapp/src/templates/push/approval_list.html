@@ -1,0 +1,75 @@
+<%var jsPart = {%>
+<script src="/js/pages/push/approval_list.js"></script>
+<%};%>
+
+
+<%var htmlPart = {%>
+
+<div class="ui segment teal">
+    <div class="ui tabular menu" id="tab_menu">
+        <a data-status="one" class="item active teal">待审批</a>
+        <a data-status="two" class="item teal">已审批</a>
+    </div>
+
+    <div class="ui divider hidden"></div>
+    <div class="row js_part" id="part_one">
+        <div class="column">
+            <div class=" ui segment teal">
+                <a class="ui teal left ribbon label">待审批列表</a>
+                <table class="ui  celled table compact  small" id="approval">
+                    <thead>
+                    <tr>
+                        <th>推单目标</th>
+                        <th>资产单号</th>
+                        <th>对应项目</th>
+                        <th>推单金额（元）</th>
+                        <th>项目期限</th>
+                        <th>还款方式</th>
+                        <th>渠道资金利率（%）</th>
+                        <th>推单时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row js_part ks-hidden" id="part_two">
+        <div class="column">
+            <div class=" ui segment teal">
+                <a class="ui teal left ribbon label">已审批列表</a>
+                <table class="ui  celled table compact  small" id="approved">
+                    <thead>
+                    <tr>
+                        <th>推单目标</th>
+                        <th>资产单号</th>
+                        <th>对应项目</th>
+                        <th>对应标的</th>
+                        <th>推单金额（元）</th>
+                        <th>项目期限</th>
+                        <th>还款方式</th>
+                        <th>渠道资金利率（%）</th>
+                        <th>推单时间</th>
+                        <th>标的放款时间</th>
+                        <th>标的利率（%）</th>
+                        <th>标的期数</th>
+                        <th>标的下期还款时间</th>
+                        <th>资产状态</th>
+                        <th>标的应还清时间</th>
+                        <th>标的实际还清时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%}; include("/common/top.html",{jsSection:jsPart,htmlSection:htmlPart,title:"推单管理"}){}%>
+

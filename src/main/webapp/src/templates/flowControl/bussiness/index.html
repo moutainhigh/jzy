@@ -1,0 +1,214 @@
+<%var jsPart = {%>
+<script>
+    //列表初始化
+    function initList() {
+        dtTable = $("#flowListTable").DataTable({
+            serverSide: true,//服务端分页
+            searching: false,//显示默认搜索框
+            ordering: false,//开启排序
+            autoWidth: true,//自适应宽度
+            "ajax": {
+                "url": $(document).api.settings.api['flow control list'],
+                "data": function (d) {
+                    var _d = $.extend({},{searchKeys:formQuery.data},{start:d.start,length:d.length,draw:d.draw});
+                    return JSON.stringify(_d);
+                },
+                "type": "post",
+            },
+            columns: [
+                {data: 'code'},
+                {data: 'name'},
+                {data: 'description'},
+                {
+                    data: 'status',
+                    render: function (data) {
+                        return enums.status[data];
+                    }
+                },
+
+            ],
+            columnDefs: [{
+                //   指定第最后一列
+                className:"single line",
+                targets: 4,
+                render: function (data, type, row, meta) {
+                    return "<div onclick=showUpdate('" + row.id + "');  class='ui basic mini button'><i class='edit icon'></i>编辑</div>";
+                }
+            }],
+            "iDisplayLength": 20,
+            "aLengthMenu": [
+                [20],
+                [20]
+            ],
+            initComplete: function () {
+                $(".right.aligned.eight.wide.column").append("<div class='ui teal small button js-addFlow'><i class='plus icon'></i>新增流程</div>");
+
+                    $('#addModal').modal({
+                        observeChanges:true,
+                        blurring: true,
+                        onHidden:function(){
+                            $(this).removeClass("hidden");
+                            point=1;
+                            addFormReset();
+                        }
+                    }).modal('attach events', '.js-addFlow')
+
+            }
+        })
+    }
+
+    //打开新增窗口
+    function showUpdate(id){
+//        $('#updateModal').height(screen.height*0.8);
+        fetch(id);
+        $('#updateModal').modal({
+            observeChanges:true,
+            blurring: true,
+            onHidden:function(){
+                $(this).removeClass("hidden");
+                point=1;
+                updateFormReset();
+            }
+        }).modal("show");
+    }
+
+    var formQuery = {
+        data: {
+            code: '',
+            name: '',
+            productType: '',
+            product: '',
+            type:$('#type').val()
+        },
+        reset: function () {
+            this.data = {
+                code: '',
+                name: '',
+                productType: '',
+                product: '',
+                type:$('#type').val()
+            }
+        }
+    };
+
+    function initSearch() {
+        $("#queryForm").form({
+            onSuccess: function (e, fields) {
+                e.preventDefault();
+                formQuery.reset();
+                $.extend(formQuery.data, fields);
+                console.log(formQuery.data)
+                dtTable.ajax.reload();
+            }
+        })
+    }
+
+
+    /**
+     * 修改产品大类,查找到所有的产品
+     */
+    function queryProductByType(cur) {
+        var productType = $(cur).val();
+        $(cur).parents(".fields").find(".product").html("");
+        $(document).api({
+                    action: "query product",
+                    on: "now",
+                    method: "post",
+                    data: {"typeId": productType},
+                    onSuccess: function (data) {
+                        if (data.ok) {
+                            for (var i = 0; i < data.data.length; i++) {
+                                $(cur).parents(".fields").find(".product").append("<option value='" + data.data[i].id + "'>" + data.data[i].name + "</option>");
+                            }
+                        }
+                    }
+                }
+        )
+    }
+
+    function initPage() {
+        initList()
+        initSearch()
+    }
+
+    initPage()
+
+</script>
+<%};%>
+
+<%var htmlPart = {%>
+
+<div class="ui grid">
+    <input type="hidden" id="type" value="${type}">
+    <!--查询-->
+    <div class="row" >
+        <div class="column">
+            <div class=" ui segment small teal">
+                <input type="hidden" value="${type}" id="flowControlType"/>
+                <form class="ui equal width form" id="queryForm">
+                    <div class="ui four fields">
+                        <div class=" field">
+                            <label>业务审批流程编号</label>
+                            <input type="text" placeholder='业务审批流程编号' id="search_code" name="code">
+                        </div>
+                        <div class="field">
+                            <label>业务审批流程名称</label>
+                            <input type="text" placeholder='业务审批流程名称' id="search_name" name="name">
+                        </div>
+                        <div class="field">
+                            <label>产品大类</label>
+                            <select onchange="queryProductByType(this)" id="search_prdtpye" name="productType" class="ui dropdown">
+                                <option value="">请选择</option>
+                                <%for(productType in productTypes){%>
+                                <option value="${productType.id}">${productType.name}</option>
+                                <%}%>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label>产品名称</label>
+                            <select class="product ui dropdown" id="search_product" name="product"  >
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="ui teal mini submit button">查询</div>
+                    <div  class="ui mini reset button">重置</div>
+
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+
+    <!--列表-->
+    <div class="row" >
+        <div class="column">
+            <div class=" ui segment small teal">
+                <a class="ui teal left ribbon label">业务审批列表</a>
+                <table class="ui celled table small " id="flowListTable">
+                    <thead>
+                    <tr>
+                        <th>业务审批流程编号</th>
+                        <th>业务审批流程名称</th>
+                        <th>业务审批流程说明</th>
+                        <th>是否生效</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<% includeFileTemplate("add.html"){} %>
+<% includeFileTemplate("update.html"){} %>
+
+<%}; include("/common/menu.html",{jsSection:jsPart,htmlSection:htmlPart,title:"业务审批流程配置"}){}%>
