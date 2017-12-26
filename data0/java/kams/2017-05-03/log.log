@@ -1,0 +1,243 @@
+2017-05-03 10:16:09.230 DEBUG org.apache.shiro.web.env.IniWebEnvironment - Checking any specified config locations.
+2017-05-03 10:16:09.230 DEBUG org.apache.shiro.web.env.IniWebEnvironment - No INI instance or config locations specified.  Trying default config locations.
+2017-05-03 10:16:09.233 DEBUG org.apache.shiro.io.ResourceUtils - Opening resource from class path [shiro.ini]
+2017-05-03 10:16:09.240 DEBUG org.apache.shiro.config.Ini - Parsing [main]
+2017-05-03 10:16:09.243 DEBUG org.apache.shiro.config.Ini - Parsing [urls]
+2017-05-03 10:16:09.247 DEBUG org.apache.shiro.web.env.IniWebEnvironment - Discovered non-empty INI configuration at location 'classpath:shiro.ini'.  Using for configuration.
+2017-05-03 10:16:09.256 DEBUG org.apache.shiro.config.IniFactorySupport - Creating instance from Ini [sections=main,urls]
+2017-05-03 10:16:09.599 DEBUG org.apache.shiro.realm.AuthorizingRealm - No authorizationCache instance set.  Checking for a cacheManager...
+2017-05-03 10:16:09.603 DEBUG org.apache.shiro.config.IniFactorySupport - Creating instance from Ini [sections=main,urls]
+2017-05-03 10:16:09.606 DEBUG org.apache.shiro.web.filter.mgt.DefaultFilterChainManager - Creating chain [/user/logout] from String definition [logout]
+2017-05-03 10:16:09.607 DEBUG org.apache.shiro.web.filter.mgt.DefaultFilterChainManager - Attempting to apply path [/user/logout] to filter [logout] with config [null]
+2017-05-03 10:16:09.607 DEBUG org.apache.shiro.web.filter.mgt.DefaultFilterChainManager - Creating chain [/user/error] from String definition [anon]
+2017-05-03 10:16:09.608 DEBUG org.apache.shiro.web.filter.mgt.DefaultFilterChainManager - Attempting to apply path [/user/error] to filter [anon] with config [null]
+2017-05-03 10:16:09.608 DEBUG org.apache.shiro.web.filter.mgt.DefaultFilterChainManager - Creating chain [/user/login] from String definition [anon]
+2017-05-03 10:16:09.608 DEBUG org.apache.shiro.web.filter.mgt.DefaultFilterChainManager - Attempting to apply path [/user/login] to filter [anon] with config [null]
+2017-05-03 10:16:09.608 DEBUG org.apache.shiro.web.env.EnvironmentLoader - Published WebEnvironment as ServletContext attribute with name [org.apache.shiro.web.env.EnvironmentLoader.ENVIRONMENT_ATTRIBUTE_KEY]
+2017-05-03 10:16:19.392 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is desired by: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.394 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is being obtained: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.401 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' given to: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.405 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - Adding TriggerPersistenceDelegate of type: org.quartz.impl.jdbcjobstore.SimpleTriggerPersistenceDelegate
+2017-05-03 10:16:19.407 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - Adding TriggerPersistenceDelegate of type: org.quartz.impl.jdbcjobstore.CronTriggerPersistenceDelegate
+2017-05-03 10:16:19.409 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - Adding TriggerPersistenceDelegate of type: org.quartz.impl.jdbcjobstore.CalendarIntervalTriggerPersistenceDelegate
+2017-05-03 10:16:19.410 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - Adding TriggerPersistenceDelegate of type: org.quartz.impl.jdbcjobstore.DailyTimeIntervalTriggerPersistenceDelegate
+2017-05-03 10:16:19.430 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.431 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.436 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.445 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:16:19.445 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:16:19.445 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:16:19.445 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:16:19.457 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:16:19.457 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:16:19.457 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:16:19.457 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:16:19.465 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.466 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' returned by: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.469 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: Check-in complete.
+2017-05-03 10:16:19.469 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - JobStore background threads started (as scheduler was started).
+2017-05-03 10:16:19.469 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - MisfireHandler: scanning for misfires...
+2017-05-03 10:16:19.492 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - Found 0 triggers that missed their scheduled fire-time.
+2017-05-03 10:16:19.528 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:16:19.530 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.530 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.536 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.580 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: RMI TCP Connection(2)-127.0.0.1
+2017-05-03 10:16:19.608 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:16:20.328 DEBUG org.quartz.utils.UpdateChecker - Checking for available updated version of Quartz...
+2017-05-03 10:16:39.444 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:39.445 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:39.449 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:39.454 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:39.455 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:39.459 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:39.469 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:16:39.469 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:16:39.469 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:16:39.469 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:16:39.481 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:16:39.481 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:16:39.481 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:16:39.481 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:16:39.489 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:39.489 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:39.492 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: Check-in complete.
+2017-05-03 10:16:39.508 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:16:59.455 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:59.455 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:59.459 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:59.464 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:59.464 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:59.468 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:59.476 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:16:59.477 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:16:59.477 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:16:59.477 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:16:59.489 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:16:59.489 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:16:59.489 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:16:59.489 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:16:59.498 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:59.498 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:16:59.502 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: Check-in complete.
+2017-05-03 10:16:59.518 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:17:19.469 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - MisfireHandler: scanning for misfires...
+2017-05-03 10:17:19.814 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - Found 0 triggers that missed their scheduled fire-time.
+2017-05-03 10:17:20.021 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:20.021 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:20.094 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:20.225 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:20.226 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:20.292 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:20.494 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:17:20.494 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:17:20.494 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:17:20.494 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:17:20.840 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:17:20.840 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:17:20.840 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:17:20.840 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:17:21.046 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:21.046 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:21.116 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: Check-in complete.
+2017-05-03 10:17:21.661 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:17:40.378 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:40.379 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:40.446 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:40.585 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:40.586 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:40.657 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:40.861 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:17:40.861 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:17:40.861 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:17:40.861 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:17:41.207 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:17:41.207 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:17:41.207 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:17:41.207 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:17:41.420 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:41.421 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:17:41.491 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: Check-in complete.
+2017-05-03 10:17:42.041 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:18:00.193 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:00.194 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:00.197 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:00.201 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:00.201 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:00.205 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:00.213 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:18:00.213 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:18:00.213 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:18:00.213 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:18:00.224 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:18:00.224 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:18:00.224 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:18:00.224 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:18:00.232 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:00.232 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:00.235 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: Check-in complete.
+2017-05-03 10:18:00.251 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:18:19.469 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - MisfireHandler: scanning for misfires...
+2017-05-03 10:18:19.481 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - Found 0 triggers that missed their scheduled fire-time.
+2017-05-03 10:18:20.202 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:20.202 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:20.206 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:20.210 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:20.211 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:20.214 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:20.223 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:18:20.223 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:18:20.223 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:18:20.223 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:18:20.235 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:18:20.235 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:18:20.235 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:18:20.235 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:18:20.244 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:20.244 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:20.247 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: Check-in complete.
+2017-05-03 10:18:20.264 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:18:40.213 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:40.213 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:40.216 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:40.221 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:40.221 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:40.224 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:40.232 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:18:40.233 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:18:40.233 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:18:40.233 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:18:40.246 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:18:40.246 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:18:40.246 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:18:40.246 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:18:40.254 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:40.254 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:18:40.257 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: Check-in complete.
+2017-05-03 10:18:40.273 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:19:00.226 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:00.227 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:00.231 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:00.236 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:00.236 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:00.241 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:00.250 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:19:00.250 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:19:00.250 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:19:00.250 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:19:00.262 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:19:00.262 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:19:00.262 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:19:00.262 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:19:00.270 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:00.270 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:00.273 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: Check-in complete.
+2017-05-03 10:19:00.290 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:19:19.469 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - MisfireHandler: scanning for misfires...
+2017-05-03 10:19:19.480 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - Found 0 triggers that missed their scheduled fire-time.
+2017-05-03 10:19:20.233 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:20.233 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:20.237 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:20.242 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is desired by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:20.242 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' is being obtained: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:20.246 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' given to: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:20.254 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:19:20.254 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:19:20.254 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:19:20.254 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:19:20.265 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Freed 0 acquired trigger(s).
+2017-05-03 10:19:20.266 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Deleted 0 complete triggers(s).
+2017-05-03 10:19:20.266 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Scheduled 0 recoverable job(s) for recovery.
+2017-05-03 10:19:20.266 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: ......Cleaned-up 0 other failed job(s).
+2017-05-03 10:19:20.273 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'TRIGGER_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:20.273 DEBUG org.quartz.impl.jdbcjobstore.StdRowLockSemaphore - Lock 'STATE_ACCESS' returned by: QuartzScheduler_NutzScheduler-wangqx-sxgsd1493777779300_ClusterManager
+2017-05-03 10:19:20.276 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - ClusterManager: Check-in complete.
+2017-05-03 10:19:20.292 DEBUG org.quartz.core.QuartzSchedulerThread - batch acquisition of 0 triggers
+2017-05-03 10:19:22.662 DEBUG org.quartz.simpl.SimpleThreadPool - Shutting down threadpool...
+2017-05-03 10:19:22.662 DEBUG org.quartz.simpl.SimpleThreadPool - Shutdown of threadpool complete.
+2017-05-03 10:19:22.674 DEBUG org.quartz.impl.jdbcjobstore.JobStoreTX - JobStore background threads shutdown.
+2017-05-03 10:19:22.817 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.817 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.821 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.821 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.821 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.821 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.821 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.821 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.836 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.836 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.836 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.837 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.837 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.837 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.850 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.851 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.852 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.851 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.878 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.878 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.878 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.878 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.878 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.878 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.
+2017-05-03 10:19:22.878 DEBUG org.quartz.simpl.SimpleThreadPool - WorkerThread is shut down.

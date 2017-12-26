@@ -1,0 +1,9 @@
+2017-04-21 09:31:42,314 org.nutz.mvc.impl.NutLoading.depose(NutLoading.java:420) INFO  - Nutz.Mvc[nutz] is deposing ...
+2017-04-21 09:31:42,318 org.nutz.ioc.impl.NutIoc.depose(NutIoc.java:255) INFO  - org.nutz.ioc.impl.NutIoc@984473089 is closing. startup date [17-04-20 10:20:12.807]
+2017-04-21 09:31:42,323 org.quartz.core.QuartzScheduler.shutdown(QuartzScheduler.java:694) INFO  - Scheduler NutzScheduler_$_wangqx-sxgsd1492654819562 shutting down.
+2017-04-21 09:31:42,323 org.quartz.core.QuartzScheduler.standby(QuartzScheduler.java:613) INFO  - Scheduler NutzScheduler_$_wangqx-sxgsd1492654819562 paused.
+2017-04-21 09:31:42,328 com.alibaba.druid.pool.DruidDataSource.close(DruidDataSource.java:1444) INFO  - {dataSource-2} closed
+2017-04-21 09:31:42,328 org.quartz.core.QuartzScheduler.shutdown(QuartzScheduler.java:771) INFO  - Scheduler NutzScheduler_$_wangqx-sxgsd1492654819562 shutdown complete.
+2017-04-21 09:31:42,329 com.alibaba.druid.pool.DruidDataSource.close(DruidDataSource.java:1444) INFO  - {dataSource-1} closed
+2017-04-21 09:31:42,329 org.nutz.ioc.impl.NutIoc.depose(NutIoc.java:262) INFO  - org.nutz.ioc.impl.NutIoc@984473089 is deposed. startup date [17-04-20 10:20:12.807]
+2017-04-21 09:31:42,329 org.nutz.mvc.impl.NutLoading.depose(NutLoading.java:445) INFO  - Nutz.Mvc[nutz] is down in 11ms

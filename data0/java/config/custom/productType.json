@@ -1,0 +1,22 @@
+[
+  {  
+    "code":"SHULOU",
+    "name": "赎楼贷"
+  },
+    {
+    "code":"HONGBEN",
+    "name": "房抵贷"
+  },
+    {
+    "code":"CHEDAI",
+    "name": "车押贷"
+  },
+    {
+    "code":"GERENDAI",
+    "name": "信用贷"
+  },
+    {
+    "code":"PIAOJU",
+    "name": "票据融资"
+  }
+]

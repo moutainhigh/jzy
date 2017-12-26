@@ -1,0 +1,22 @@
+[
+  {  
+    "code":"SHULOU",
+    "name": "赎楼过桥"
+  },
+    {
+    "code":"HONGBEN",
+    "name": "个人抵押贷"
+  },
+    {
+    "code":"CHEDAI",
+    "name": "车贷"
+  },
+    {
+    "code":"GERENDAI",
+    "name": "个人信用贷"
+  },
+    {
+    "code":"YINPIAO",
+    "name": "票据贴现"
+  }
+]
